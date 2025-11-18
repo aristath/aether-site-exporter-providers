@@ -1,0 +1,42 @@
+{
+    "name": "aristath/aether-site-exporter-providers",
+    "description": "Provider implementations (Cloudflare R2, Cloudflare Workers, GitLab, GitLab Pages) for Aether Site Exporter",
+    "type": "wordpress-plugin",
+    "require": {
+        "php": ">=7.4"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "*",
+        "wp-coding-standards/wpcs": "*",
+        "phpstan/phpstan": "*",
+        "phpstan/extension-installer": "*",
+        "szepeviktor/phpstan-wordpress": "*",
+        "friendsofphp/php-cs-fixer": "^3.89"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aether\\SiteExporterProviders\\": "includes/"
+        }
+    },
+    "scripts": {
+        "check-cs": "phpcs --standard=phpcs.xml",
+        "fix-cs": [
+            "phpcbf --standard=phpcs.xml",
+            "php-cs-fixer fix --allow-risky=yes"
+        ],
+        "fix-cs-fixer": "php-cs-fixer fix --allow-risky=yes",
+        "phpstan": "phpstan analyse --memory-limit=1G",
+        "check-stan": "@phpstan",
+        "check": [
+            "@check-cs",
+            "@phpstan"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpstan/extension-installer": true
+        },
+        "process-timeout": 600
+    }
+}

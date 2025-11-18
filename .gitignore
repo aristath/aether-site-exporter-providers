@@ -1,0 +1,7 @@
+vendor/
+
+.php-cs-fixer.cache
+node_modules
+.claude/settings.local.json
+node_modules/
+coverage/
