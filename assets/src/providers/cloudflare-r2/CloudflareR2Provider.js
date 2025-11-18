@@ -8,14 +8,27 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import {
-	AbstractAWSProvider,
-	CAP_STORAGE,
-	CAP_MEDIA,
-} from '../aws/AbstractAWSProvider';
-import { CAP_STATIC_SITE } from '../base/AbstractProvider';
-import { ConfigFieldBuilder } from '../utils/configFieldBuilder';
+import { AbstractAWSProvider } from '../aws/AbstractAWSProvider';
 import { EdgeService } from '../services/edgeService';
+
+// Import from parent plugin's SDK (exposed as window.AetherProviderSDK)
+// Access SDK lazily to avoid issues if SDK hasn't loaded yet
+function getSDK() {
+	if ( typeof window === 'undefined' || ! window.AetherProviderSDK ) {
+		return null;
+	}
+	return window.AetherProviderSDK;
+}
+
+function getConfigFieldBuilder() {
+	const SDK = getSDK();
+	return SDK?.ConfigFieldBuilder || null;
+}
+
+function getDeploymentTypes() {
+	const SDK = getSDK();
+	return SDK?.DEPLOYMENT_TYPES || {};
+}
 
 /**
  * CloudflareR2Provider class
@@ -32,19 +45,20 @@ export class CloudflareR2Provider extends AbstractAWSProvider {
 	static ID = 'cloudflare-r2';
 
 	/**
-	 * Provider capabilities.
+	 * Get supported deployment types.
 	 *
-	 * Note: Cloudflare R2 is a storage provider, not an edge provider.
-	 * While it can deploy a worker (via the edge provider), it should not
-	 * be listed in the edge providers dropdown. The edge provider should
-	 * be Cloudflare Workers (CloudflareWorkersProvider).
+	 * Cloudflare R2 supports static sites and blueprint bundles through S3-compatible storage.
+	 * Inherits from AbstractAWSProvider but can be overridden here if needed.
 	 *
-	 * Cloudflare R2 supports media offloading (CAP_MEDIA) since it can
-	 * store and serve media files through its object storage.
-	 *
-	 * @type {Array<string>}
+	 * @return {Array<string>} Supported deployment types
 	 */
-	capabilities = [ CAP_STORAGE, CAP_MEDIA, CAP_STATIC_SITE ];
+	getSupportedDeploymentTypes() {
+		const types = getDeploymentTypes();
+		return [
+			types.STATIC_SITE,
+			types.BLUEPRINT_BUNDLE,
+		];
+	}
 
 	/**
 	 * Whether this provider requires a worker to be deployed.
@@ -123,19 +137,27 @@ export class CloudflareR2Provider extends AbstractAWSProvider {
 	}
 
 	/**
-	 * Get configuration fields for this provider.
+	 * Get provider-specific configuration fields.
 	 *
 	 * Includes common S3 fields from AbstractAWSProvider plus R2-specific fields.
 	 *
+	 * Note: The deployment_types field is automatically added by AbstractProvider.getConfigFields()
+	 *
 	 * @return {Array<Object>} Array of field definitions
 	 */
-	getConfigFields() {
+	getProviderSpecificConfigFields() {
 		// Get base S3 fields from AbstractAWSProvider (already built)
-		const baseFields = super.getConfigFields();
+		const baseFields = super.getProviderSpecificConfigFields();
 
 		// Add R2-specific fields
-		const r2Fields = ConfigFieldBuilder.buildAll( [
-			ConfigFieldBuilder.text( 'cloudflare_account_id' )
+		const builder = getConfigFieldBuilder();
+		if ( ! builder ) {
+			throw new Error(
+				'ConfigFieldBuilder is not available. Make sure AetherProviderSDK is loaded.'
+			);
+		}
+		const r2Fields = builder.buildAll( [
+			builder.text( 'cloudflare_account_id' )
 				.label( __( 'Cloudflare Account ID', 'aether' ) )
 				.description(
 					__(
@@ -153,7 +175,7 @@ export class CloudflareR2Provider extends AbstractAWSProvider {
 				)
 				.sensitive(),
 
-			ConfigFieldBuilder.url( 'worker_endpoint' )
+			builder.url( 'worker_endpoint' )
 				.label( __( 'Worker Endpoint URL', 'aether' ) )
 				.description(
 					__(
@@ -162,7 +184,7 @@ export class CloudflareR2Provider extends AbstractAWSProvider {
 					)
 				),
 
-			ConfigFieldBuilder.url( 'custom_domain' )
+			builder.url( 'custom_domain' )
 				.label( __( 'Custom Domain (Optional)', 'aether' ) )
 				.description(
 					__(
@@ -171,7 +193,7 @@ export class CloudflareR2Provider extends AbstractAWSProvider {
 					)
 				),
 
-			ConfigFieldBuilder.checkbox( 'public_access' )
+			builder.checkbox( 'public_access' )
 				.label( __( 'Enable Public Access', 'aether' ) )
 				.description(
 					__(

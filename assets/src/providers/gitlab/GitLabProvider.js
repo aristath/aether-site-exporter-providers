@@ -8,15 +8,19 @@
  */
 
 import { __, sprintf } from '@wordpress/i18n';
-import { AbstractGitProvider, CAP_STORAGE } from '../git/AbstractGitProvider';
-import { ConfigFieldBuilder } from '../utils/configFieldBuilder';
+import { AbstractGitProvider } from '../git/AbstractGitProvider';
 import { debugWarn } from '../../utils/debug';
+
+// Import from parent plugin's SDK (exposed as window.AetherProviderSDK)
+const { ConfigFieldBuilder } = window.AetherProviderSDK || {};
 
 /**
  * GitLabProvider class
  *
  * Provides Git-based file storage using GitLab repositories.
  * Uses GitLab API and isomorphic-git for browser-based deployment.
+ *
+ * Inherits deployment types from AbstractGitProvider (BLUEPRINT_BUNDLE + STATIC_SITE).
  */
 export class GitLabProvider extends AbstractGitProvider {
 	/**
@@ -25,13 +29,6 @@ export class GitLabProvider extends AbstractGitProvider {
 	 * @type {string}
 	 */
 	static ID = 'gitlab';
-
-	/**
-	 * Provider capabilities.
-	 *
-	 * @type {Array<string>}
-	 */
-	capabilities = [ CAP_STORAGE ];
 
 	/**
 	 * Get the unique provider identifier.
@@ -88,13 +85,20 @@ export class GitLabProvider extends AbstractGitProvider {
 	 *
 	 * @return {Array<Object>} Array of field definitions
 	 */
-	getConfigFields() {
+	getProviderSpecificConfigFields() {
 		// Get base Git fields from AbstractGitProvider (already built)
-		const baseFields = super.getConfigFields();
+		const baseFields = super.getProviderSpecificConfigFields();
 
 		// Add GitLab-specific fields
-		const gitlabFields = ConfigFieldBuilder.buildAll( [
-			ConfigFieldBuilder.text( 'project_id' )
+		const SDK = window.AetherProviderSDK;
+		const builder = SDK?.ConfigFieldBuilder;
+		if ( ! builder ) {
+			throw new Error(
+				'ConfigFieldBuilder is not available. Make sure AetherProviderSDK is loaded.'
+			);
+		}
+		const gitlabFields = builder.buildAll( [
+			builder.text( 'project_id' )
 				.label( __( 'Project ID', 'aether' ) )
 				.description( __( 'GitLab project ID (numeric)', 'aether' ) )
 				.required()
@@ -103,7 +107,7 @@ export class GitLabProvider extends AbstractGitProvider {
 					__( 'Project ID must be numeric', 'aether' )
 				),
 
-			ConfigFieldBuilder.text( 'namespace' )
+			builder.text( 'namespace' )
 				.label( __( 'Namespace (Optional)', 'aether' ) )
 				.description(
 					__(
@@ -112,7 +116,7 @@ export class GitLabProvider extends AbstractGitProvider {
 					)
 				),
 
-			ConfigFieldBuilder.text( 'project_path' )
+			builder.text( 'project_path' )
 				.label( __( 'Project Path (Optional)', 'aether' ) )
 				.description(
 					__( 'Project path for repository URL', 'aether' )

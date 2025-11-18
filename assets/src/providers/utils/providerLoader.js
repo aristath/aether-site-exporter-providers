@@ -16,6 +16,7 @@
 
 import ProviderRegistry from '../registry/ProviderRegistry';
 import { debugError, debugWarn } from '../../utils/debug';
+import { applyFilters } from '@wordpress/hooks';
 
 /**
  * Track loading states for providers.
@@ -488,13 +489,11 @@ export async function loadAllProviders( options = {} ) {
 	let allProviderIds = [ 'local-filesystem' ];
 
 	// Allow plugins to extend provider IDs via filter
-	// Use dynamic import to avoid circular dependencies and reduce bundle size
 	try {
-		const { applyFilters } = await import( '@wordpress/hooks' );
 		allProviderIds = applyFilters( 'aether.provider_ids', allProviderIds );
 	} catch ( error ) {
 		debugWarn(
-			'Failed to load @wordpress/hooks for provider filtering:',
+			'Provider ID filter failed:',
 			error
 		);
 	}

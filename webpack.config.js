@@ -88,17 +88,25 @@ module.exports = {
 			},
 		},
 	},
-	externals: {
-		// Externalize parent plugin's abstractions to avoid duplication
-		// These will be provided by aether-site-exporter at runtime
-		react: 'React',
-		'react-dom': 'ReactDOM',
-		'@wordpress/element': 'window.wp.element',
-		'@wordpress/components': 'window.wp.components',
-		'@wordpress/hooks': 'window.wp.hooks',
-		'@wordpress/i18n': 'window.wp.i18n',
-		'@wordpress/api-fetch': 'window.wp.apiFetch',
-		'@wordpress/icons': 'window.wp.icons',
+	externals: ( { request }, callback ) => {
+		// Externalize WordPress packages
+		const wpPackages = {
+			react: 'React',
+			'react-dom': 'ReactDOM',
+			'@wordpress/element': 'window.wp.element',
+			'@wordpress/components': 'window.wp.components',
+			'@wordpress/hooks': 'window.wp.hooks',
+			'@wordpress/i18n': 'window.wp.i18n',
+			'@wordpress/api-fetch': 'window.wp.apiFetch',
+			'@wordpress/icons': 'window.wp.icons',
+		};
+
+		if ( wpPackages[ request ] ) {
+			return callback( null, wpPackages[ request ] );
+		}
+
+		// Don't externalize anything else - let webpack handle it normally
+		callback();
 	},
 	plugins: [ ...defaultConfig.plugins, new RemoveSourceMapPlugin() ],
 };

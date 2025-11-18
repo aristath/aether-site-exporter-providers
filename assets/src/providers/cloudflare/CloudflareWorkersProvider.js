@@ -8,8 +8,6 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { AbstractProvider, CAP_EDGE } from '../base/AbstractProvider';
-import { ConfigFieldBuilder } from '../utils/configFieldBuilder';
 import { debug, debugWarn, debugError } from '../../utils/debug';
 import apiFetch from '../../utils/api';
 import {
@@ -21,12 +19,52 @@ import {
 	removeCustomDomain,
 } from '../../utils/cloudflareWorkersApi';
 
+// Import from parent plugin's SDK (exposed as window.AetherProviderSDK)
+// Access SDK lazily to avoid issues if SDK hasn't loaded yet
+function getSDK() {
+	if ( typeof window === 'undefined' || ! window.AetherProviderSDK ) {
+		return null;
+	}
+	return window.AetherProviderSDK;
+}
+
+function getAbstractProvider() {
+	const SDK = getSDK();
+	if ( SDK && SDK.AbstractProvider && typeof SDK.AbstractProvider === 'function' ) {
+		return SDK.AbstractProvider;
+	}
+	// Return a placeholder class - this prevents "superclass is not a constructor" error
+	return class {
+		constructor() {
+			throw new Error(
+				'AetherProviderSDK.AbstractProvider is not available. ' +
+				'Make sure the parent plugin (aether-site-exporter) is active and the SDK has loaded.'
+			);
+		}
+	};
+}
+
+function getConfigFieldBuilder() {
+	const SDK = getSDK();
+	return SDK?.ConfigFieldBuilder || null;
+}
+
+function getDeploymentTypes() {
+	const SDK = getSDK();
+	return SDK?.DEPLOYMENT_TYPES || {};
+}
+
+// Get these at module load time with fallbacks
+const SDK = getSDK();
+const ConfigFieldBuilder = getConfigFieldBuilder();
+const DEPLOYMENT_TYPES = getDeploymentTypes();
+
 /**
  * CloudflareWorkersProvider class
  *
  * Provides Cloudflare Workers edge computing platform integration.
  */
-export class CloudflareWorkersProvider extends AbstractProvider {
+export class CloudflareWorkersProvider extends getAbstractProvider() {
 	/**
 	 * Provider ID constant.
 	 *
@@ -35,11 +73,16 @@ export class CloudflareWorkersProvider extends AbstractProvider {
 	static ID = 'cloudflare';
 
 	/**
-	 * Provider capabilities.
+	 * Get supported deployment types.
 	 *
-	 * @type {Array<string>}
+	 * Cloudflare Workers support edge functions only.
+	 *
+	 * @return {Array<string>} Supported deployment types
 	 */
-	capabilities = [ CAP_EDGE ];
+	getSupportedDeploymentTypes() {
+		const types = getDeploymentTypes();
+		return [ types.EDGE_FUNCTIONS ];
+	}
 
 	/**
 	 * Worker script file paths
@@ -108,13 +151,21 @@ export class CloudflareWorkersProvider extends AbstractProvider {
 	}
 
 	/**
-	 * Get configuration fields for this provider.
+	 * Get provider-specific configuration fields.
+	 *
+	 * Note: The deployment_types field is automatically added by AbstractProvider.getConfigFields()
 	 *
 	 * @return {Array<Object>} Array of field definitions
 	 */
-	getConfigFields() {
-		return ConfigFieldBuilder.buildAll( [
-			ConfigFieldBuilder.text( 'account_id' )
+	getProviderSpecificConfigFields() {
+		const builder = getConfigFieldBuilder();
+		if ( ! builder ) {
+			throw new Error(
+				'ConfigFieldBuilder is not available. Make sure AetherProviderSDK is loaded.'
+			);
+		}
+		return builder.buildAll( [
+			builder.text( 'account_id' )
 				.label( __( 'Account ID', 'aether' ) )
 				.description(
 					__(
@@ -132,7 +183,7 @@ export class CloudflareWorkersProvider extends AbstractProvider {
 				)
 				.sensitive(),
 
-			ConfigFieldBuilder.password( 'api_token' )
+			builder.password( 'api_token' )
 				.label( __( 'API Token', 'aether' ) )
 				.description(
 					__(

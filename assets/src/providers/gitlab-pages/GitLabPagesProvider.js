@@ -10,8 +10,9 @@
 
 import { __ } from '@wordpress/i18n';
 import { GitLabProvider } from '../gitlab/GitLabProvider';
-import { CAP_STATIC_SITE } from '../base/AbstractProvider';
-import { ConfigFieldBuilder } from '../utils/configFieldBuilder';
+
+// Import from parent plugin's SDK (exposed as window.AetherProviderSDK)
+const { ConfigFieldBuilder, DEPLOYMENT_TYPES } = window.AetherProviderSDK || {};
 
 /**
  * GitLabPagesProvider class
@@ -29,15 +30,18 @@ export class GitLabPagesProvider extends GitLabProvider {
 	static ID = 'gitlab-pages';
 
 	/**
-	 * Provider capabilities.
+	 * Get supported deployment types.
 	 *
-	 * GitLab Pages is a static site provider, not a storage provider.
-	 * While it inherits Git storage functionality from GitLabProvider,
-	 * it should only appear in the static site providers dropdown.
+	 * GitLab Pages supports static sites only (not blueprint bundles).
+	 * Overrides parent GitLabProvider which supports both.
 	 *
-	 * @type {Array<string>}
+	 * @return {Array<string>} Supported deployment types
 	 */
-	capabilities = [ CAP_STATIC_SITE ];
+	getSupportedDeploymentTypes() {
+		const SDK = window.AetherProviderSDK;
+		const types = SDK?.DEPLOYMENT_TYPES || {};
+		return [ types.STATIC_SITE ];
+	}
 
 	/**
 	 * Get the unique provider identifier.
@@ -103,13 +107,20 @@ export class GitLabPagesProvider extends GitLabProvider {
 	 *
 	 * @return {Array<Object>} Array of field definitions
 	 */
-	getConfigFields() {
+	getProviderSpecificConfigFields() {
 		// Get base fields from GitLabProvider (already built)
-		const baseFields = super.getConfigFields();
+		const baseFields = super.getProviderSpecificConfigFields();
 
 		// Add Pages-specific fields
-		const pagesFields = ConfigFieldBuilder.buildAll( [
-			ConfigFieldBuilder.checkbox( 'pages_enabled' )
+		const SDK = window.AetherProviderSDK;
+		const builder = SDK?.ConfigFieldBuilder;
+		if ( ! builder ) {
+			throw new Error(
+				'ConfigFieldBuilder is not available. Make sure AetherProviderSDK is loaded.'
+			);
+		}
+		const pagesFields = builder.buildAll( [
+			builder.checkbox( 'pages_enabled' )
 				.label( __( 'Enable GitLab Pages', 'aether' ) )
 				.description(
 					__(
@@ -119,7 +130,7 @@ export class GitLabPagesProvider extends GitLabProvider {
 				)
 				.default( true ),
 
-			ConfigFieldBuilder.url( 'pages_url' )
+			builder.url( 'pages_url' )
 				.label( __( 'GitLab Pages URL (Optional)', 'aether' ) )
 				.description(
 					__(
@@ -128,7 +139,7 @@ export class GitLabPagesProvider extends GitLabProvider {
 					)
 				),
 
-			ConfigFieldBuilder.url( 'custom_domain' )
+			builder.url( 'custom_domain' )
 				.label( __( 'Custom Domain (Optional)', 'aether' ) )
 				.description(
 					__(
