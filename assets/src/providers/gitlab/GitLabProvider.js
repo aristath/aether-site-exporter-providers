@@ -11,9 +11,6 @@ import { __, sprintf } from '@wordpress/i18n';
 import { AbstractGitProvider } from '../git/AbstractGitProvider';
 import { debugWarn } from '../../utils/debug';
 
-// Import from parent plugin's SDK (exposed as window.AetherProviderSDK)
-const { ConfigFieldBuilder } = window.AetherProviderSDK || {};
-
 /**
  * GitLabProvider class
  *
@@ -79,52 +76,16 @@ export class GitLabProvider extends AbstractGitProvider {
 	}
 
 	/**
-	 * Get configuration fields for this provider.
+	 * Get provider-specific configuration fields.
 	 *
-	 * Includes common Git fields from AbstractGitProvider plus GitLab-specific fields.
+	 * Settings are now handled by PHP via BaseProvider.getSettings().
+	 * This method returns an empty array since JavaScript no longer defines fields.
 	 *
-	 * @return {Array<Object>} Array of field definitions
+	 * @return {Array<Object>} Empty array (settings handled by PHP)
 	 */
 	getProviderSpecificConfigFields() {
-		// Get base Git fields from AbstractGitProvider (already built)
-		const baseFields = super.getProviderSpecificConfigFields();
-
-		// Add GitLab-specific fields
-		const SDK = window.AetherProviderSDK;
-		const builder = SDK?.ConfigFieldBuilder;
-		if ( ! builder ) {
-			throw new Error(
-				'ConfigFieldBuilder is not available. Make sure AetherProviderSDK is loaded.'
-			);
-		}
-		const gitlabFields = builder.buildAll( [
-			builder.text( 'project_id' )
-				.label( __( 'Project ID', 'aether' ) )
-				.description( __( 'GitLab project ID (numeric)', 'aether' ) )
-				.required()
-				.pattern(
-					'^\\d+$',
-					__( 'Project ID must be numeric', 'aether' )
-				),
-
-			builder.text( 'namespace' )
-				.label( __( 'Namespace (Optional)', 'aether' ) )
-				.description(
-					__(
-						'GitLab namespace (username or group) for repository URL',
-						'aether'
-					)
-				),
-
-			builder.text( 'project_path' )
-				.label( __( 'Project Path (Optional)', 'aether' ) )
-				.description(
-					__( 'Project path for repository URL', 'aether' )
-				),
-		] );
-
-		// Combine base fields and GitLab-specific fields
-		return [ ...baseFields, ...gitlabFields ];
+		// Settings are handled by PHP, not JavaScript
+		return [];
 	}
 
 	/**

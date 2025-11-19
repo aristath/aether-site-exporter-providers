@@ -10,9 +10,7 @@
 
 import { __ } from '@wordpress/i18n';
 import { GitLabProvider } from '../gitlab/GitLabProvider';
-
-// Import from parent plugin's SDK (exposed as window.AetherProviderSDK)
-const { ConfigFieldBuilder, DEPLOYMENT_TYPES } = window.AetherProviderSDK || {};
+import { DEPLOYMENT_TYPES } from '@aether/base/constants/deploymentTypes';
 
 /**
  * GitLabPagesProvider class
@@ -38,9 +36,7 @@ export class GitLabPagesProvider extends GitLabProvider {
 	 * @return {Array<string>} Supported deployment types
 	 */
 	getSupportedDeploymentTypes() {
-		const SDK = window.AetherProviderSDK;
-		const types = SDK?.DEPLOYMENT_TYPES || {};
-		return [ types.STATIC_SITE ];
+		return [ DEPLOYMENT_TYPES.STATIC_SITE ];
 	}
 
 	/**
@@ -101,56 +97,16 @@ export class GitLabPagesProvider extends GitLabProvider {
 	}
 
 	/**
-	 * Get configuration fields for this provider.
+	 * Get provider-specific configuration fields.
 	 *
-	 * Includes all fields from GitLabProvider plus Pages-specific fields.
+	 * Settings are now handled by PHP via BaseProvider.getSettings().
+	 * This method returns an empty array since JavaScript no longer defines fields.
 	 *
-	 * @return {Array<Object>} Array of field definitions
+	 * @return {Array<Object>} Empty array (settings handled by PHP)
 	 */
 	getProviderSpecificConfigFields() {
-		// Get base fields from GitLabProvider (already built)
-		const baseFields = super.getProviderSpecificConfigFields();
-
-		// Add Pages-specific fields
-		const SDK = window.AetherProviderSDK;
-		const builder = SDK?.ConfigFieldBuilder;
-		if ( ! builder ) {
-			throw new Error(
-				'ConfigFieldBuilder is not available. Make sure AetherProviderSDK is loaded.'
-			);
-		}
-		const pagesFields = builder.buildAll( [
-			builder.checkbox( 'pages_enabled' )
-				.label( __( 'Enable GitLab Pages', 'aether' ) )
-				.description(
-					__(
-						'Enable static site hosting via GitLab Pages',
-						'aether'
-					)
-				)
-				.default( true ),
-
-			builder.url( 'pages_url' )
-				.label( __( 'GitLab Pages URL (Optional)', 'aether' ) )
-				.description(
-					__(
-						'Auto-detected if namespace provided (e.g., https://namespace.gitlab.io/project)',
-						'aether'
-					)
-				),
-
-			builder.url( 'custom_domain' )
-				.label( __( 'Custom Domain (Optional)', 'aether' ) )
-				.description(
-					__(
-						'Custom domain for GitLab Pages (e.g., https://www.example.com)',
-						'aether'
-					)
-				),
-		] );
-
-		// Combine base fields and Pages-specific fields
-		return [ ...baseFields, ...pagesFields ];
+		// Settings are handled by PHP, not JavaScript
+		return [];
 	}
 
 	/**
