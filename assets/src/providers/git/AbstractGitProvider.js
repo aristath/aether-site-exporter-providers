@@ -9,46 +9,8 @@
 
 import { __, sprintf } from '@wordpress/i18n';
 import { getRestUrl } from '../../utils/getRestUrl';
-
-// Import from parent plugin's SDK (exposed as window.AetherProviderSDK)
-// Access SDK lazily to avoid issues if SDK hasn't loaded yet
-function getSDK() {
-	if ( typeof window === 'undefined' || ! window.AetherProviderSDK ) {
-		return null;
-	}
-	return window.AetherProviderSDK;
-}
-
-function getAbstractProvider() {
-	const SDK = getSDK();
-	if ( SDK && SDK.AbstractProvider && typeof SDK.AbstractProvider === 'function' ) {
-		return SDK.AbstractProvider;
-	}
-	// Return a placeholder class - this prevents "superclass is not a constructor" error
-	return class {
-		constructor() {
-			throw new Error(
-				'AetherProviderSDK.AbstractProvider is not available. ' +
-				'Make sure the parent plugin (aether-site-exporter) is active and the SDK has loaded.'
-			);
-		}
-	};
-}
-
-function getConfigFieldBuilder() {
-	const SDK = getSDK();
-	return SDK?.ConfigFieldBuilder || null;
-}
-
-function getDeploymentTypes() {
-	const SDK = getSDK();
-	return SDK?.DEPLOYMENT_TYPES || {};
-}
-
-// Get these at module load time with fallbacks
-const SDK = getSDK();
-const ConfigFieldBuilder = getConfigFieldBuilder();
-const DEPLOYMENT_TYPES = getDeploymentTypes();
+import { AbstractProvider } from '@aether/base/providers/base/AbstractProvider';
+import { DEPLOYMENT_TYPES } from '@aether/base/constants/deploymentTypes';
 
 /**
  * AbstractGitProvider class
@@ -56,7 +18,7 @@ const DEPLOYMENT_TYPES = getDeploymentTypes();
  * Abstract base class for Git-based storage providers.
  * Subclasses must implement provider-specific methods.
  */
-export class AbstractGitProvider extends getAbstractProvider() {
+export class AbstractGitProvider extends AbstractProvider {
 	/**
 	 * Get supported deployment types.
 	 *
@@ -65,10 +27,9 @@ export class AbstractGitProvider extends getAbstractProvider() {
 	 * @return {Array<string>} Supported deployment types
 	 */
 	getSupportedDeploymentTypes() {
-		const types = getDeploymentTypes();
 		return [
-			types.BLUEPRINT_BUNDLE,
-			types.STATIC_SITE,
+			DEPLOYMENT_TYPES.BLUEPRINT_BUNDLE,
+			DEPLOYMENT_TYPES.STATIC_SITE,
 		];
 	}
 
@@ -126,50 +87,14 @@ export class AbstractGitProvider extends getAbstractProvider() {
 	/**
 	 * Get provider-specific configuration fields.
 	 *
-	 * Defines common Git fields shared by all Git providers.
-	 * Subclasses should override and call super.getProviderSpecificConfigFields() to add provider-specific fields.
+	 * Settings are now handled by PHP via BaseProvider.getSettings().
+	 * This method returns an empty array since JavaScript no longer defines fields.
 	 *
-	 * Note: The deployment_types field is automatically added by AbstractProvider.getConfigFields()
-	 *
-	 * @return {Array<Object>} Array of field definitions
+	 * @return {Array<Object>} Empty array (settings handled by PHP)
 	 */
 	getProviderSpecificConfigFields() {
-		const builder = getConfigFieldBuilder();
-		if ( ! builder ) {
-			throw new Error(
-				'ConfigFieldBuilder is not available. Make sure AetherProviderSDK is loaded.'
-			);
-		}
-		return builder.buildAll( [
-			builder.password( 'personal_access_token' )
-				.label( __( 'Personal Access Token', 'aether' ) )
-				.description(
-					__(
-						'Personal access token with repository write permissions',
-						'aether'
-					)
-				)
-				.required()
-				.sensitive()
-				.min( 20 )
-				.max( 255 ),
-
-			builder.text( 'branch' )
-				.label( __( 'Branch', 'aether' ) )
-				.description(
-					__( 'Git branch name (default: main)', 'aether' )
-				)
-				.default( 'main' ),
-
-			builder.url( 'git_worker_url' )
-				.label( __( 'Git Worker URL (Optional)', 'aether' ) )
-				.description(
-					__(
-						'CORS proxy worker for browser-based Git operations (for WordPress Playground)',
-						'aether'
-					)
-				),
-		] );
+		// Settings are handled by PHP, not JavaScript
+		return [];
 	}
 
 	/**

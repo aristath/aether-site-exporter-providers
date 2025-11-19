@@ -7,88 +7,11 @@
  * @package
  */
 
-import { __ } from '@wordpress/i18n';
 import { StorageService } from '../services/storageService';
 
-/**
- * Wait for SDK to be available
- * Returns a promise that resolves when AbstractProvider is available
- */
-function waitForSDK() {
-	return new Promise( ( resolve, reject ) => {
-		// Check if SDK is already available
-		if (
-			window.AetherProviderSDK &&
-			window.AetherProviderSDK.AbstractProvider
-		) {
-			resolve( window.AetherProviderSDK.AbstractProvider );
-			return;
-		}
-
-		// Poll for SDK availability
-		let attempts = 0;
-		const maxAttempts = 50; // 5 seconds max wait (50 * 100ms)
-		const interval = setInterval( () => {
-			attempts++;
-			if (
-				window.AetherProviderSDK &&
-				window.AetherProviderSDK.AbstractProvider
-			) {
-				clearInterval( interval );
-				resolve( window.AetherProviderSDK.AbstractProvider );
-			} else if ( attempts >= maxAttempts ) {
-				clearInterval( interval );
-				reject(
-					new Error(
-						'AetherProviderSDK.AbstractProvider is not available after waiting. ' +
-						'Make sure the parent plugin (aether-site-exporter) is active and the SDK is loaded.'
-					)
-				);
-			}
-		}, 100 );
-	} );
-}
-
-// Import from parent plugin's SDK (exposed as window.AetherProviderSDK)
-// Access SDK lazily to avoid issues if SDK hasn't loaded yet
-function getSDK() {
-	if ( typeof window === 'undefined' || ! window.AetherProviderSDK ) {
-		return null;
-	}
-	return window.AetherProviderSDK;
-}
-
-function getAbstractProvider() {
-	const SDK = getSDK();
-	if ( SDK && SDK.AbstractProvider && typeof SDK.AbstractProvider === 'function' ) {
-		return SDK.AbstractProvider;
-	}
-	// Return a placeholder class - this prevents "superclass is not a constructor" error
-	// The placeholder will throw if instantiated, but allows the class to be defined
-	return class {
-		constructor() {
-			throw new Error(
-				'AetherProviderSDK.AbstractProvider is not available. ' +
-				'Make sure the parent plugin (aether-site-exporter) is active and the SDK has loaded.'
-			);
-		}
-	};
-}
-
-function getConfigFieldBuilder() {
-	const SDK = getSDK();
-	return SDK?.ConfigFieldBuilder || null;
-}
-
-function getDeploymentTypes() {
-	const SDK = getSDK();
-	return SDK?.DEPLOYMENT_TYPES || {};
-}
-
-// Get these at module load time with fallbacks
-const SDK = getSDK();
-const ConfigFieldBuilder = getConfigFieldBuilder();
-const DEPLOYMENT_TYPES = getDeploymentTypes();
+// Import from base plugin
+import { AbstractProvider } from '@aether/base/providers/base/AbstractProvider';
+import { DEPLOYMENT_TYPES } from '@aether/base/constants/deploymentTypes';
 
 /**
  * AbstractAWSProvider class
@@ -96,7 +19,7 @@ const DEPLOYMENT_TYPES = getDeploymentTypes();
  * Abstract base class for AWS S3-compatible storage providers.
  * Subclasses must implement provider-specific methods.
  */
-export class AbstractAWSProvider extends getAbstractProvider() {
+export class AbstractAWSProvider extends AbstractProvider {
 	/**
 	 * Get supported deployment types.
 	 *
@@ -105,10 +28,9 @@ export class AbstractAWSProvider extends getAbstractProvider() {
 	 * @return {Array<string>} Supported deployment types
 	 */
 	getSupportedDeploymentTypes() {
-		const types = getDeploymentTypes();
 		return [
-			types.BLUEPRINT_BUNDLE,
-			types.STATIC_SITE,
+			DEPLOYMENT_TYPES.BLUEPRINT_BUNDLE,
+			DEPLOYMENT_TYPES.STATIC_SITE,
 		];
 	}
 
@@ -131,72 +53,14 @@ export class AbstractAWSProvider extends getAbstractProvider() {
 	/**
 	 * Get provider-specific configuration fields.
 	 *
-	 * Defines common S3-compatible fields shared by all AWS providers.
-	 * Subclasses should override and call super.getProviderSpecificConfigFields() to add provider-specific fields.
+	 * Settings are now handled by PHP via BaseProvider.getSettings().
+	 * This method returns an empty array since JavaScript no longer defines fields.
 	 *
-	 * Note: The deployment_types field is automatically added by AbstractProvider.getConfigFields()
-	 *
-	 * @return {Array<Object>} Array of field definitions
+	 * @return {Array<Object>} Empty array (settings handled by PHP)
 	 */
 	getProviderSpecificConfigFields() {
-		const builder = getConfigFieldBuilder();
-		if ( ! builder ) {
-			throw new Error(
-				'ConfigFieldBuilder is not available. Make sure AetherProviderSDK is loaded.'
-			);
-		}
-		return builder.buildAll( [
-			builder.text( 'access_key_id' )
-				.label( __( 'Access Key ID', 'aether' ) )
-				.description(
-					__( 'S3-compatible API access key ID', 'aether' )
-				)
-				.required()
-				.min( 16 )
-				.max( 128 ),
-
-			builder.password( 'secret_access_key' )
-				.label( __( 'Secret Access Key', 'aether' ) )
-				.description(
-					__(
-						'S3-compatible API secret access key (encrypted)',
-						'aether'
-					)
-				)
-				.required()
-				.sensitive()
-				.min( 32 )
-				.max( 128 ),
-
-			builder.text( 'bucket_name' )
-				.label( __( 'Bucket Name', 'aether' ) )
-				.description( __( 'Bucket name for file storage', 'aether' ) )
-				.required()
-				.pattern(
-					'^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$',
-					__(
-						'Bucket name must be 3-63 characters, lowercase, start/end with alphanumeric',
-						'aether'
-					)
-				)
-				.min( 3 )
-				.max( 63 ),
-
-			builder.text( 'region' )
-				.label( __( 'Region (Optional)', 'aether' ) )
-				.description(
-					__( 'Storage region (e.g., us-east-1, auto)', 'aether' )
-				),
-
-			builder.url( 'endpoint' )
-				.label( __( 'Endpoint URL (Optional)', 'aether' ) )
-				.description(
-					__(
-						'Custom endpoint URL for S3-compatible storage',
-						'aether'
-					)
-				),
-		] );
+		// Settings are handled by PHP, not JavaScript
+		return [];
 	}
 
 	/**
@@ -289,8 +153,5 @@ export class AbstractAWSProvider extends getAbstractProvider() {
 		);
 	}
 }
-
-// Export wait function for use by subclasses if needed
-export { waitForSDK };
 
 export default AbstractAWSProvider;
