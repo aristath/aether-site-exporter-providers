@@ -27,7 +27,7 @@ export function useEdgeService( providerId ) {
 	const getEdgeService = useCallback( async () => {
 		// Fetch edge provider credentials from settings.
 		const response = await apiFetch( {
-			path: '/aether/v1/settings',
+			path: '/aether/site-exporter/settings',
 			method: 'GET',
 		} );
 

@@ -335,6 +335,7 @@ export class ConfigStorage {
 			);
 		} catch ( error ) {
 			// Failed to save to cache - log but don't throw
+			// eslint-disable-next-line no-console
 			console.error(
 				`[ConfigStorage] Failed to cache config for ${ this.providerId }:`,
 				error
@@ -353,6 +354,7 @@ export class ConfigStorage {
 			await this.store.delete( this.cacheKey );
 		} catch ( error ) {
 			// Failed to clear cache - log but don't throw
+			// eslint-disable-next-line no-console
 			console.error(
 				`[ConfigStorage] Failed to clear cache for ${ this.providerId }:`,
 				error
@@ -386,6 +388,7 @@ export class ConfigStorage {
 			await store.clear();
 		} catch ( error ) {
 			// Failed to clear all caches - log but don't throw
+			// eslint-disable-next-line no-console
 			console.error(
 				'[ConfigStorage] Failed to clear all caches:',
 				error
