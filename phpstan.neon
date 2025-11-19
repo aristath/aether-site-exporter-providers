@@ -5,6 +5,7 @@ parameters:
         - aether-site-exporter-providers.php
     bootstrapFiles:
         - aether-site-exporter-providers.php
+        - phpstan-bootstrap.php
     excludePaths:
         - vendor/
     # Ignore WordPress core file require errors - PHPStan cannot verify

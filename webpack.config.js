@@ -1,4 +1,5 @@
 const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
+// eslint-disable-next-line import/no-extraneous-dependencies
 const { RawSource } = require( 'webpack-sources' );
 
 // Allow disabling minification via environment variable for easier debugging
@@ -57,8 +58,7 @@ module.exports = {
 		'provider-cloudflare-r2':
 			'./assets/src/providers/cloudflare-r2/index.js',
 		'provider-gitlab': './assets/src/providers/gitlab/index.js',
-		'provider-gitlab-pages':
-			'./assets/src/providers/gitlab-pages/index.js',
+		'provider-gitlab-pages': './assets/src/providers/gitlab-pages/index.js',
 	},
 	output: {
 		...defaultConfig.output,
@@ -86,6 +86,17 @@ module.exports = {
 				...defaultConfig.module?.parser?.javascript,
 				dynamicImportMode: 'eager',
 			},
+		},
+	},
+	resolve: {
+		...defaultConfig.resolve,
+		alias: {
+			...defaultConfig.resolve?.alias,
+			// Allow importing from base plugin's source
+			'@aether/base': require( 'path' ).resolve(
+				__dirname,
+				'../aether-site-exporter/assets/src'
+			),
 		},
 	},
 	externals: ( { request }, callback ) => {
