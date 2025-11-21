@@ -108,15 +108,7 @@ describe( 'GitLabPagesProvider', () => {
 				( f ) => f.id === 'project_id'
 			);
 
-			// Pattern can be regex or string
-			expect( projectIdField.validation.pattern ).toBeDefined();
-			if ( typeof projectIdField.validation.pattern === 'string' ) {
-				expect( projectIdField.validation.pattern ).toBe( '^\\d+$' );
-			} else {
-				expect( projectIdField.validation.pattern.toString() ).toBe(
-					'/^\\d+$/'
-				);
-			}
+			expect( projectIdField.validation.pattern ).toBe( '^\\d+$' );
 		} );
 
 		test( 'sets default value for branch', () => {

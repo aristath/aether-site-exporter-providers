@@ -53,13 +53,12 @@ export class AbstractAWSProvider extends AbstractProvider {
 	/**
 	 * Get provider-specific configuration fields.
 	 *
-	 * Settings are now handled by PHP via BaseProvider.getSettings().
-	 * This method returns an empty array since JavaScript no longer defines fields.
+	 * Abstract base class - subclasses should override this method to define their fields.
 	 *
-	 * @return {Array<Object>} Empty array (settings handled by PHP)
+	 * @return {Array<Object>} Empty array (subclasses should override)
 	 */
 	getProviderSpecificConfigFields() {
-		// Settings are handled by PHP, not JavaScript
+		// Abstract base class - subclasses should override
 		return [];
 	}
 
