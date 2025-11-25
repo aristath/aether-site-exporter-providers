@@ -59,7 +59,7 @@ export class CloudflareR2StaticSiteProvider {
 	 *
 	 * @type {string}
 	 */
-	static DEPLOYMENT_TYPE = 'static-site';
+	static DEPLOYMENT_TYPE = 'static_site';
 
 	/**
 	 * Configuration fields.

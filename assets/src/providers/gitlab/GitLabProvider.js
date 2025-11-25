@@ -59,7 +59,7 @@ export class GitLabProvider {
 	 *
 	 * @type {string}
 	 */
-	static DEPLOYMENT_TYPE = 'blueprint-bundle';
+	static DEPLOYMENT_TYPE = 'blueprint_bundle';
 
 	/**
 	 * Configuration fields.
