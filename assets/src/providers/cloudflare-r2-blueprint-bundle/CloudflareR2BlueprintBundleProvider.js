@@ -90,7 +90,7 @@ export class CloudflareR2BlueprintBundleProvider {
 				'Cloudflare API Token',
 				'aether-site-exporter-providers'
 			),
-			type: 'password',
+			type: 'text',
 			required: true,
 			sensitive: true,
 			validation: {
