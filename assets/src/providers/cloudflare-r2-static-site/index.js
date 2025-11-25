@@ -77,24 +77,22 @@ function createUploadAdapter( workerEndpoint ) {
 			let fileToUpload = file;
 
 			// If this is a server-side file (blueprint bundle), fetch it first
-			// Server-side files are indicated by sourcePath and empty blob
-			if ( options.sourcePath && file.size === 0 ) {
+			// Server-side files are indicated by sourceUrl and empty blob
+			if ( options.sourceUrl && file.size === 0 ) {
 				try {
-					const downloadResponse = await apiFetch( {
-						path: `/aether/site-exporter/local-storage/download?path=${ encodeURIComponent(
-							options.sourcePath
-						) }`,
-						parse: false, // Get raw response to access blob
+					// Fetch directly from the sourceUrl (e.g., http://localhost:10003/wp-content/uploads/aether-temp/bundle.zip)
+					const response = await fetch( options.sourceUrl, {
+						credentials: 'same-origin',
 					} );
 
-					if ( ! downloadResponse.ok ) {
+					if ( ! response.ok ) {
 						return {
 							success: false,
-							error: `Failed to fetch server-side file for R2 upload: ${ downloadResponse.statusText }`,
+							error: `Failed to fetch server-side file for R2 upload: ${ response.statusText }`,
 						};
 					}
 
-					fileToUpload = await downloadResponse.blob();
+					fileToUpload = await response.blob();
 				} catch ( error ) {
 					return {
 						success: false,
