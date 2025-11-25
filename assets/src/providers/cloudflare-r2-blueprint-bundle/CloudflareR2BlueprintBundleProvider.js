@@ -185,7 +185,7 @@ export class CloudflareR2BlueprintBundleProvider {
 			),
 		},
 		{
-			id: 'custom_domain',
+			id: 'public_url',
 			label: __(
 				'Custom Domain (Optional)',
 				'aether-site-exporter-providers'

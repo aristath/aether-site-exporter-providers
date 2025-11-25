@@ -34,7 +34,7 @@ describe( 'StorageService', () => {
 	const mockWorkerEndpoint = 'https://worker.example.com';
 	const mockBucketName = 'test-bucket';
 	const mockConfig = {
-		custom_domain: 'https://cdn.example.com',
+		public_url: 'https://cdn.example.com',
 	};
 
 	beforeEach( () => {

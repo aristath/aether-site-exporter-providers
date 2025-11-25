@@ -144,7 +144,7 @@ export class GitLabPagesProvider {
 			),
 		},
 		{
-			id: 'custom_domain',
+			id: 'public_url',
 			label: __( 'Custom Domain', 'aether-site-exporter-providers' ),
 			type: 'url',
 			required: false,

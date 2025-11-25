@@ -57,6 +57,9 @@ doAction( 'aether.providers.register', CloudflareR2StaticSiteProvider );
  * The adapter encapsulates the R2-specific upload logic (via Worker endpoint)
  * while allowing the StorageService to handle common concerns.
  *
+ * For server-side files (like blueprint bundles), the adapter fetches the file
+ * from the server first, then uploads to R2.
+ *
  * @param {string} workerEndpoint Worker endpoint URL.
  * @return {Object} Upload adapter with upload() method.
  */
@@ -67,11 +70,40 @@ function createUploadAdapter( workerEndpoint ) {
 		 *
 		 * @param {string}    key     Storage key (file path).
 		 * @param {File|Blob} file    File to upload.
-		 * @param {Object}    options Upload options (contentType, etc.).
+		 * @param {Object}    options Upload options (contentType, sourcePath, etc.).
 		 * @return {Promise<Object>} Upload result.
 		 */
 		async upload( key, file, options = {} ) {
-			return uploadToWorker( workerEndpoint, key, file, options );
+			let fileToUpload = file;
+
+			// If this is a server-side file (blueprint bundle), fetch it first
+			// Server-side files are indicated by sourcePath and empty blob
+			if ( options.sourcePath && file.size === 0 ) {
+				try {
+					const downloadResponse = await apiFetch( {
+						path: `/aether/site-exporter/local-storage/download?path=${ encodeURIComponent(
+							options.sourcePath
+						) }`,
+						parse: false, // Get raw response to access blob
+					} );
+
+					if ( ! downloadResponse.ok ) {
+						return {
+							success: false,
+							error: `Failed to fetch server-side file for R2 upload: ${ downloadResponse.statusText }`,
+						};
+					}
+
+					fileToUpload = await downloadResponse.blob();
+				} catch ( error ) {
+					return {
+						success: false,
+						error: `Failed to fetch server-side file: ${ error.message }`,
+					};
+				}
+			}
+
+			return uploadToWorker( workerEndpoint, key, fileToUpload, options );
 		},
 	};
 }
@@ -119,7 +151,7 @@ addFilter(
 		// Build config for StorageService with R2-specific settings
 		const storageConfig = {
 			...config,
-			public_url: effectiveConfig.custom_domain || null,
+			public_url: effectiveConfig.public_url || null,
 			provider_id: providerId,
 		};
 
@@ -161,7 +193,7 @@ addFilter(
 			const storage = new StorageService(
 				providerConfig.worker_endpoint,
 				providerConfig.bucket_name,
-				{ public_url: providerConfig.custom_domain || null }
+				{ public_url: providerConfig.public_url || null }
 			);
 			return storage.testConnection();
 		};

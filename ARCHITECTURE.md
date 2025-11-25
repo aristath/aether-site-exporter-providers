@@ -223,7 +223,7 @@ AbstractProvider (from SDK)
       // From CloudflareR2Provider.getProviderSpecificConfigFields()
       "cloudflare_account_id": "...",
       "worker_endpoint": "https://...",
-      "custom_domain": "https://cdn.example.com"
+      "public_url": "https://cdn.example.com"
     },
     "gitlab-pages": {
       "deployment_types": ["static_site"],

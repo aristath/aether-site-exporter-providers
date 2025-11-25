@@ -173,15 +173,19 @@ export class CloudflareR2StaticSiteProvider {
 			},
 		},
 		{
-			id: 'custom_domain',
+			id: 'public_url',
 			label: __(
-				'Custom Domain (Optional)',
+				'Public URL (Optional)',
 				'aether-site-exporter-providers'
 			),
 			type: 'url',
 			required: false,
 			sensitive: false,
 			isAdvanced: true,
+			help: __(
+				'The public URL where your static site will be accessible (e.g., https://example.com).',
+				'aether-site-exporter-providers'
+			),
 		},
 	];
 }
