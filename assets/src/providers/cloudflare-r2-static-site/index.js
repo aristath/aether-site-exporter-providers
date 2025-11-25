@@ -2,17 +2,21 @@
  * Cloudflare R2 Static Site Provider Registration
  *
  * Registers the Cloudflare R2 static site provider handlers via WordPress hooks.
- * Provider metadata is registered in JavaScript, not PHP.
+ * Uses the StorageService adapter pattern for true provider instance isolation.
+ *
+ * Each provider instance gets its own StorageService via the 'aether.storage.service.create'
+ * filter, ensuring complete isolation between instances.
  *
  * @package
  */
 
-import { addFilter, addAction, doAction } from '@wordpress/hooks';
+import { addFilter, doAction } from '@wordpress/hooks';
 import { CloudflareR2StaticSiteProvider } from './CloudflareR2StaticSiteProvider';
 import { initCloudflareR2ModalHooks } from './modal-hooks';
 import ProviderRegistry from '@aether/providers/registry/ProviderRegistry';
 import apiFetch from '../../utils/api';
 import { StorageService } from '../services/storageService';
+import { uploadFile as uploadToWorker } from '../../utils/workerEndpointClient';
 
 /**
  * Load provider configuration from REST API.
@@ -47,190 +51,84 @@ ProviderRegistry.register(
 // Also trigger the hook for any listeners
 doAction( 'aether.providers.register', CloudflareR2StaticSiteProvider );
 
-// Track processed files per provider to avoid duplicate processing
-const processedFiles = new Map();
-
 /**
- * Get storage service for a provider instance.
+ * Create upload adapter for Cloudflare R2.
  *
- * @param {string} providerId Provider instance ID.
- * @return {Promise<StorageService|null>} Storage service or null if not configured.
+ * The adapter encapsulates the R2-specific upload logic (via Worker endpoint)
+ * while allowing the StorageService to handle common concerns.
+ *
+ * @param {string} workerEndpoint Worker endpoint URL.
+ * @return {Object} Upload adapter with upload() method.
  */
-async function getStorageService( providerId ) {
-	const config = await loadProviderConfig( providerId );
-
-	if ( ! config?.worker_endpoint || ! config?.bucket_name ) {
-		return null;
-	}
-
-	return new StorageService( config.worker_endpoint, config.bucket_name, {
-		public_url: config.custom_domain || null,
-	} );
+function createUploadAdapter( workerEndpoint ) {
+	return {
+		/**
+		 * Upload a file to Cloudflare R2 via Worker.
+		 *
+		 * @param {string}    key     Storage key (file path).
+		 * @param {File|Blob} file    File to upload.
+		 * @param {Object}    options Upload options (contentType, etc.).
+		 * @return {Promise<Object>} Upload result.
+		 */
+		async upload( key, file, options = {} ) {
+			return uploadToWorker( workerEndpoint, key, file, options );
+		},
+	};
 }
 
 /**
- * Handle unified file upload for static site provider.
+ * Register storage service creation filter.
  *
- * @param {Object} fileContext Unified file context from aether.file.upload action.
- * @return {Promise<void>}
+ * This filter intercepts storage service creation for cloudflare-r2-static-site
+ * provider instances. Each instance gets its own StorageService with an adapter
+ * configured for its specific worker endpoint, achieving true instance isolation.
+ *
+ * The filter receives the full provider instance ID (e.g., 'cloudflare-r2-static-site:uuid'),
+ * and uses the providerConfig passed from the caller (which was already loaded).
+ *
+ * Note: WordPress filters are synchronous, so the providerConfig must be loaded
+ * by the caller before invoking the filter.
  */
-async function handleUnifiedFileUpload( fileContext ) {
-	const {
-		fileType,
-		providerId,
-		filePath,
-		fileContent,
-		contentType,
-		storageKey,
-	} = fileContext;
-
-	// Only handle requests for cloudflare-r2-static-site providers
-	if (
-		! providerId ||
-		! providerId.startsWith( 'cloudflare-r2-static-site' )
-	) {
-		return;
-	}
-
-	// Only handle static files, not blueprint bundles
-	if ( fileType === 'blueprint-bundle' ) {
-		return;
-	}
-
-	// Create a unique key for this file+provider combination
-	const fileKey = `${ providerId }:${ storageKey }`;
-
-	// Check if file is already processed or in progress
-	const existingEntry = processedFiles.get( fileKey );
-	if ( existingEntry === true ) {
-		return;
-	}
-	if ( existingEntry instanceof Promise ) {
-		try {
-			await existingEntry;
-		} catch {
-			if ( processedFiles.get( fileKey ) === existingEntry ) {
-				processedFiles.delete( fileKey );
-			}
-		}
-		if ( processedFiles.get( fileKey ) === true ) {
-			return;
-		}
-	}
-
-	const processingPromise = ( async () => {
-		try {
-			const storage = await getStorageService( providerId );
-			if ( ! storage ) {
-				throw new Error(
-					'Storage service not available. Please configure worker_endpoint and bucket_name.'
-				);
-			}
-
-			// Get file content as Blob
-			let fileBlob = null;
-			if ( fileContent ) {
-				if ( typeof fileContent === 'string' ) {
-					fileBlob = new Blob( [ fileContent ], {
-						type: contentType || 'text/html',
-					} );
-				} else if ( fileContent instanceof Blob ) {
-					fileBlob = fileContent;
-				}
-			} else if (
-				filePath?.startsWith( 'http://' ) ||
-				filePath?.startsWith( 'https://' )
-			) {
-				const response = await fetch( filePath, {
-					method: 'GET',
-					credentials: 'omit',
-				} );
-				if ( ! response.ok ) {
-					throw new Error(
-						`Failed to fetch ${ filePath }: HTTP ${ response.status }`
-					);
-				}
-				fileBlob = await response.blob();
-			}
-
-			if ( ! fileBlob ) {
-				throw new Error( 'File content or valid URL is required' );
-			}
-
-			// Determine storage key from filePath if not provided
-			let finalStorageKey = storageKey;
-			if ( ! finalStorageKey && filePath ) {
-				if (
-					filePath.startsWith( 'http://' ) ||
-					filePath.startsWith( 'https://' )
-				) {
-					try {
-						const urlObj = new URL( filePath );
-						finalStorageKey = urlObj.pathname;
-					} catch {
-						finalStorageKey = filePath;
-					}
-				} else {
-					finalStorageKey = filePath;
-				}
-			}
-
-			// Normalize storage key
-			finalStorageKey =
-				finalStorageKey?.replace( /^\/+/, '' ) || 'index.html';
-
-			// Add index.html for directory paths
-			if ( finalStorageKey.endsWith( '/' ) ) {
-				finalStorageKey =
-					finalStorageKey.replace( /\/+$/, '' ) + '/index.html';
-			} else if ( ! /\.[a-zA-Z0-9]+$/.test( finalStorageKey ) ) {
-				finalStorageKey = finalStorageKey + '/index.html';
-			}
-
-			const uploadResult = await storage.upload(
-				finalStorageKey,
-				fileBlob,
-				{
-					contentType: contentType || 'text/html',
-				}
-			);
-
-			if ( ! uploadResult.success ) {
-				throw new Error( uploadResult.error || 'Upload failed' );
-			}
-
-			fileContext.result = { success: true, url: uploadResult.url };
-		} catch ( error ) {
-			fileContext.result = {
-				success: false,
-				error: error.message || 'Unknown error',
-			};
-			throw error;
-		}
-		processedFiles.set( fileKey, true );
-	} )().catch( ( error ) => {
-		if ( processedFiles.get( fileKey ) === processingPromise ) {
-			processedFiles.delete( fileKey );
-		}
-		throw error;
-	} );
-
-	processedFiles.set( fileKey, processingPromise );
-	await processingPromise;
-}
-
-/**
- * Register unified file upload action hook.
- */
-addAction(
-	'aether.file.upload',
+addFilter(
+	'aether.storage.service.create',
 	'aether/cloudflare-r2-static-site',
-	( fileContext ) => {
-		if ( ! fileContext._uploadPromises ) {
-			fileContext._uploadPromises = [];
+	( service, staticPath, config, providerId, providerConfig ) => {
+		// Only handle this provider type
+		if ( ! providerId?.startsWith( 'cloudflare-r2-static-site' ) ) {
+			return service;
 		}
-		fileContext._uploadPromises.push(
-			handleUnifiedFileUpload( fileContext )
+
+		// Use providerConfig passed from caller (already loaded)
+		// Fall back to config if providerConfig not available
+		const effectiveConfig = providerConfig || config;
+
+		if (
+			! effectiveConfig?.worker_endpoint ||
+			! effectiveConfig?.bucket_name
+		) {
+			// Return null to indicate provider is not configured
+			// The caller should handle this case
+			return null;
+		}
+
+		// Create instance-specific upload adapter using this instance's worker endpoint
+		const uploadAdapter = createUploadAdapter(
+			effectiveConfig.worker_endpoint
+		);
+
+		// Build config for StorageService with R2-specific settings
+		const storageConfig = {
+			...config,
+			public_url: effectiveConfig.custom_domain || null,
+			provider_id: providerId,
+		};
+
+		// Return new StorageService with the adapter
+		// Use worker_endpoint as "staticPath" for R2 (it's the base for URL building)
+		return new StorageService(
+			effectiveConfig.worker_endpoint,
+			storageConfig,
+			uploadAdapter
 		);
 	},
 	10
@@ -247,13 +145,24 @@ addFilter(
 			return handler;
 		}
 		return async () => {
-			const storage = await getStorageService( providerId );
-			if ( ! storage ) {
+			const providerConfig = await loadProviderConfig( providerId );
+
+			if (
+				! providerConfig?.worker_endpoint ||
+				! providerConfig?.bucket_name
+			) {
 				return {
 					success: false,
 					error: 'Storage service not configured. Please set worker_endpoint and bucket_name.',
 				};
 			}
+
+			// Create a temporary StorageService to test connection
+			const storage = new StorageService(
+				providerConfig.worker_endpoint,
+				providerConfig.bucket_name,
+				{ public_url: providerConfig.custom_domain || null }
+			);
 			return storage.testConnection();
 		};
 	},

@@ -51,10 +51,15 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 				);
 			}
 
-			const restUrl = ( window.aetherData?.restUrl || window.wpApiSettings?.root || '/wp-json' ).replace( /\/$/, '' );
+			const restUrl = (
+				window.aetherData?.restUrl ||
+				window.wpApiSettings?.root ||
+				'/wp-json'
+			).replace( /\/$/, '' );
 
 			// Get nonce for authentication from window.aetherData (set by base plugin)
-			const nonce = window.aetherData?.nonce || window.wpApiSettings?.nonce || '';
+			const nonce =
+				window.aetherData?.nonce || window.wpApiSettings?.nonce || '';
 
 			// Generate worker name (format: aether-r2-{random})
 			const randomId = Math.random().toString( 36 ).substring( 2, 10 );
