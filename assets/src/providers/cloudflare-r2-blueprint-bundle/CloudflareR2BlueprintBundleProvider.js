@@ -102,39 +102,6 @@ export class CloudflareR2BlueprintBundleProvider {
 			},
 		},
 		{
-			id: 'access_key_id',
-			label: __( 'R2 Access Key ID', 'aether-site-exporter-providers' ),
-			type: 'text',
-			required: true,
-			sensitive: true,
-			validation: {
-				minLength: 16,
-				maxLength: 128,
-				message: __(
-					'Access Key ID must be between 16 and 128 characters',
-					'aether-site-exporter-providers'
-				),
-			},
-		},
-		{
-			id: 'secret_access_key',
-			label: __(
-				'R2 Secret Access Key',
-				'aether-site-exporter-providers'
-			),
-			type: 'text',
-			required: true,
-			sensitive: true,
-			validation: {
-				minLength: 32,
-				maxLength: 128,
-				message: __(
-					'Secret Access Key must be between 32 and 128 characters',
-					'aether-site-exporter-providers'
-				),
-			},
-		},
-		{
 			id: 'bucket_name',
 			label: __( 'Bucket Name', 'aether-site-exporter-providers' ),
 			type: 'text',
@@ -163,6 +130,47 @@ export class CloudflareR2BlueprintBundleProvider {
 				'URL of the deployed Cloudflare Worker. Use the Deploy Worker button below to create one.',
 				'aether-site-exporter-providers'
 			),
+		},
+		{
+			id: 'access_key_id',
+			label: __( 'R2 Access Key ID', 'aether-site-exporter-providers' ),
+			type: 'text',
+			required: false,
+			sensitive: true,
+			help: __(
+				'Only required for S3-compatible API access, not for Worker-based uploads.',
+				'aether-site-exporter-providers'
+			),
+			validation: {
+				minLength: 16,
+				maxLength: 128,
+				message: __(
+					'Access Key ID must be between 16 and 128 characters',
+					'aether-site-exporter-providers'
+				),
+			},
+		},
+		{
+			id: 'secret_access_key',
+			label: __(
+				'R2 Secret Access Key',
+				'aether-site-exporter-providers'
+			),
+			type: 'text',
+			required: false,
+			sensitive: true,
+			help: __(
+				'Only required for S3-compatible API access, not for Worker-based uploads.',
+				'aether-site-exporter-providers'
+			),
+			validation: {
+				minLength: 32,
+				maxLength: 128,
+				message: __(
+					'Secret Access Key must be between 32 and 128 characters',
+					'aether-site-exporter-providers'
+				),
+			},
 		},
 		{
 			id: 'bundle_path',
