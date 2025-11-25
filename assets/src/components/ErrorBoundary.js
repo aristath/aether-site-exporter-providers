@@ -17,7 +17,6 @@ import {
 	fontWeight,
 	noticeStyles,
 } from '../utils/styles';
-import { debugError } from '../utils/debug';
 
 /**
  * Error Boundary component
@@ -38,12 +37,6 @@ class ErrorBoundary extends Component {
 	}
 
 	componentDidCatch( error, errorInfo ) {
-		// Log error details for debugging
-		debugError( 'Error caught by ErrorBoundary:', {
-			error,
-			errorInfo,
-		} );
-
 		this.setState( {
 			error,
 			errorInfo,

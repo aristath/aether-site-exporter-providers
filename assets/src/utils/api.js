@@ -11,7 +11,6 @@
  */
 
 import apiFetch from '@wordpress/api-fetch';
-import { getRestUrl } from './getRestUrl';
 
 /**
  * Create authorization headers for external API calls.
@@ -30,16 +29,35 @@ export function createAuthHeaders( token, type = 'Bearer' ) {
 }
 
 /**
- * Get REST API nonce from meta tag or default.
+ * Get REST API nonce from window.aetherData.
  *
  * @return {string} REST API nonce.
  */
 function getNonce() {
-	const metaTag = document.querySelector( 'meta[name="aether-rest-nonce"]' );
-	if ( metaTag ) {
-		return metaTag.getAttribute( 'content' ) || '';
+	if (
+		typeof window !== 'undefined' &&
+		window.aetherData &&
+		window.aetherData.nonce
+	) {
+		return window.aetherData.nonce;
 	}
 	return '';
+}
+
+/**
+ * Get REST API URL from window.aetherData.
+ *
+ * @return {string} REST API base URL.
+ */
+function getRestUrl() {
+	if (
+		typeof window !== 'undefined' &&
+		window.aetherData &&
+		window.aetherData.restUrl
+	) {
+		return window.aetherData.restUrl;
+	}
+	return '/wp-json/';
 }
 
 /**

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /**
  * Manifest Cache - Persistent cache for file-manifest.json
  *
@@ -99,9 +98,6 @@ export class ManifestCache {
 					cached.schemaVersion !== undefined &&
 					cached.schemaVersion !== CACHE_SCHEMA_VERSION
 				) {
-					console.log(
-						`[ManifestCache] Cache schema version mismatch for ${ providerId } (cached: ${ cached.schemaVersion }, current: ${ CACHE_SCHEMA_VERSION }). Invalidating cache.`
-					);
 					await this.store.delete( cacheKey );
 					return null;
 				}
@@ -116,12 +112,7 @@ export class ManifestCache {
 				// Cache expired - delete it
 				await this.store.delete( cacheKey );
 			}
-		} catch ( error ) {
-			console.error(
-				`[ManifestCache] Error getting cache for ${ providerId }:`,
-				error
-			);
-		}
+		} catch {}
 
 		return null; // Cache miss or error
 	}
@@ -146,11 +137,7 @@ export class ManifestCache {
 				}
 			);
 			return true;
-		} catch ( error ) {
-			console.error(
-				`[ManifestCache] Error setting cache for ${ providerId }:`,
-				error
-			);
+		} catch {
 			return false;
 		}
 	}
@@ -169,11 +156,7 @@ export class ManifestCache {
 		try {
 			await this.store.delete( cacheKey );
 			return true;
-		} catch ( error ) {
-			console.error(
-				`[ManifestCache] Error invalidating cache for ${ providerId }:`,
-				error
-			);
+		} catch {
 			return false;
 		}
 	}
@@ -197,14 +180,10 @@ export class ManifestCache {
 					await this.store.deleteOlderThan( CACHE_EXPIRATION_MS );
 
 				if ( deleted > 0 ) {
-					console.log(
-						`[ManifestCache] Cleaned up ${ deleted } expired cache entries`
-					);
 				}
 
 				return deleted;
 			} catch ( error ) {
-				console.error( '[ManifestCache] Error during cleanup:', error );
 				return 0;
 			} finally {
 				this.cleanupPromise = null;
@@ -236,7 +215,6 @@ export class ManifestCache {
 				totalCached: totalCount,
 			};
 		} catch ( error ) {
-			console.error( '[ManifestCache] Error getting stats:', error );
 			return {
 				totalCached: 0,
 			};
@@ -257,9 +235,7 @@ export function getManifestCache() {
 		cacheInstance = new ManifestCache();
 
 		// Run cleanup on first initialization
-		cacheInstance.cleanup().catch( ( error ) => {
-			console.error( '[ManifestCache] Initial cleanup failed:', error );
-		} );
+		cacheInstance.cleanup().catch( () => {} );
 	}
 
 	return cacheInstance;

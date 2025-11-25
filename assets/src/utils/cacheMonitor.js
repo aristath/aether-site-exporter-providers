@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /**
  * Cache Monitor - Utility for monitoring and managing all IndexedDB caches
  *
@@ -66,7 +65,6 @@ export class CacheMonitor {
 			stats.wporg = await this.caches.wporg.getStats();
 			stats.manifest = await this.caches.manifest.getStats();
 			stats.uploadProgress = await this.caches.uploadProgress.getStats();
-			// Archive progress cache doesn't have getStats, skip for now
 
 			// Calculate totals
 			stats.total = {
@@ -95,8 +93,8 @@ export class CacheMonitor {
 					usageFormatted: this.formatBytes( estimate.usage ),
 				};
 			}
-		} catch ( error ) {
-			console.error( '[CacheMonitor] Error getting stats:', error );
+		} catch {
+			// Silently handle errors
 		}
 
 		return stats;
@@ -163,11 +161,10 @@ export class CacheMonitor {
 	/**
 	 * Print formatted statistics to console
 	 *
-	 * @return {Promise<void>}
+	 * @return {Promise<string>} Formatted statistics string
 	 */
 	async printStats() {
-		const formatted = await this.getFormattedStats();
-		console.log( formatted );
+		return this.getFormattedStats();
 	}
 
 	/**
@@ -189,10 +186,8 @@ export class CacheMonitor {
 			results.uploadProgress = await this.caches.uploadProgress.clear();
 			results.archiveProgress =
 				await this.caches.archiveProgress.clearAll();
-
-			console.log( '[CacheMonitor] All caches cleared:', results );
-		} catch ( error ) {
-			console.error( '[CacheMonitor] Error clearing caches:', error );
+		} catch {
+			// Silently handle errors
 		}
 
 		return results;
@@ -206,7 +201,6 @@ export class CacheMonitor {
 	 */
 	async clearCache( cacheName ) {
 		if ( ! this.caches[ cacheName ] ) {
-			console.error( `[CacheMonitor] Unknown cache: ${ cacheName }` );
 			return false;
 		}
 
@@ -214,17 +208,8 @@ export class CacheMonitor {
 			// Archive progress cache uses clearAll() instead of clear()
 			const clearMethod =
 				cacheName === 'archiveProgress' ? 'clearAll' : 'clear';
-			const result = await this.caches[ cacheName ][ clearMethod ]();
-			console.log(
-				`[CacheMonitor] Cleared ${ cacheName } cache:`,
-				result
-			);
-			return result;
-		} catch ( error ) {
-			console.error(
-				`[CacheMonitor] Error clearing ${ cacheName } cache:`,
-				error
-			);
+			return await this.caches[ cacheName ][ clearMethod ]();
+		} catch {
 			return false;
 		}
 	}
@@ -257,10 +242,8 @@ export class CacheMonitor {
 			results.archiveProgress = await deleteDatabase(
 				'aether-archive-progress'
 			);
-
-			console.log( '[CacheMonitor] All databases deleted:', results );
-		} catch ( error ) {
-			console.error( '[CacheMonitor] Error deleting databases:', error );
+		} catch {
+			// Silently handle errors
 		}
 
 		return results;
@@ -285,19 +268,8 @@ export class CacheMonitor {
 			results.uploadProgress = await this.caches.uploadProgress.cleanup();
 			results.archiveProgress =
 				await this.caches.archiveProgress.cleanup();
-
-			const total =
-				results.wporg +
-				results.manifest +
-				results.uploadProgress +
-				results.archiveProgress;
-
-			console.log(
-				`[CacheMonitor] Cleanup complete: ${ total } entries removed`,
-				results
-			);
-		} catch ( error ) {
-			console.error( '[CacheMonitor] Error during cleanup:', error );
+		} catch {
+			// Silently handle errors
 		}
 
 		return results;
@@ -311,11 +283,7 @@ export class CacheMonitor {
 	async getResumableSessions() {
 		try {
 			return await this.caches.uploadProgress.getResumableSessions();
-		} catch ( error ) {
-			console.error(
-				'[CacheMonitor] Error getting resumable sessions:',
-				error
-			);
+		} catch {
 			return [];
 		}
 	}

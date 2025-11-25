@@ -7,8 +7,6 @@
  * @package
  */
 
-import { debug, debugError } from './debug';
-
 /**
  * Calculate SHA-256 hash for a File or Blob object.
  *
@@ -37,14 +35,8 @@ export async function calculateFileHash( file ) {
 			.map( ( b ) => b.toString( 16 ).padStart( 2, '0' ) )
 			.join( '' );
 
-		debug( 'calculateFileHash:', {
-			fileSize: file.size,
-			hashLength: hashHex.length,
-		} );
-
 		return hashHex;
 	} catch ( error ) {
-		debugError( 'Failed to calculate file hash:', error );
 		throw new Error( `Hash calculation failed: ${ error.message }` );
 	}
 }

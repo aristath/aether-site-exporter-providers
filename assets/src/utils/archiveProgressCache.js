@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /**
  * Archive Progress Cache - Persistent cache for archive creation progress
  *
@@ -75,11 +74,7 @@ export class ArchiveProgressCache {
 			}
 
 			return cached.progress || null;
-		} catch ( error ) {
-			console.error(
-				`[ArchiveProgressCache] Error getting progress for ${ progressId }:`,
-				error
-			);
+		} catch {
 			return null;
 		}
 	}
@@ -101,11 +96,7 @@ export class ArchiveProgressCache {
 				}
 			);
 			return true;
-		} catch ( error ) {
-			console.error(
-				`[ArchiveProgressCache] Error setting progress for ${ progressId }:`,
-				error
-			);
+		} catch {
 			return false;
 		}
 	}
@@ -127,11 +118,7 @@ export class ArchiveProgressCache {
 				: updates;
 
 			return this.set( progressId, merged );
-		} catch ( error ) {
-			console.error(
-				`[ArchiveProgressCache] Error updating progress for ${ progressId }:`,
-				error
-			);
+		} catch {
 			return false;
 		}
 	}
@@ -176,11 +163,7 @@ export class ArchiveProgressCache {
 		try {
 			await this.store.delete( progressId );
 			return true;
-		} catch ( error ) {
-			console.error(
-				`[ArchiveProgressCache] Error clearing progress for ${ progressId }:`,
-				error
-			);
+		} catch {
 			return false;
 		}
 	}
@@ -204,17 +187,10 @@ export class ArchiveProgressCache {
 					await this.store.deleteOlderThan( CACHE_EXPIRATION_MS );
 
 				if ( deleted > 0 ) {
-					console.log(
-						`[ArchiveProgressCache] Cleaned up ${ deleted } expired entries`
-					);
 				}
 
 				return deleted;
-			} catch ( error ) {
-				console.error(
-					'[ArchiveProgressCache] Error during cleanup:',
-					error
-				);
+			} catch {
 				return 0;
 			} finally {
 				this.cleanupPromise = null;
@@ -247,12 +223,7 @@ export function getArchiveProgressCache() {
 		cacheInstance = new ArchiveProgressCache();
 
 		// Run cleanup on first initialization
-		cacheInstance.cleanup().catch( ( error ) => {
-			console.error(
-				'[ArchiveProgressCache] Initial cleanup failed:',
-				error
-			);
-		} );
+		cacheInstance.cleanup().catch( () => {} );
 	}
 
 	return cacheInstance;

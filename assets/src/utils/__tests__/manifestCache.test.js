@@ -107,7 +107,7 @@ describe( 'ManifestCache', () => {
 			expect( mockIndexedDBStore.set ).toHaveBeenCalledWith(
 				'manifest:cloudflare-r2',
 				{ manifest },
-				{ providerId: 'cloudflare-r2' }
+				{ providerId: 'cloudflare-r2', schemaVersion: 2 }
 			);
 		} );
 
@@ -119,7 +119,7 @@ describe( 'ManifestCache', () => {
 			expect( mockIndexedDBStore.set ).toHaveBeenCalledWith(
 				'manifest:cloudflare-r2',
 				{ manifest: {} },
-				{ providerId: 'cloudflare-r2' }
+				{ providerId: 'cloudflare-r2', schemaVersion: 2 }
 			);
 		} );
 	} );

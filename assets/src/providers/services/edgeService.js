@@ -18,7 +18,6 @@ import {
 	createSuccessResponse,
 	createErrorResponse,
 } from '../../utils/standardResponse';
-import { debugError, debugWarn } from '../../utils/debug';
 import pRetry from 'p-retry';
 import {
 	MAX_RETRIES,
@@ -75,13 +74,6 @@ export class EdgeService {
 					retries: MAX_RETRIES,
 					minTimeout: RETRY_INITIAL_DELAY,
 					maxTimeout: RETRY_MAX_DELAY,
-					onFailedAttempt: ( error ) => {
-						// Only network errors will trigger retry.
-						debugWarn(
-							`Cloudflare API request failed (${ endpoint }), retrying... (attempt ${ error.attemptNumber })`,
-							error.message
-						);
-					},
 					// Only retry on network errors, not HTTP errors.
 					shouldRetry: ( error ) => {
 						return (
@@ -100,16 +92,11 @@ export class EdgeService {
 					responseText,
 					'Cloudflare API request failed'
 				);
-				debugError( `Cloudflare API error (${ endpoint }):`, error );
 				return createErrorResponse( error, data.errors || [] );
 			}
 
 			return createSuccessResponse( { result: data.result } );
 		} catch ( error ) {
-			debugError(
-				`Cloudflare API request failed (${ endpoint }):`,
-				error
-			);
 			return createErrorResponse(
 				error.message || 'Network request failed'
 			);
@@ -260,16 +247,11 @@ export class EdgeService {
 			);
 
 			if ( ! subdomainResponse.success ) {
-				debugWarn(
-					'Failed to get workers.dev subdomain:',
-					subdomainResponse.error
-				);
 				return createErrorResponse( subdomainResponse.error );
 			}
 
 			const subdomain = subdomainResponse.data?.result?.subdomain;
 			if ( ! subdomain ) {
-				debugWarn( 'No workers.dev subdomain configured' );
 				return createErrorResponse( 'No subdomain configured' );
 			}
 
@@ -285,16 +267,11 @@ export class EdgeService {
 			);
 
 			if ( ! enableResponse.success ) {
-				debugWarn(
-					'Failed to enable workers.dev subdomain:',
-					enableResponse.error
-				);
 				return createErrorResponse( enableResponse.error );
 			}
 
 			return createSuccessResponse();
 		} catch ( error ) {
-			debugWarn( 'Error enabling workers.dev subdomain:', error );
 			return createErrorResponse( error.message );
 		}
 	}
@@ -342,7 +319,7 @@ export class EdgeService {
 						'Worker is deployed and accessible'
 					);
 				}
-			} catch ( error ) {
+			} catch {
 				// Worker might not exist yet, continue
 			}
 		}
@@ -572,7 +549,6 @@ export class EdgeService {
 		}
 
 		if ( ! workerType ) {
-			debugWarn( 'Worker type is required to fetch script' );
 			return '';
 		}
 
@@ -590,12 +566,8 @@ export class EdgeService {
 				return response;
 			}
 
-			debugWarn(
-				'Failed to fetch worker script: unexpected response format'
-			);
 			return '';
-		} catch ( error ) {
-			debugError( 'Error fetching worker script:', error );
+		} catch {
 			return '';
 		}
 	}

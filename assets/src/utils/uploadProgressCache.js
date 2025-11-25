@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /**
  * Upload Progress Cache - Persistent cache for upload progress tracking
  *
@@ -161,11 +160,7 @@ export class UploadProgressCache {
 			}
 
 			return session;
-		} catch ( error ) {
-			console.error(
-				`[UploadProgressCache] Error getting session ${ sessionId }:`,
-				error
-			);
+		} catch {
 			return null;
 		}
 	}
@@ -188,9 +183,6 @@ export class UploadProgressCache {
 		try {
 			const session = await this.getSession( sessionId );
 			if ( ! session ) {
-				console.warn(
-					`[UploadProgressCache] Session ${ sessionId } not found`
-				);
 				return false;
 			}
 
@@ -255,11 +247,7 @@ export class UploadProgressCache {
 			} );
 
 			return true;
-		} catch ( error ) {
-			console.error(
-				`[UploadProgressCache] Error updating session ${ sessionId }:`,
-				error
-			);
+		} catch {
 			return false;
 		}
 	}
@@ -326,11 +314,7 @@ export class UploadProgressCache {
 		try {
 			await this.store.delete( sessionId );
 			return true;
-		} catch ( error ) {
-			console.error(
-				`[UploadProgressCache] Error deleting session ${ sessionId }:`,
-				error
-			);
+		} catch {
 			return false;
 		}
 	}
@@ -354,11 +338,7 @@ export class UploadProgressCache {
 					session.status === SESSION_STATUS.PAUSED;
 				return isNotExpired && isResumable;
 			} );
-		} catch ( error ) {
-			console.error(
-				'[UploadProgressCache] Error getting resumable sessions:',
-				error
-			);
+		} catch {
 			return [];
 		}
 	}
@@ -380,11 +360,7 @@ export class UploadProgressCache {
 			return session.uploadedFilesList.some(
 				( file ) => file.storageKey === storageKey
 			);
-		} catch ( error ) {
-			console.error(
-				`[UploadProgressCache] Error checking file upload status:`,
-				error
-			);
+		} catch {
 			return false;
 		}
 	}
@@ -408,17 +384,10 @@ export class UploadProgressCache {
 					await this.store.deleteOlderThan( CACHE_EXPIRATION_MS );
 
 				if ( deleted > 0 ) {
-					console.log(
-						`[UploadProgressCache] Cleaned up ${ deleted } expired sessions`
-					);
 				}
 
 				return deleted;
-			} catch ( error ) {
-				console.error(
-					'[UploadProgressCache] Error during cleanup:',
-					error
-				);
+			} catch {
 				return 0;
 			} finally {
 				this.cleanupPromise = null;
@@ -465,11 +434,7 @@ export class UploadProgressCache {
 					).length,
 				},
 			};
-		} catch ( error ) {
-			console.error(
-				'[UploadProgressCache] Error getting stats:',
-				error
-			);
+		} catch {
 			return {
 				totalSessions: 0,
 				resumableSessions: 0,
@@ -497,12 +462,7 @@ export function getUploadProgressCache() {
 		cacheInstance = new UploadProgressCache();
 
 		// Run cleanup on first initialization
-		cacheInstance.cleanup().catch( ( error ) => {
-			console.error(
-				'[UploadProgressCache] Initial cleanup failed:',
-				error
-			);
-		} );
+		cacheInstance.cleanup().catch( () => {} );
 	}
 
 	return cacheInstance;

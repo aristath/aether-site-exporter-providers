@@ -9,9 +9,12 @@ import LoadingState from '../LoadingState';
 
 describe( 'LoadingState', () => {
 	it( 'should render spinner', () => {
-		render( <LoadingState /> );
+		const { container } = render( <LoadingState /> );
 
-		expect( screen.getByTestId( 'spinner' ) ).toBeInTheDocument();
+		// Check for the spinner by its class or role (actual WordPress Spinner is an SVG)
+		expect(
+			container.querySelector( '.components-spinner' )
+		).toBeInTheDocument();
 	} );
 
 	it( 'should render default loading message', () => {
@@ -27,9 +30,11 @@ describe( 'LoadingState', () => {
 	} );
 
 	it( 'should not render message when empty string provided', () => {
-		render( <LoadingState message="" /> );
+		const { container } = render( <LoadingState message="" /> );
 
 		expect( screen.queryByText( 'Loading…' ) ).not.toBeInTheDocument();
-		expect( screen.getByTestId( 'spinner' ) ).toBeInTheDocument();
+		expect(
+			container.querySelector( '.components-spinner' )
+		).toBeInTheDocument();
 	} );
 } );

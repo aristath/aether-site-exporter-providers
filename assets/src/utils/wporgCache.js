@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /**
  * WordPress.org API Cache - Persistent cache for WordPress.org existence checks
  *
@@ -98,12 +97,7 @@ export class WpOrgCache {
 				// Cache expired - delete it
 				await this.store.delete( cacheKey );
 			}
-		} catch ( error ) {
-			console.error(
-				`[WpOrgCache] Error getting cache for ${ cacheKey }:`,
-				error
-			);
-		}
+		} catch {}
 
 		return null; // Cache miss or error
 	}
@@ -135,11 +129,7 @@ export class WpOrgCache {
 				}
 			);
 			return true;
-		} catch ( error ) {
-			console.error(
-				`[WpOrgCache] Error setting cache for ${ cacheKey }:`,
-				error
-			);
+		} catch {
 			return false;
 		}
 	}
@@ -163,14 +153,10 @@ export class WpOrgCache {
 					await this.store.deleteOlderThan( CACHE_EXPIRATION_MS );
 
 				if ( deleted > 0 ) {
-					console.log(
-						`[WpOrgCache] Cleaned up ${ deleted } expired cache entries`
-					);
 				}
 
 				return deleted;
 			} catch ( error ) {
-				console.error( '[WpOrgCache] Error during cleanup:', error );
 				return 0;
 			} finally {
 				this.cleanupPromise = null;
@@ -206,7 +192,6 @@ export class WpOrgCache {
 				hitRate: null, // Would require tracking hits/misses
 			};
 		} catch ( error ) {
-			console.error( '[WpOrgCache] Error getting stats:', error );
 			return {
 				totalCached: 0,
 				memoryCached: this.memoryCache.size,
@@ -224,7 +209,6 @@ export class WpOrgCache {
 		try {
 			return await this.store.getAll();
 		} catch ( error ) {
-			console.error( '[WpOrgCache] Error getting all entries:', error );
 			return [];
 		}
 	}
@@ -243,9 +227,7 @@ export function getWpOrgCache() {
 		cacheInstance = new WpOrgCache();
 
 		// Run cleanup on first initialization
-		cacheInstance.cleanup().catch( ( error ) => {
-			console.error( '[WpOrgCache] Initial cleanup failed:', error );
-		} );
+		cacheInstance.cleanup().catch( () => {} );
 	}
 
 	return cacheInstance;

@@ -54,9 +54,10 @@ class RemoveSourceMapPlugin {
 module.exports = {
 	...defaultConfig,
 	entry: {
-		'provider-cloudflare': './assets/src/providers/cloudflare/index.js',
-		'provider-cloudflare-r2':
-			'./assets/src/providers/cloudflare-r2/index.js',
+		'provider-cloudflare-r2-static-site':
+			'./assets/src/providers/cloudflare-r2-static-site/index.js',
+		'provider-cloudflare-r2-blueprint-bundle':
+			'./assets/src/providers/cloudflare-r2-blueprint-bundle/index.js',
 		'provider-gitlab': './assets/src/providers/gitlab/index.js',
 		'provider-gitlab-pages': './assets/src/providers/gitlab-pages/index.js',
 	},

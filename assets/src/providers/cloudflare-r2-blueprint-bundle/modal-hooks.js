@@ -1,7 +1,7 @@
 /**
- * Cloudflare R2 Provider Modal Hooks
+ * Cloudflare R2 Blueprint Bundle Provider Modal Hooks
  *
- * Adds custom content to the Cloudflare R2 provider configuration modal.
+ * Adds custom content to the Cloudflare R2 blueprint bundle provider configuration modal.
  * Specifically adds a "Deploy Worker" button for R2 storage worker.
  *
  * @package
@@ -28,9 +28,6 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 	const [ success, setSuccess ] = useState( false );
 	const [ workerUrl, setWorkerUrl ] = useState( null );
 
-	// R2 worker type
-	const workerType = 'r2';
-
 	const handleDeploy = async () => {
 		setDeploying( true );
 		setError( null );
@@ -38,7 +35,16 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 		setWorkerUrl( null );
 
 		try {
-			// Validate R2 credentials
+			// Validate required credentials from this provider's config
+			if ( ! config?.account_id || ! config?.api_token ) {
+				throw new Error(
+					__(
+						'Cloudflare Account ID and API Token are required',
+						'aether'
+					)
+				);
+			}
+
 			if (
 				! config?.access_key_id ||
 				! config?.secret_access_key ||
@@ -46,30 +52,11 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 			) {
 				throw new Error(
 					__(
-						'Access Key ID, Secret Access Key, and Bucket Name are required',
-						'aether-site-exporter-providers'
+						'R2 Access Key ID, Secret Access Key, and Bucket Name are required',
+						'aether'
 					)
 				);
 			}
-
-			// Get edge provider (Cloudflare Workers) credentials from settings
-			const settingsResponse = await apiFetch( {
-				path: '/aether/site-exporter/settings',
-			} );
-			const settings = settingsResponse.settings || {};
-			const edgeProvider = settings.providers?.cloudflare || {};
-
-			if ( ! edgeProvider.account_id || ! edgeProvider.api_token ) {
-				throw new Error(
-					__(
-						'Cloudflare Workers provider must be configured first. Please configure the Cloudflare Workers (edge) provider with Account ID and API Token.',
-						'aether-site-exporter-providers'
-					)
-				);
-			}
-
-			// Note: Worker script will be loaded directly from file system by the server
-			// to avoid any corruption during REST API transfer
 
 			const restUrl = window.wpApiSettings?.root || '/wp-json';
 
@@ -81,13 +68,11 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 				window.wpApiSettings?.nonce ||
 				'';
 
-			// Prepare worker bindings for R2
 			// Generate worker name (format: aether-r2-{random})
 			const randomId = Math.random().toString( 36 ).substring( 2, 10 );
 			const workerName = `aether-r2-${ randomId }`;
 
 			// Prepare bindings - R2 bucket binding
-			// Format: { bindingName: { type: 'r2_bucket', bucket_name: '...' } }
 			const bindings = {};
 			if ( config.bucket_name ) {
 				bindings.R2_BUCKET = {
@@ -106,12 +91,11 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify( {
-					worker_type: workerType,
+					worker_type: 'r2',
 					worker_name: workerName,
-					// script: script, // Let the server load it directly from file system
 					bindings,
-					account_id: edgeProvider.account_id,
-					api_token: edgeProvider.api_token,
+					account_id: config.account_id,
+					api_token: config.api_token,
 				} ),
 			} );
 
@@ -122,10 +106,7 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 				throw new Error(
 					errorData.message ||
 						errorData.error ||
-						__(
-							'Failed to deploy worker',
-							'aether-site-exporter-providers'
-						)
+						__( 'Failed to deploy worker', 'aether' )
 				);
 			}
 
@@ -135,14 +116,11 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 				throw new Error(
 					result.message ||
 						result.error ||
-						__(
-							'Failed to deploy worker',
-							'aether-site-exporter-providers'
-						)
+						__( 'Failed to deploy worker', 'aether' )
 				);
 			}
 
-			// Save worker endpoint to R2 provider config and update form field
+			// Save worker endpoint to provider config and update form field
 			if ( result.worker_url ) {
 				// Update the form field value immediately (if onChange is available)
 				if ( onChange && typeof onChange === 'function' ) {
@@ -150,7 +128,6 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 				}
 
 				// Save to provider config using the provider config endpoint
-				// This ensures it's properly saved and will be reflected in the form
 				try {
 					await apiFetch( {
 						path: `/aether/site-exporter/providers/${ providerId }/config`,
@@ -159,14 +136,9 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 							worker_endpoint: result.worker_url,
 						},
 					} );
-				} catch ( saveError ) {
+				} catch {
 					// Error saving worker endpoint - the value is already in the form
 					// so deployment is still successful. The user can manually save if needed.
-					// eslint-disable-next-line no-console
-					console.error(
-						'Failed to save worker endpoint:',
-						saveError
-					);
 				}
 			}
 
@@ -179,11 +151,7 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 			}, 10000 );
 		} catch ( err ) {
 			setError(
-				err.message ||
-					__(
-						'Failed to deploy worker',
-						'aether-site-exporter-providers'
-					)
+				err.message || __( 'Failed to deploy worker', 'aether' )
 			);
 		} finally {
 			setDeploying( false );
@@ -204,14 +172,16 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 				isBusy={ deploying }
 				disabled={
 					deploying ||
+					! config?.account_id ||
+					! config?.api_token ||
 					! config?.access_key_id ||
 					! config?.secret_access_key ||
 					! config?.bucket_name
 				}
 			>
 				{ deploying
-					? __( 'Deploying…', 'aether-site-exporter-providers' )
-					: __( 'Deploy Worker', 'aether-site-exporter-providers' ) }
+					? __( 'Deploying…', 'aether' )
+					: __( 'Deploy Worker', 'aether' ) }
 			</Button>
 
 			{ error && (
@@ -230,18 +200,10 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 					isDismissible={ false }
 					style={ { marginTop: '0.5rem' } }
 				>
-					{ __(
-						'Worker deployed successfully!',
-						'aether-site-exporter-providers'
-					) }
+					{ __( 'Worker deployed successfully!', 'aether' ) }
 					{ workerUrl && (
 						<div style={ { marginTop: '0.5rem' } }>
-							<strong>
-								{ __(
-									'Worker URL:',
-									'aether-site-exporter-providers'
-								) }
-							</strong>{ ' ' }
+							<strong>{ __( 'Worker URL:', 'aether' ) }</strong>{ ' ' }
 							<a
 								href={ workerUrl }
 								target="_blank"
@@ -263,15 +225,17 @@ const rootContainers = new Map();
 
 /**
  * Initialize modal hooks for Cloudflare R2 provider.
+ *
+ * @param {string} providerIdPrefix Provider ID prefix to match (e.g., 'cloudflare-r2-blueprint-bundle').
  */
-export function initCloudflareR2ModalHooks() {
+export function initCloudflareR2ModalHooks( providerIdPrefix ) {
 	// Hook into the after_fields action to add Deploy Worker button
 	addAction(
 		'aether.provider.form.after_fields',
-		'aether-site-exporter-providers/cloudflare-r2/deploy-button',
+		`aether/${ providerIdPrefix }/deploy-button`,
 		( context ) => {
-			// Only add button for Cloudflare R2 provider
-			if ( context.providerId !== 'cloudflare-r2' ) {
+			// Only add button for matching provider
+			if ( ! context.providerId?.startsWith( providerIdPrefix ) ) {
 				return;
 			}
 
@@ -288,11 +252,9 @@ export function initCloudflareR2ModalHooks() {
 			const existingRoot = reactRoots.get( context.providerId );
 			const existingContainer = rootContainers.get( context.providerId );
 			if ( existingRoot ) {
-				// Unmount previous React component
 				try {
 					existingRoot.unmount();
-				} catch ( e ) {
-					// If unmount fails, just remove the element
+				} catch {
 					if ( existingContainer && existingContainer.parentNode ) {
 						existingContainer.parentNode.removeChild(
 							existingContainer

@@ -7,18 +7,122 @@
  * @package
  */
 
+import { __, sprintf } from '@wordpress/i18n';
 import { addFilter, doAction } from '@wordpress/hooks';
 import { GitLabPagesProvider } from './GitLabPagesProvider';
 import ProviderRegistry from '@aether/providers/registry/ProviderRegistry';
+import apiFetch from '../../utils/api';
 
-// Create provider instance for hook registration
-const provider = new GitLabPagesProvider();
+/**
+ * Load provider configuration from REST API.
+ *
+ * @param {string} providerId Provider instance ID.
+ * @return {Promise<Object>} Provider configuration or empty object.
+ */
+async function loadProviderConfig( providerId ) {
+	try {
+		const response = await apiFetch( {
+			path: `/aether/site-exporter/providers/${ providerId }/config`,
+			method: 'GET',
+		} );
+		return response.config || {};
+	} catch ( error ) {
+		if (
+			error.code === 'restProviderNotConfigured' ||
+			error.status === 404
+		) {
+			return {};
+		}
+		throw error;
+	}
+}
 
-// Register provider in JavaScript registry
-ProviderRegistry.register( provider.getId(), provider );
+// Register provider class in JavaScript registry
+ProviderRegistry.register( GitLabPagesProvider.ID, GitLabPagesProvider );
 
 // Also trigger the hook for any listeners
-doAction( 'aether.providers.register', provider );
+doAction( 'aether.providers.register', GitLabPagesProvider );
+
+/**
+ * GitLab API base URL.
+ */
+const GITLAB_API_BASE = 'https://gitlab.com/api/v4';
+
+/**
+ * Test connection to GitLab API.
+ *
+ * @param {string} providerId Provider instance ID.
+ * @return {Promise<Object>} Connection test result.
+ */
+async function testConnection( providerId ) {
+	const config = await loadProviderConfig( providerId );
+
+	if ( ! config.personal_access_token ) {
+		return {
+			success: false,
+			error: __( 'Personal access token is required', 'aether' ),
+		};
+	}
+
+	try {
+		const response = await fetch( `${ GITLAB_API_BASE }/user`, {
+			headers: {
+				Authorization: `Bearer ${ config.personal_access_token }`,
+			},
+		} );
+
+		if ( ! response.ok ) {
+			return {
+				success: false,
+				error: sprintf(
+					/* translators: %d: HTTP status code */
+					__( 'GitLab API returned status %d', 'aether' ),
+					response.status
+				),
+			};
+		}
+
+		const userData = await response.json();
+
+		// Verify project access (required for GitLab Pages)
+		if ( config.project_id ) {
+			const projectResponse = await fetch(
+				`${ GITLAB_API_BASE }/projects/${ config.project_id }`,
+				{
+					headers: {
+						Authorization: `Bearer ${ config.personal_access_token }`,
+					},
+				}
+			);
+
+			if ( ! projectResponse.ok ) {
+				return {
+					success: false,
+					error: __(
+						'Cannot access GitLab project. Please verify project ID and token permissions.',
+						'aether'
+					),
+				};
+			}
+		}
+
+		return {
+			success: true,
+			message: sprintf(
+				/* translators: %s: GitLab username */
+				__( 'Successfully connected to GitLab as %s', 'aether' ),
+				userData.username || userData.name
+			),
+		};
+	} catch ( error ) {
+		return {
+			success: false,
+			error:
+				error.message ||
+				__( 'Failed to connect to GitLab API', 'aether' ),
+		};
+	}
+}
 
 /**
  * Register test connection handler hook.
@@ -26,16 +130,27 @@ doAction( 'aether.providers.register', provider );
 addFilter(
 	'aether.provider.test',
 	'aether/gitlab-pages',
-	( handler, providerId, config ) => {
+	( handler, providerId ) => {
 		// Handle 'gitlab-pages' or 'gitlab-pages:uuid' format
-		if (
-			providerId !== 'gitlab-pages' &&
-			! providerId?.startsWith( 'gitlab-pages:' )
-		) {
+		if ( ! providerId?.startsWith( 'gitlab-pages' ) ) {
 			return handler;
 		}
-		return async ( testConfig ) =>
-			provider.testConnection( testConfig || config );
+		return async () => testConnection( providerId );
+	},
+	10
+);
+
+/**
+ * Register upload strategy filter.
+ */
+addFilter(
+	'aether.provider.upload_strategy',
+	'aether/gitlab-pages',
+	( strategy, providerId ) => {
+		if ( providerId?.startsWith( 'gitlab-pages' ) ) {
+			return 'git';
+		}
+		return strategy;
 	},
 	10
 );

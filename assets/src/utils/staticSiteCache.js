@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /**
  * Static Site Cache - IndexedDB-based cache for static site generation
  *
@@ -110,11 +109,7 @@ export class StaticSiteCache {
 						timestamp: cached.timestamp,
 				  }
 				: null;
-		} catch ( error ) {
-			console.error(
-				`[StaticSiteCache] Error getting URL "${ url }":`,
-				error
-			);
+		} catch {
 			return null;
 		}
 	}
@@ -149,11 +144,7 @@ export class StaticSiteCache {
 					sessionId: this.sessionId,
 				}
 			);
-		} catch ( error ) {
-			console.error(
-				`[StaticSiteCache] Error caching URL "${ url }":`,
-				error
-			);
+		} catch {
 			return false;
 		}
 	}
@@ -171,11 +162,7 @@ export class StaticSiteCache {
 
 		try {
 			return await this.store.delete( url );
-		} catch ( error ) {
-			console.error(
-				`[StaticSiteCache] Error deleting URL "${ url }":`,
-				error
-			);
+		} catch {
 			return false;
 		}
 	}
@@ -207,8 +194,7 @@ export class StaticSiteCache {
 				this.sessionId
 			);
 			return items.map( ( item ) => item.url );
-		} catch ( error ) {
-			console.error( '[StaticSiteCache] Error getting all URLs:', error );
+		} catch {
 			return [];
 		}
 	}
@@ -246,8 +232,7 @@ export class StaticSiteCache {
 				storagePercent: storageEstimate.percentUsed,
 				usingFallback: false,
 			};
-		} catch ( error ) {
-			console.error( '[StaticSiteCache] Error getting stats:', error );
+		} catch {
 			return {
 				totalCached: 0,
 				sessionCached: 0,
@@ -288,8 +273,7 @@ export class StaticSiteCache {
 			}
 
 			return deletedCount;
-		} catch ( error ) {
-			console.error( '[StaticSiteCache] Error clearing session:', error );
+		} catch {
 			return 0;
 		}
 	}
@@ -307,8 +291,7 @@ export class StaticSiteCache {
 
 		try {
 			return await this.store.clear();
-		} catch ( error ) {
-			console.error( '[StaticSiteCache] Error clearing all:', error );
+		} catch {
 			return false;
 		}
 	}
@@ -328,8 +311,7 @@ export class StaticSiteCache {
 
 		try {
 			return await this.store.deleteOlderThan( MAX_CACHE_AGE_MS );
-		} catch ( error ) {
-			console.error( '[StaticSiteCache] Error during cleanup:', error );
+		} catch {
 			return 0;
 		}
 	}

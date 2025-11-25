@@ -9,7 +9,6 @@
 
 import { useState, useEffect, useCallback } from '@wordpress/element';
 import { useProvider } from './useProvider';
-import { debugError } from '../../utils/debug';
 
 /**
  * Manage provider configuration.
@@ -50,8 +49,7 @@ export function useProviderConfig( providerId ) {
 
 			const configured = await provider.isConfigured();
 			setIsConfigured( configured );
-		} catch ( error ) {
-			debugError( 'Failed to load provider config:', error );
+		} catch {
 			setConfig( {} );
 			setIsConfigured( false );
 		} finally {
@@ -94,7 +92,6 @@ export function useProviderConfig( providerId ) {
 
 				return result;
 			} catch ( error ) {
-				debugError( 'Failed to save provider config:', error );
 				setSaveError( error );
 				return false;
 			} finally {
@@ -144,8 +141,7 @@ export function useProviderConfig( providerId ) {
 				);
 				setErrors( validationErrors );
 				return validationErrors;
-			} catch ( error ) {
-				debugError( 'Failed to validate config:', error );
+			} catch {
 				return {};
 			}
 		},
@@ -176,7 +172,6 @@ export function useProviderConfig( providerId ) {
 
 			return result;
 		} catch ( error ) {
-			debugError( 'Failed to delete provider config:', error );
 			setSaveError( error );
 			return false;
 		} finally {

@@ -7,7 +7,6 @@
  * @package
  */
 
-import { debug } from './debug';
 import { parseErrorResponse } from './errorParser';
 import { createSuccessResponse, createErrorResponse } from './standardResponse';
 // Timeout for very long operations (5 minutes)
@@ -35,15 +34,7 @@ const MULTIPART_CHUNK_SIZE = 5 * 1024 * 1024;
  * @return {Promise<Object>} Upload result with success and optional url/error.
  */
 export async function uploadFile( workerEndpoint, key, file, options = {} ) {
-	const fileSize = file.size;
-	debug( 'uploadFile called:', {
-		key,
-		fileSize,
-		useMultipart: fileSize > MULTIPART_THRESHOLD_BYTES,
-		hasOnProgress: !! options.onProgress,
-	} );
-
-	// Use multipart upload for large files.
+	const fileSize = file.size; // Use multipart upload for large files.
 	if ( fileSize > MULTIPART_THRESHOLD_BYTES ) {
 		return uploadMultipart( workerEndpoint, key, file, options );
 	}
@@ -85,11 +76,6 @@ async function uploadSingleWithProgress(
 					const percent = Math.round(
 						( event.loaded / event.total ) * 100
 					);
-					debug( '[Aether] uploadSingleWithProgress progress:', {
-						loaded: event.loaded,
-						total: event.total,
-						percent,
-					} );
 					onProgress( event.loaded, event.total, percent );
 				}
 			} );
@@ -198,15 +184,6 @@ async function uploadMultipart( workerEndpoint, key, file, options = {} ) {
 		if ( onProgress ) {
 			const uploadedBytes = partNumber * MULTIPART_CHUNK_SIZE;
 			const progressBytes = Math.min( uploadedBytes, fileSize );
-			const percent = Math.round( ( progressBytes / fileSize ) * 100 );
-			debug( 'uploadMultipart progress:', {
-				partNumber,
-				numParts,
-				uploadedBytes,
-				progressBytes,
-				fileSize,
-				percent,
-			} );
 			onProgress( progressBytes, fileSize, null );
 		}
 	}

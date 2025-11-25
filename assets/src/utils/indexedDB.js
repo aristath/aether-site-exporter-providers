@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /**
  * IndexedDB Wrapper - Abstract storage interface for browser persistent storage
  *
@@ -144,7 +143,6 @@ export class IndexedDBStore {
 			const result = await db.get( this.storeName, key );
 			return result || null;
 		} catch ( error ) {
-			console.error( `[IndexedDB] Error getting key "${ key }":`, error );
 			return null;
 		}
 	}
@@ -161,7 +159,6 @@ export class IndexedDBStore {
 			const result = await db.getAll( this.storeName, undefined, limit );
 			return result || [];
 		} catch ( error ) {
-			console.error( '[IndexedDB] Error getting all values:', error );
 			return [];
 		}
 	}
@@ -177,7 +174,6 @@ export class IndexedDBStore {
 			const result = await db.getAllKeys( this.storeName );
 			return result || [];
 		} catch ( error ) {
-			console.error( '[IndexedDB] Error getting all keys:', error );
 			return [];
 		}
 	}
@@ -209,17 +205,7 @@ export class IndexedDBStore {
 
 			await db.put( this.storeName, data );
 			return true;
-		} catch ( error ) {
-			// Check for quota exceeded error
-			if (
-				error.name === 'QuotaExceededError' ||
-				error.message?.includes( 'quota' )
-			) {
-				console.warn(
-					'[IndexedDB] Storage quota exceeded. Consider cleaning up old data.'
-				);
-			}
-			console.error( `[IndexedDB] Error setting key "${ key }":`, error );
+		} catch {
 			return false;
 		}
 	}
@@ -235,11 +221,7 @@ export class IndexedDBStore {
 			const db = await this.ensureDatabase();
 			await db.delete( this.storeName, key );
 			return true;
-		} catch ( error ) {
-			console.error(
-				`[IndexedDB] Error deleting key "${ key }":`,
-				error
-			);
+		} catch {
 			return false;
 		}
 	}
@@ -255,7 +237,6 @@ export class IndexedDBStore {
 			await db.clear( this.storeName );
 			return true;
 		} catch ( error ) {
-			console.error( '[IndexedDB] Error clearing store:', error );
 			return false;
 		}
 	}
@@ -271,7 +252,6 @@ export class IndexedDBStore {
 			const result = await db.count( this.storeName );
 			return result || 0;
 		} catch ( error ) {
-			console.error( '[IndexedDB] Error counting items:', error );
 			return 0;
 		}
 	}
@@ -292,11 +272,7 @@ export class IndexedDBStore {
 				indexValue
 			);
 			return result || [];
-		} catch ( error ) {
-			console.error(
-				`[IndexedDB] Error getting by index "${ indexName }":`,
-				error
-			);
+		} catch {
 			return [];
 		}
 	}
@@ -335,7 +311,6 @@ export class IndexedDBStore {
 			await tx.done;
 			return deletedCount;
 		} catch ( error ) {
-			console.error( '[IndexedDB] Error deleting old items:', error );
 			return 0;
 		}
 	}
@@ -357,12 +332,7 @@ export class IndexedDBStore {
 							? ( estimate.usage / estimate.quota ) * 100
 							: 0,
 				};
-			} catch ( error ) {
-				console.error(
-					'[IndexedDB] Error getting storage estimate:',
-					error
-				);
-			}
+			} catch {}
 		}
 		return { quota: null, usage: null, percentUsed: null };
 	}
@@ -415,7 +385,6 @@ export async function deleteDatabase( dbName ) {
 
 		return true;
 	} catch ( error ) {
-		console.error( '[IndexedDB] Error deleting database:', error );
 		return false;
 	}
 }

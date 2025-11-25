@@ -1,25 +1,21 @@
 /**
  * GitLab Pages Provider
  *
- * JavaScript implementation of the GitLab Pages provider.
- * Provides GitLab Pages static site hosting.
- * Extends GitLabProvider to inherit Git-based storage functionality.
+ * Static metadata class for the GitLab Pages provider.
+ * All logic is handled via hooks in index.js.
  *
  * @package
  */
 
 import { __ } from '@wordpress/i18n';
-import { GitLabProvider } from '../gitlab/GitLabProvider';
-import { DEPLOYMENT_TYPES } from '@aether/base/constants/deploymentTypes';
 
 /**
  * GitLabPagesProvider class
  *
  * Provides GitLab Pages static site hosting.
- * Extends GitLabProvider to inherit Git-based storage functionality.
- * Uses GitLab API and isomorphic-git for browser-based deployment.
+ * This is a static metadata class - all operational logic is in index.js.
  */
-export class GitLabPagesProvider extends GitLabProvider {
+export class GitLabPagesProvider {
 	/**
 	 * Provider ID constant.
 	 *
@@ -28,212 +24,116 @@ export class GitLabPagesProvider extends GitLabProvider {
 	static ID = 'gitlab-pages';
 
 	/**
-	 * Get supported deployment types.
+	 * Provider name.
 	 *
-	 * GitLab Pages supports static sites only (not blueprint bundles).
-	 * Overrides parent GitLabProvider which supports both.
-	 *
-	 * @return {Array<string>} Supported deployment types
+	 * @type {string}
 	 */
-	getSupportedDeploymentTypes() {
-		return [ DEPLOYMENT_TYPES.STATIC_SITE ];
-	}
+	static NAME = __( 'GitLab Pages (Experimental)', 'aether' );
 
 	/**
-	 * Get the unique provider identifier.
+	 * Provider type.
 	 *
-	 * @return {string} Provider ID
+	 * @type {string}
 	 */
-	getId() {
-		return this.registeredId || GitLabPagesProvider.ID;
-	}
+	static TYPE = 'git-hosting';
 
 	/**
-	 * Get the base provider name without experimental suffix.
+	 * Provider description.
 	 *
-	 * @return {string} Base provider name
+	 * @type {string}
 	 */
-	getBaseName() {
-		return __( 'GitLab Pages', 'aether' );
-	}
+	static DESCRIPTION = __(
+		'GitLab Pages static site hosting with automatic CI/CD pipelines. Uses GitLab API for browser-based deployment.',
+		'aether'
+	);
 
 	/**
-	 * Get the human-readable provider name.
+	 * Provider icon.
 	 *
-	 * @return {string} Provider name
+	 * @type {string}
 	 */
-	getName() {
-		return super.getName();
-	}
+	static ICON = '🦊';
 
 	/**
-	 * Get the provider type.
+	 * Deployment type this provider supports.
 	 *
-	 * @return {string} Provider type
+	 * @type {string}
 	 */
-	getType() {
-		return 'git-hosting';
-	}
+	static DEPLOYMENT_TYPE = 'static-site';
 
 	/**
-	 * Get the provider description.
+	 * Configuration fields.
 	 *
-	 * @return {string} Provider description
+	 * @type {Array<Object>}
 	 */
-	getDescription() {
-		return __(
-			'GitLab Pages static site hosting with automatic CI/CD pipelines. Uses GitLab API and isomorphic-git for browser-based deployment.',
-			'aether'
-		);
-	}
-
-	/**
-	 * Get the provider icon.
-	 *
-	 * @return {string} Provider icon
-	 */
-	getIcon() {
-		return '🦊';
-	}
-
-	/**
-	 * Get provider-specific configuration fields.
-	 *
-	 * @return {Array<Object>} Array of field definitions
-	 */
-	getProviderSpecificConfigFields() {
-		return [
-			{
-				id: 'personal_access_token',
-				label: __( 'Personal Access Token', 'aether' ),
-				type: 'text',
-				required: true,
-				sensitive: true,
-				help: __(
-					'GitLab Personal Access Token with api and write_repository scopes',
-					'aether'
-				),
-			},
-			{
-				id: 'project_id',
-				label: __( 'Project ID', 'aether' ),
-				type: 'text',
-				required: true,
-				sensitive: false,
-				validation: {
-					pattern: '^\\d+$',
-					message: __(
-						'Project ID must be a numeric value',
-						'aether'
-					),
-				},
-			},
-			{
-				id: 'namespace',
-				label: __( 'Namespace', 'aether' ),
-				type: 'text',
-				required: false,
-				sensitive: false,
-				help: __(
-					'GitLab namespace (username or group) for the repository',
-					'aether'
-				),
-			},
-			{
-				id: 'project_path',
-				label: __( 'Project Path', 'aether' ),
-				type: 'text',
-				required: false,
-				sensitive: false,
-				help: __(
-					'Repository name/path within the namespace',
-					'aether'
-				),
-			},
-			{
-				id: 'branch',
-				label: __( 'Branch', 'aether' ),
-				type: 'text',
-				required: false,
-				sensitive: false,
-				default: 'main',
-				help: __( 'Git branch to push to', 'aether' ),
-			},
-			{
-				id: 'pages_enabled',
-				label: __( 'GitLab Pages Enabled', 'aether' ),
-				type: 'checkbox',
-				required: false,
-				sensitive: false,
-				default: true,
-			},
-			{
-				id: 'pages_url',
-				label: __( 'Pages URL', 'aether' ),
-				type: 'url',
-				required: false,
-				sensitive: false,
-				help: __( 'Custom GitLab Pages URL', 'aether' ),
-			},
-			{
-				id: 'custom_domain',
-				label: __( 'Custom Domain', 'aether' ),
-				type: 'url',
-				required: false,
-				sensitive: false,
-			},
-			{
-				id: 'git_worker_url',
-				label: __( 'Git Worker URL', 'aether' ),
-				type: 'url',
-				required: false,
-				sensitive: false,
-				isAdvanced: true,
-			},
-		];
-	}
-
-	/**
-	 * Deploy to GitLab Pages.
-	 *
-	 * @return {Promise<Object>} Deployment result
-	 */
-	async deploy() {
-		const configured = await this.isConfigured();
-		if ( ! configured ) {
-			return {
-				success: false,
-				message: __(
-					'Cannot deploy: provider is not configured.',
-					'aether'
-				),
-			};
-		}
-
-		return {
-			success: true,
-			message: __(
-				'GitLab Pages deployment is automatic when files are pushed to the repository.',
+	static CONFIG_FIELDS = [
+		{
+			id: 'personal_access_token',
+			label: __( 'Personal Access Token', 'aether' ),
+			type: 'text',
+			required: true,
+			sensitive: true,
+			help: __(
+				'GitLab Personal Access Token with api and write_repository scopes',
 				'aether'
 			),
-		};
-	}
-
-	/**
-	 * Get provider status.
-	 *
-	 * @return {Promise<Object>} Status object
-	 */
-	async getStatus() {
-		const status = await super.getStatus();
-
-		const config = await this.getConfig();
-		status.pages_enabled = Boolean( config.pages_enabled );
-		status.hasCustomDomain = Boolean( config.custom_domain );
-		status.supportsBrowserGit = Boolean( config.git_worker_url );
-
-		return status;
-	}
+		},
+		{
+			id: 'project_id',
+			label: __( 'Project ID', 'aether' ),
+			type: 'text',
+			required: true,
+			sensitive: false,
+			validation: {
+				pattern: '^\\d+$',
+				message: __( 'Project ID must be a numeric value', 'aether' ),
+			},
+		},
+		{
+			id: 'namespace',
+			label: __( 'Namespace', 'aether' ),
+			type: 'text',
+			required: false,
+			sensitive: false,
+			help: __(
+				'GitLab namespace (username or group) for the repository',
+				'aether'
+			),
+		},
+		{
+			id: 'project_path',
+			label: __( 'Project Path', 'aether' ),
+			type: 'text',
+			required: false,
+			sensitive: false,
+			help: __( 'Repository name/path within the namespace', 'aether' ),
+		},
+		{
+			id: 'branch',
+			label: __( 'Branch', 'aether' ),
+			type: 'text',
+			required: false,
+			sensitive: false,
+			default: 'main',
+			help: __( 'Git branch to push to', 'aether' ),
+		},
+		{
+			id: 'pages_url',
+			label: __( 'Pages URL', 'aether' ),
+			type: 'url',
+			required: false,
+			sensitive: false,
+			help: __( 'Custom GitLab Pages URL', 'aether' ),
+		},
+		{
+			id: 'custom_domain',
+			label: __( 'Custom Domain', 'aether' ),
+			type: 'url',
+			required: false,
+			sensitive: false,
+			isAdvanced: true,
+		},
+	];
 }
 
 export default GitLabPagesProvider;
