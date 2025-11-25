@@ -123,11 +123,20 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 
 				// Save to provider config using the provider config endpoint
 				try {
+					// First fetch existing config to merge with
+					const existingConfigResponse = await apiFetch( {
+						path: `/aether/site-exporter/providers/${ providerId }/config`,
+						method: 'GET',
+					} );
+					const existingConfig = existingConfigResponse?.config || {};
+
+					// Merge worker_endpoint into existing config
 					await apiFetch( {
 						path: `/aether/site-exporter/providers/${ providerId }/config`,
 						method: 'POST',
 						data: {
 							config: {
+								...existingConfig,
 								worker_endpoint: result.worker_url,
 							},
 						},
