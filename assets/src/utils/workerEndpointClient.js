@@ -113,7 +113,7 @@ async function uploadSingleWithProgress(
 		// Open and send request.
 		xhr.open( 'POST', workerEndpoint );
 		xhr.setRequestHeader( 'Content-Type', 'application/octet-stream' );
-		xhr.setRequestHeader( 'X-R2-Key', key );
+		xhr.setRequestHeader( 'X-R2-Key', encodeURIComponent( key ) );
 		xhr.setRequestHeader( 'X-R2-Content-Type', contentType );
 		if ( cacheControl ) {
 			xhr.setRequestHeader( 'X-R2-Cache-Control', cacheControl );
@@ -255,7 +255,7 @@ async function uploadPart( workerEndpoint, key, uploadId, partNumber, chunk ) {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/octet-stream',
-			'X-R2-Key': key,
+			'X-R2-Key': encodeURIComponent( key ),
 			'X-R2-Upload-Id': uploadId,
 			'X-R2-Part-Number': String( partNumber ),
 		},

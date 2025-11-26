@@ -7,136 +7,10 @@
  * @package
  */
 
-import { useState } from '@wordpress/element';
-import { Modal, Button, Notice, TextareaControl } from '@wordpress/components';
+import { useState, useEffect } from '@wordpress/element';
+import { Modal, Button, Notice, TextareaControl, Spinner } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { CLOUDFLARE_DOCS } from './documentation';
-
-/**
- * The worker code that users need to paste.
- * This is a simplified version that works for static site serving.
- */
-const WORKER_CODE = `/* eslint-disable no-console */
-/**
- * Cloudflare Worker for R2 Static Site Serving
- *
- * Deploy this worker and add an R2 bucket binding named "R2_BUCKET"
- */
-
-const CORS_HEADERS = {
-	'Access-Control-Allow-Origin': '*',
-	'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-	'Access-Control-Allow-Headers': 'Content-Type, X-R2-Key, X-R2-Content-Type, X-R2-Cache-Control, X-API-Key, X-R2-Action, X-R2-Upload-Id, X-R2-Part-Number',
-	'Access-Control-Max-Age': '86400',
-};
-
-export default {
-	async fetch(request, env) {
-		// Handle CORS preflight
-		if (request.method === 'OPTIONS') {
-			return new Response(null, { status: 204, headers: CORS_HEADERS });
-		}
-
-		// Handle GET requests (serve static files)
-		if (request.method === 'GET') {
-			return handleGet(request, env);
-		}
-
-		// Handle POST requests (uploads)
-		if (request.method === 'POST') {
-			return handlePost(request, env);
-		}
-
-		return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-			status: 405,
-			headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
-		});
-	},
-};
-
-async function handleGet(request, env) {
-	const url = new URL(request.url);
-	let path = url.pathname.slice(1); // Remove leading /
-
-	// Handle directory index
-	if (!path || path.endsWith('/')) {
-		path = path + 'index.html';
-	}
-
-	// Try to get the file
-	let object = await env.R2_BUCKET.get(path);
-
-	// If not found and no extension, try as directory
-	if (!object && !path.split('/').pop().includes('.')) {
-		object = await env.R2_BUCKET.get(path + '/index.html');
-	}
-
-	if (!object) {
-		return new Response('Not found', { status: 404 });
-	}
-
-	const contentType = object.httpMetadata?.contentType || getContentType(path);
-	return new Response(object.body, {
-		headers: {
-			'Content-Type': contentType,
-			'Cache-Control': 'public, max-age=3600',
-			'Access-Control-Allow-Origin': '*',
-		},
-	});
-}
-
-async function handlePost(request, env) {
-	const action = request.headers.get('X-R2-Action');
-	const key = request.headers.get('X-R2-Key');
-
-	// Handle different actions
-	if (action === 'delete') {
-		const body = await request.json();
-		await env.R2_BUCKET.delete(body.key);
-		return jsonResponse({ success: true });
-	}
-
-	if (action === 'list') {
-		const body = await request.json();
-		const listed = await env.R2_BUCKET.list({ prefix: body.prefix || '' });
-		return jsonResponse({
-			success: true,
-			objects: listed.objects.map(o => ({ key: o.key, size: o.size })),
-		});
-	}
-
-	// Default: file upload
-	if (!key) {
-		return jsonResponse({ success: false, error: 'Missing X-R2-Key header' }, 400);
-	}
-
-	const contentType = request.headers.get('X-R2-Content-Type') || 'application/octet-stream';
-	const data = await request.arrayBuffer();
-
-	await env.R2_BUCKET.put(key, data, {
-		httpMetadata: { contentType, cacheControl: 'public, max-age=3600' },
-	});
-
-	return jsonResponse({ success: true, key, size: data.byteLength });
-}
-
-function jsonResponse(data, status = 200) {
-	return new Response(JSON.stringify(data), {
-		status,
-		headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
-	});
-}
-
-function getContentType(path) {
-	const ext = path.split('.').pop().toLowerCase();
-	const types = {
-		html: 'text/html', css: 'text/css', js: 'application/javascript',
-		json: 'application/json', png: 'image/png', jpg: 'image/jpeg',
-		jpeg: 'image/jpeg', gif: 'image/gif', svg: 'image/svg+xml',
-		webp: 'image/webp', woff: 'font/woff', woff2: 'font/woff2',
-	};
-	return types[ext] || 'application/octet-stream';
-}`;
 
 /**
  * Manual Worker Setup Modal component.
@@ -149,20 +23,64 @@ function getContentType(path) {
  */
 export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 	const [ copied, setCopied ] = useState( false );
+	const [ workerCode, setWorkerCode ] = useState( '' );
+	const [ isLoading, setIsLoading ] = useState( false );
+	const [ error, setError ] = useState( null );
+
+	// Fetch worker code when modal opens
+	useEffect( () => {
+		if ( ! isOpen || workerCode ) {
+			return;
+		}
+
+		const fetchWorkerCode = async () => {
+			setIsLoading( true );
+			setError( null );
+
+			try {
+				// Get plugin URL from global variable set by PHP
+				const pluginUrl = window.aetherSepPluginUrl || '';
+				if ( ! pluginUrl ) {
+					throw new Error( 'Plugin URL not available' );
+				}
+
+				const response = await fetch(
+					pluginUrl + 'assets/workers/CloudflareR2Worker.js'
+				);
+
+				if ( ! response.ok ) {
+					throw new Error( `Failed to fetch worker code: ${ response.status }` );
+				}
+
+				const code = await response.text();
+				setWorkerCode( code );
+			} catch ( err ) {
+				setError( err.message );
+			} finally {
+				setIsLoading( false );
+			}
+		};
+
+		fetchWorkerCode();
+	}, [ isOpen, workerCode ] );
 
 	if ( ! isOpen ) {
 		return null;
 	}
 
 	const handleCopyCode = async () => {
+		if ( ! workerCode ) {
+			return;
+		}
+
 		try {
-			await navigator.clipboard.writeText( WORKER_CODE );
+			await navigator.clipboard.writeText( workerCode );
 			setCopied( true );
 			setTimeout( () => setCopied( false ), 3000 );
 		} catch {
 			// Fallback for older browsers
 			const textarea = document.createElement( 'textarea' );
-			textarea.value = WORKER_CODE;
+			textarea.value = workerCode;
 			document.body.appendChild( textarea );
 			textarea.select();
 			document.execCommand( 'copy' );
@@ -216,6 +134,14 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 		borderRadius: '2px',
 		marginTop: '1rem',
 		fontSize: '0.875rem',
+	};
+
+	const loadingStyle = {
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+		padding: '2rem',
+		gap: '0.5rem',
 	};
 
 	return (
@@ -370,34 +296,49 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 					</ol>
 
 					<div style={ codeBlockStyle }>
-						<div style={ copyButtonContainerStyle }>
-							<Button
-								variant="secondary"
-								onClick={ handleCopyCode }
-								disabled={ copied }
-							>
-								{ copied
-									? __(
-											'Copied!',
-											'aether-site-exporter-providers'
-									  )
-									: __(
-											'Copy Code',
-											'aether-site-exporter-providers'
-									  ) }
-							</Button>
-						</div>
-						<TextareaControl
-							value={ WORKER_CODE }
-							readOnly
-							rows={ 15 }
-							style={ {
-								fontFamily: 'monospace',
-								fontSize: '12px',
-								backgroundColor: '#1e1e1e',
-								color: '#d4d4d4',
-							} }
-						/>
+						{ isLoading && (
+							<div style={ loadingStyle }>
+								<Spinner />
+								<span>{ __( 'Loading worker code...', 'aether-site-exporter-providers' ) }</span>
+							</div>
+						) }
+						{ error && (
+							<Notice status="error" isDismissible={ false }>
+								{ error }
+							</Notice>
+						) }
+						{ ! isLoading && ! error && workerCode && (
+							<>
+								<div style={ copyButtonContainerStyle }>
+									<Button
+										variant="secondary"
+										onClick={ handleCopyCode }
+										disabled={ copied }
+									>
+										{ copied
+											? __(
+													'Copied!',
+													'aether-site-exporter-providers'
+											  )
+											: __(
+													'Copy Code',
+													'aether-site-exporter-providers'
+											  ) }
+									</Button>
+								</div>
+								<TextareaControl
+									value={ workerCode }
+									readOnly
+									rows={ 15 }
+									style={ {
+										fontFamily: 'monospace',
+										fontSize: '12px',
+										backgroundColor: '#1e1e1e',
+										color: '#d4d4d4',
+									} }
+								/>
+							</>
+						) }
 					</div>
 				</div>
 

@@ -151,8 +151,9 @@ export default {
 
 			// Fall through to single-file upload (legacy)
 
-			// Get R2 key from header
-			const r2Key = request.headers.get( 'X-R2-Key' );
+			// Get R2 key from header (decode URI-encoded non-ASCII characters)
+			const encodedR2Key = request.headers.get( 'X-R2-Key' );
+			const r2Key = encodedR2Key ? decodeURIComponent( encodedR2Key ) : null;
 			if ( ! r2Key ) {
 				debugInfo.timing.validation = Date.now() - startTime;
 				return new Response(
@@ -295,7 +296,8 @@ export default {
 async function handleStaticFileRequest( request, env, debugInfo ) {
 	try {
 		const url = new URL( request.url );
-		const pathname = url.pathname;
+		// Decode URI-encoded pathname to handle non-ASCII characters (e.g., Greek)
+		const pathname = decodeURIComponent( url.pathname );
 
 		// Remove leading slash to get R2 key
 		let filepath = pathname.startsWith( '/' )
@@ -851,7 +853,8 @@ async function handleInitiateMultipart( request, env, debugInfo, startTime ) {
  */
 async function handleChunkUpload( request, env, debugInfo, startTime ) {
 	try {
-		const key = request.headers.get( 'X-R2-Key' );
+		const encodedKey = request.headers.get( 'X-R2-Key' );
+		const key = encodedKey ? decodeURIComponent( encodedKey ) : null;
 		const uploadId = request.headers.get( 'X-R2-Upload-Id' );
 		const partNumber = parseInt(
 			request.headers.get( 'X-R2-Part-Number' ),

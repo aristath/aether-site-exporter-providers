@@ -142,5 +142,12 @@ class Plugin
 				true
 			);
 		}
+
+		// Pass plugin URL to JavaScript for worker file fetching.
+		\wp_add_inline_script(
+			'aether-sep-provider-cloudflare-r2-static-site',
+			'window.aetherSepPluginUrl = ' . \wp_json_encode($pluginUrl) . ';',
+			'before'
+		);
 	}
 }
