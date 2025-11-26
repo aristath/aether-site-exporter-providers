@@ -12,6 +12,13 @@ import { Button, Notice } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { addFilter } from '@wordpress/hooks';
 import apiFetch from '../../utils/api';
+import { EdgeService } from '../services/edgeService';
+import {
+	R2SetupGuide,
+	APITokenHelpSection,
+	DeploymentErrorHelp,
+	ManualWorkerSetupModal,
+} from '../cloudflare-r2-shared';
 
 /**
  * Deploy Worker button component for Cloudflare R2.
@@ -27,12 +34,17 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 	const [ error, setError ] = useState( null );
 	const [ success, setSuccess ] = useState( false );
 	const [ workerUrl, setWorkerUrl ] = useState( null );
+	const [ domainAttached, setDomainAttached ] = useState( false );
+	const [ domainError, setDomainError ] = useState( null );
+	const [ showManualSetup, setShowManualSetup ] = useState( false );
 
 	const handleDeploy = async () => {
 		setDeploying( true );
 		setError( null );
 		setSuccess( false );
 		setWorkerUrl( null );
+		setDomainAttached( false );
+		setDomainError( null );
 
 		try {
 			// Validate required credentials for worker deployment
@@ -152,6 +164,61 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 				}
 			}
 
+			// If public_url is configured, attach the worker to the custom domain
+			if ( result.worker_url && config.public_url ) {
+				try {
+					const edgeService = new EdgeService(
+						config.account_id,
+						config.api_token,
+						config,
+						'cloudflare-r2-static-site'
+					);
+
+					// Get zone ID for the hostname
+					const hostname = config.public_url
+						.replace( /^https?:\/\//, '' )
+						.split( '/' )[ 0 ];
+					const rootDomain = hostname
+						.split( '.' )
+						.slice( -2 )
+						.join( '.' );
+					const zoneResult =
+						await edgeService.getZoneIdForHostname( rootDomain );
+
+					if ( zoneResult.success && zoneResult.data?.zoneId ) {
+						// Extract worker name from worker URL
+						const deployedWorkerName =
+							result.worker_url.match(
+								/https?:\/\/([^.]+)/
+							)?.[ 1 ];
+						if ( deployedWorkerName ) {
+							const attachResult =
+								await edgeService.attachWorkerToCustomDomain(
+									deployedWorkerName,
+									hostname,
+									zoneResult.data.zoneId
+								);
+							if ( attachResult.success ) {
+								setDomainAttached( true );
+							} else {
+								setDomainError( attachResult.error );
+							}
+						}
+					} else {
+						setDomainError(
+							zoneResult.error ||
+								__(
+									'Could not find zone for domain',
+									'aether-site-exporter-providers'
+								)
+						);
+					}
+				} catch ( domainErr ) {
+					// Don't fail deployment if custom domain attachment fails
+					setDomainError( domainErr.message );
+				}
+			}
+
 			setSuccess( true );
 			setWorkerUrl( result.worker_url || null );
 
@@ -178,32 +245,52 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 		borderTop: '1px solid #ddd',
 	};
 
+	const buttonContainerStyle = {
+		display: 'flex',
+		gap: '0.5rem',
+		alignItems: 'center',
+	};
+
 	return (
 		<div style={ containerStyle }>
-			<Button
-				variant="secondary"
-				onClick={ handleDeploy }
-				isBusy={ deploying }
-				disabled={
-					deploying ||
-					! config?.account_id ||
-					! config?.api_token ||
-					! config?.bucket_name
-				}
-			>
-				{ deploying
-					? __( 'Deploying…', 'aether-site-exporter-providers' )
-					: __( 'Deploy Worker', 'aether-site-exporter-providers' ) }
-			</Button>
+			<div style={ buttonContainerStyle }>
+				<Button
+					variant="secondary"
+					onClick={ handleDeploy }
+					isBusy={ deploying }
+					disabled={
+						deploying ||
+						! config?.account_id ||
+						! config?.api_token ||
+						! config?.bucket_name
+					}
+				>
+					{ deploying
+						? __( 'Deploying…', 'aether-site-exporter-providers' )
+						: __(
+								'Deploy Worker',
+								'aether-site-exporter-providers'
+						  ) }
+				</Button>
+				<Button
+					variant="tertiary"
+					onClick={ () => setShowManualSetup( true ) }
+				>
+					{ __( 'Manual Setup', 'aether-site-exporter-providers' ) }
+				</Button>
+			</div>
 
 			{ error && (
-				<Notice
-					status="error"
-					isDismissible={ false }
-					style={ { marginTop: '0.5rem' } }
-				>
-					{ error }
-				</Notice>
+				<>
+					<Notice
+						status="error"
+						isDismissible={ false }
+						style={ { marginTop: '0.5rem' } }
+					>
+						{ error }
+					</Notice>
+					<DeploymentErrorHelp errorType="worker_deployment" />
+				</>
 			) }
 
 			{ success && (
@@ -233,8 +320,61 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 							</a>
 						</div>
 					) }
+					{ domainAttached && config.public_url && (
+						<div style={ { marginTop: '0.5rem' } }>
+							<strong>
+								{ __(
+									'Custom domain attached:',
+									'aether-site-exporter-providers'
+								) }
+							</strong>{ ' ' }
+							<a
+								href={ config.public_url }
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								{
+									config.public_url
+										.replace( /^https?:\/\//, '' )
+										.split( '/' )[ 0 ]
+								}
+							</a>
+						</div>
+					) }
+					{ domainError && (
+						<>
+							<div
+								style={ {
+									marginTop: '0.5rem',
+									color: '#d63638',
+								} }
+							>
+								<strong>
+									{ __(
+										'Custom domain warning:',
+										'aether-site-exporter-providers'
+									) }
+								</strong>{ ' ' }
+								{ domainError }
+							</div>
+							<DeploymentErrorHelp
+								errorType="domain_attachment"
+								hostname={
+									config.public_url
+										?.replace( /^https?:\/\//, '' )
+										.split( '/' )[ 0 ]
+								}
+							/>
+						</>
+					) }
 				</Notice>
 			) }
+
+			<ManualWorkerSetupModal
+				isOpen={ showManualSetup }
+				onClose={ () => setShowManualSetup( false ) }
+				bucketName={ config?.bucket_name }
+			/>
 		</div>
 	);
 }
@@ -242,12 +382,49 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 /**
  * Initialize modal hooks for Cloudflare R2 provider.
  *
- * Uses the field-level filter `aether.admin.provider.field.after` to inject
- * the Deploy Worker button after the `worker_endpoint` field.
+ * Uses filters to inject documentation and help content into the provider modal:
+ * - Modal header: Setup guide with API permissions
+ * - After api_token field: Token creation help
+ * - After worker_endpoint field: Deploy Worker button
  *
  * @param {string} providerIdPrefix Provider ID prefix to match (e.g., 'cloudflare-r2-static-site').
  */
 export function initCloudflareR2ModalHooks( providerIdPrefix ) {
+	// Add setup guide at the top of the modal
+	addFilter(
+		'aether.admin.provider.modal.header',
+		`aether/${ providerIdPrefix }/setup-guide`,
+		( content, context ) => {
+			// Only show for matching provider
+			if ( ! context.providerId?.startsWith( providerIdPrefix ) ) {
+				return content;
+			}
+			return <R2SetupGuide />;
+		}
+	);
+
+	// Add API token help section after api_token field
+	addFilter(
+		'aether.admin.provider.field.after',
+		`aether/${ providerIdPrefix }/api-token-help`,
+		( content, context ) => {
+			// Only add after api_token field for matching provider
+			if (
+				context.fieldId !== 'api_token' ||
+				! context.providerId?.startsWith( providerIdPrefix )
+			) {
+				return content;
+			}
+			return (
+				<>
+					{ content }
+					<APITokenHelpSection />
+				</>
+			);
+		},
+		5 // Priority 5 to run before other field.after filters
+	);
+
 	// Hook into the field-level after filter to add Deploy Worker button
 	// after the worker_endpoint field
 	addFilter(
@@ -264,12 +441,16 @@ export function initCloudflareR2ModalHooks( providerIdPrefix ) {
 
 			// Return the DeployWorkerButton component
 			return (
-				<DeployWorkerButton
-					providerId={ context.providerId }
-					config={ context.formValues || {} }
-					onChange={ context.onFormChange }
-				/>
+				<>
+					{ content }
+					<DeployWorkerButton
+						providerId={ context.providerId }
+						config={ context.formValues || {} }
+						onChange={ context.onFormChange }
+					/>
+				</>
 			);
-		}
+		},
+		10 // Priority 10 (default)
 	);
 }

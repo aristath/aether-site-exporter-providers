@@ -12,6 +12,12 @@ import { Button, Notice } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { addFilter } from '@wordpress/hooks';
 import apiFetch from '../../utils/api';
+import {
+	R2SetupGuide,
+	APITokenHelpSection,
+	DeploymentErrorHelp,
+	ManualWorkerSetupModal,
+} from '../cloudflare-r2-shared';
 
 /**
  * Deploy Worker button component for Cloudflare R2.
@@ -27,6 +33,7 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 	const [ error, setError ] = useState( null );
 	const [ success, setSuccess ] = useState( false );
 	const [ workerUrl, setWorkerUrl ] = useState( null );
+	const [ showManualSetup, setShowManualSetup ] = useState( false );
 
 	const handleDeploy = async () => {
 		setDeploying( true );
@@ -178,32 +185,52 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 		borderTop: '1px solid #ddd',
 	};
 
+	const buttonContainerStyle = {
+		display: 'flex',
+		gap: '0.5rem',
+		alignItems: 'center',
+	};
+
 	return (
 		<div style={ containerStyle }>
-			<Button
-				variant="secondary"
-				onClick={ handleDeploy }
-				isBusy={ deploying }
-				disabled={
-					deploying ||
-					! config?.account_id ||
-					! config?.api_token ||
-					! config?.bucket_name
-				}
-			>
-				{ deploying
-					? __( 'Deploying…', 'aether-site-exporter-providers' )
-					: __( 'Deploy Worker', 'aether-site-exporter-providers' ) }
-			</Button>
+			<div style={ buttonContainerStyle }>
+				<Button
+					variant="secondary"
+					onClick={ handleDeploy }
+					isBusy={ deploying }
+					disabled={
+						deploying ||
+						! config?.account_id ||
+						! config?.api_token ||
+						! config?.bucket_name
+					}
+				>
+					{ deploying
+						? __( 'Deploying…', 'aether-site-exporter-providers' )
+						: __(
+								'Deploy Worker',
+								'aether-site-exporter-providers'
+						  ) }
+				</Button>
+				<Button
+					variant="tertiary"
+					onClick={ () => setShowManualSetup( true ) }
+				>
+					{ __( 'Manual Setup', 'aether-site-exporter-providers' ) }
+				</Button>
+			</div>
 
 			{ error && (
-				<Notice
-					status="error"
-					isDismissible={ false }
-					style={ { marginTop: '0.5rem' } }
-				>
-					{ error }
-				</Notice>
+				<>
+					<Notice
+						status="error"
+						isDismissible={ false }
+						style={ { marginTop: '0.5rem' } }
+					>
+						{ error }
+					</Notice>
+					<DeploymentErrorHelp errorType="worker_deployment" />
+				</>
 			) }
 
 			{ success && (
@@ -235,6 +262,12 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 					) }
 				</Notice>
 			) }
+
+			<ManualWorkerSetupModal
+				isOpen={ showManualSetup }
+				onClose={ () => setShowManualSetup( false ) }
+				bucketName={ config?.bucket_name }
+			/>
 		</div>
 	);
 }
@@ -242,12 +275,49 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 /**
  * Initialize modal hooks for Cloudflare R2 provider.
  *
- * Uses the field-level filter `aether.admin.provider.field.after` to inject
- * the Deploy Worker button after the `worker_endpoint` field.
+ * Uses filters to inject documentation and help content into the provider modal:
+ * - Modal header: Setup guide with API permissions
+ * - After api_token field: Token creation help
+ * - After worker_endpoint field: Deploy Worker button
  *
  * @param {string} providerIdPrefix Provider ID prefix to match (e.g., 'cloudflare-r2-blueprint-bundle').
  */
 export function initCloudflareR2ModalHooks( providerIdPrefix ) {
+	// Add setup guide at the top of the modal
+	addFilter(
+		'aether.admin.provider.modal.header',
+		`aether/${ providerIdPrefix }/setup-guide`,
+		( content, context ) => {
+			// Only show for matching provider
+			if ( ! context.providerId?.startsWith( providerIdPrefix ) ) {
+				return content;
+			}
+			return <R2SetupGuide />;
+		}
+	);
+
+	// Add API token help section after api_token field
+	addFilter(
+		'aether.admin.provider.field.after',
+		`aether/${ providerIdPrefix }/api-token-help`,
+		( content, context ) => {
+			// Only add after api_token field for matching provider
+			if (
+				context.fieldId !== 'api_token' ||
+				! context.providerId?.startsWith( providerIdPrefix )
+			) {
+				return content;
+			}
+			return (
+				<>
+					{ content }
+					<APITokenHelpSection />
+				</>
+			);
+		},
+		5 // Priority 5 to run before other field.after filters
+	);
+
 	// Hook into the field-level after filter to add Deploy Worker button
 	// after the worker_endpoint field
 	addFilter(
@@ -264,12 +334,16 @@ export function initCloudflareR2ModalHooks( providerIdPrefix ) {
 
 			// Return the DeployWorkerButton component
 			return (
-				<DeployWorkerButton
-					providerId={ context.providerId }
-					config={ context.formValues || {} }
-					onChange={ context.onFormChange }
-				/>
+				<>
+					{ content }
+					<DeployWorkerButton
+						providerId={ context.providerId }
+						config={ context.formValues || {} }
+						onChange={ context.onFormChange }
+					/>
+				</>
 			);
-		}
+		},
+		10 // Priority 10 (default)
 	);
 }

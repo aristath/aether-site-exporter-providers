@@ -118,6 +118,20 @@ export class CloudflareR2StaticSiteProvider {
 			},
 		},
 		{
+			id: 'public_url',
+			label: __(
+				'Custom Domain (Optional)',
+				'aether-site-exporter-providers'
+			),
+			type: 'url',
+			required: false,
+			sensitive: false,
+			help: __(
+				'The custom domain for your static site (e.g., https://example.com). If provided, the Deploy Worker button will automatically attach it to the worker.',
+				'aether-site-exporter-providers'
+			),
+		},
+		{
 			id: 'worker_endpoint',
 			label: __(
 				'Worker Endpoint URL',
@@ -171,21 +185,6 @@ export class CloudflareR2StaticSiteProvider {
 					'aether-site-exporter-providers'
 				),
 			},
-		},
-		{
-			id: 'public_url',
-			label: __(
-				'Public URL (Optional)',
-				'aether-site-exporter-providers'
-			),
-			type: 'url',
-			required: false,
-			sensitive: false,
-			isAdvanced: true,
-			help: __(
-				'The public URL where your static site will be accessible (e.g., https://example.com).',
-				'aether-site-exporter-providers'
-			),
 		},
 	];
 }
