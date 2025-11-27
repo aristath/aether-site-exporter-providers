@@ -66,6 +66,7 @@ async function getStorageService( providerId ) {
 	return new StorageService( config.worker_endpoint, config.bucket_name, {
 		public_url: config.public_url || null,
 		provider_id: providerId,
+		path: config.path || '',
 	} );
 }
 

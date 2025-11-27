@@ -35,7 +35,7 @@ export class CloudflareR2BlueprintBundleProvider {
 	 *
 	 * @type {string}
 	 */
-	static NAME = __( 'Cloudflare R2', 'aether-site-exporter-providers' );
+	static NAME = __( 'Cloudflare R2', 'aether-site-exporter-r2' );
 
 	/**
 	 * Provider type.
@@ -51,7 +51,7 @@ export class CloudflareR2BlueprintBundleProvider {
 	 */
 	static DESCRIPTION = __(
 		'Cloudflare R2 object storage for WordPress Playground blueprint bundles with zero egress fees.',
-		'aether-site-exporter-providers'
+		'aether-site-exporter-r2'
 	);
 
 	/**
@@ -78,7 +78,7 @@ export class CloudflareR2BlueprintBundleProvider {
 			id: 'account_id',
 			label: __(
 				'Cloudflare Account ID',
-				'aether-site-exporter-providers'
+				'aether-site-exporter-r2'
 			),
 			type: 'text',
 			required: true,
@@ -87,7 +87,7 @@ export class CloudflareR2BlueprintBundleProvider {
 				pattern: '^[a-f0-9]{32}$',
 				message: __(
 					'Account ID must be a 32-character hexadecimal string',
-					'aether-site-exporter-providers'
+					'aether-site-exporter-r2'
 				),
 			},
 		},
@@ -95,7 +95,7 @@ export class CloudflareR2BlueprintBundleProvider {
 			id: 'api_token',
 			label: __(
 				'Cloudflare API Token',
-				'aether-site-exporter-providers'
+				'aether-site-exporter-r2'
 			),
 			type: 'text',
 			required: true,
@@ -104,13 +104,13 @@ export class CloudflareR2BlueprintBundleProvider {
 				minLength: 20,
 				message: __(
 					'API Token must be at least 20 characters',
-					'aether-site-exporter-providers'
+					'aether-site-exporter-r2'
 				),
 			},
 		},
 		{
 			id: 'bucket_name',
-			label: __( 'Bucket Name', 'aether-site-exporter-providers' ),
+			label: __( 'Bucket Name', 'aether-site-exporter-r2' ),
 			type: 'text',
 			required: true,
 			sensitive: false,
@@ -120,7 +120,26 @@ export class CloudflareR2BlueprintBundleProvider {
 				maxLength: 63,
 				message: __(
 					'Bucket name must be 3-63 characters, start and end with alphanumeric, and contain only lowercase letters, numbers, and hyphens',
-					'aether-site-exporter-providers'
+					'aether-site-exporter-r2'
+				),
+			},
+		},
+		{
+			id: 'path',
+			label: __( 'Path Prefix', 'aether-site-exporter-r2' ),
+			type: 'text',
+			required: false,
+			sensitive: false,
+			placeholder: 'my-site/',
+			help: __(
+				'Optional path prefix for all uploaded files (e.g., "my-site/" will upload files as "my-site/bundle.zip")',
+				'aether-site-exporter-r2'
+			),
+			validation: {
+				pattern: '^[a-zA-Z0-9._/-]*$',
+				message: __(
+					'Path can only contain letters, numbers, dots, underscores, hyphens, and forward slashes',
+					'aether-site-exporter-r2'
 				),
 			},
 		},
@@ -128,32 +147,32 @@ export class CloudflareR2BlueprintBundleProvider {
 			id: 'worker_endpoint',
 			label: __(
 				'Worker Endpoint URL',
-				'aether-site-exporter-providers'
+				'aether-site-exporter-r2'
 			),
 			type: 'url',
 			required: false,
 			sensitive: false,
 			help: __(
 				'URL of the deployed Cloudflare Worker. Use the Deploy Worker button below to create one.',
-				'aether-site-exporter-providers'
+				'aether-site-exporter-r2'
 			),
 		},
 		{
 			id: 'access_key_id',
-			label: __( 'R2 Access Key ID', 'aether-site-exporter-providers' ),
+			label: __( 'R2 Access Key ID', 'aether-site-exporter-r2' ),
 			type: 'text',
 			required: false,
 			sensitive: true,
 			help: __(
 				'Only required for S3-compatible API access, not for Worker-based uploads.',
-				'aether-site-exporter-providers'
+				'aether-site-exporter-r2'
 			),
 			validation: {
 				minLength: 16,
 				maxLength: 128,
 				message: __(
 					'Access Key ID must be between 16 and 128 characters',
-					'aether-site-exporter-providers'
+					'aether-site-exporter-r2'
 				),
 			},
 		},
@@ -161,41 +180,41 @@ export class CloudflareR2BlueprintBundleProvider {
 			id: 'secret_access_key',
 			label: __(
 				'R2 Secret Access Key',
-				'aether-site-exporter-providers'
+				'aether-site-exporter-r2'
 			),
 			type: 'text',
 			required: false,
 			sensitive: true,
 			help: __(
 				'Only required for S3-compatible API access, not for Worker-based uploads.',
-				'aether-site-exporter-providers'
+				'aether-site-exporter-r2'
 			),
 			validation: {
 				minLength: 32,
 				maxLength: 128,
 				message: __(
 					'Secret Access Key must be between 32 and 128 characters',
-					'aether-site-exporter-providers'
+					'aether-site-exporter-r2'
 				),
 			},
 		},
 		{
 			id: 'bundle_path',
-			label: __( 'Bundle Path', 'aether-site-exporter-providers' ),
+			label: __( 'Bundle Path', 'aether-site-exporter-r2' ),
 			type: 'text',
 			required: false,
 			sensitive: false,
 			placeholder: 'blueprint-bundle/bundle.zip',
 			help: __(
 				'Path within the bucket for the blueprint bundle ZIP file',
-				'aether-site-exporter-providers'
+				'aether-site-exporter-r2'
 			),
 		},
 		{
 			id: 'public_url',
 			label: __(
 				'Custom Domain (Optional)',
-				'aether-site-exporter-providers'
+				'aether-site-exporter-r2'
 			),
 			type: 'url',
 			required: false,

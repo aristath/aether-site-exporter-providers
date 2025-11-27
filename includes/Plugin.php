@@ -3,10 +3,10 @@
 /**
  * Main Plugin Class
  *
- * @package Aether\SiteExporterProviders
+ * @package Aether\SiteExporterR2
  */
 
-namespace Aether\SiteExporterProviders;
+namespace Aether\SiteExporterR2;
 
 // Providers are now registered entirely in JavaScript, not PHP.
 
@@ -74,9 +74,9 @@ class Plugin
 	public function loadTextdomain(): void
 	{
 		\load_plugin_textdomain(
-			'aether-site-exporter-providers',
+			'aether-site-exporter-r2',
 			false,
-			\dirname(\plugin_basename(AETHER_SEP_PLUGIN_FILE)) . '/languages'
+			\dirname(\plugin_basename(AETHER_R2_PLUGIN_FILE)) . '/languages'
 		);
 	}
 
@@ -116,26 +116,24 @@ class Plugin
 			return;
 		}
 
-		$pluginUrl = AETHER_SEP_PLUGIN_URL;
-		$pluginDir = AETHER_SEP_PLUGIN_DIR;
+		$pluginUrl = AETHER_R2_PLUGIN_URL;
+		$pluginDir = AETHER_R2_PLUGIN_DIR;
 
 		// List of provider scripts to enqueue.
 		$providerScripts = [
 			'provider-cloudflare-r2-static-site',
 			'provider-cloudflare-r2-blueprint-bundle',
-			'provider-gitlab',
-			'provider-gitlab-pages',
 		];
 
 		foreach ($providerScripts as $scriptHandle) {
 			$assetFile = $pluginDir . 'assets/build/' . $scriptHandle . '.asset.php';
 			$asset = \file_exists($assetFile) ? require $assetFile : [
 				'dependencies' => [ 'wp-hooks', 'wp-i18n' ],
-				'version' => AETHER_SEP_VERSION,
+				'version' => AETHER_R2_VERSION,
 			];
 
 			\wp_enqueue_script(
-				'aether-sep-' . $scriptHandle,
+				'aether-r2-' . $scriptHandle,
 				$pluginUrl . 'assets/build/' . $scriptHandle . '.js',
 				$asset['dependencies'],
 				$asset['version'],
@@ -145,8 +143,8 @@ class Plugin
 
 		// Pass plugin URL to JavaScript for worker file fetching.
 		\wp_add_inline_script(
-			'aether-sep-provider-cloudflare-r2-static-site',
-			'window.aetherSepPluginUrl = ' . \wp_json_encode($pluginUrl) . ';',
+			'aether-r2-provider-cloudflare-r2-static-site',
+			'window.aetherR2PluginUrl = ' . \wp_json_encode($pluginUrl) . ';',
 			'before'
 		);
 	}

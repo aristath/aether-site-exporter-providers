@@ -376,7 +376,7 @@ export function ProviderSettings( { provider, onSave } ) {
 					>
 						{ __(
 							'This provider has no configurable settings.',
-							'aether-site-exporter-providers'
+							'aether-site-exporter-r2'
 						) }
 					</p>
 				) }
@@ -426,7 +426,7 @@ export function ProviderSettings( { provider, onSave } ) {
 												result.error ||
 													__(
 														'Connection test failed',
-														'aether-site-exporter-providers'
+														'aether-site-exporter-r2'
 													)
 											);
 										}
@@ -435,7 +435,7 @@ export function ProviderSettings( { provider, onSave } ) {
 											error.message ||
 												__(
 													'Connection test failed',
-													'aether-site-exporter-providers'
+													'aether-site-exporter-r2'
 												)
 										);
 									}

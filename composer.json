@@ -1,6 +1,6 @@
 {
-    "name": "aristath/aether-site-exporter-providers",
-    "description": "Provider implementations (Cloudflare R2, Cloudflare Workers, GitLab, GitLab Pages) for Aether Site Exporter",
+    "name": "aristath/aether-site-exporter-r2",
+    "description": "Cloudflare R2 storage providers for Aether Site Exporter",
     "type": "wordpress-plugin",
     "require": {
         "php": ">=7.4"
@@ -15,7 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Aether\\SiteExporterProviders\\": "includes/"
+            "Aether\\SiteExporterR2\\": "includes/"
         }
     },
     "scripts": {

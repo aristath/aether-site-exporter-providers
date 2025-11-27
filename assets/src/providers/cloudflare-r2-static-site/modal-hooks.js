@@ -58,7 +58,7 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 				throw new Error(
 					__(
 						'Cloudflare Account ID, API Token, and Bucket Name are required to deploy the worker',
-						'aether-site-exporter-providers'
+						'aether-site-exporter-r2'
 					)
 				);
 			}
@@ -113,7 +113,7 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 						errorData.error ||
 						__(
 							'Failed to deploy worker',
-							'aether-site-exporter-providers'
+							'aether-site-exporter-r2'
 						)
 				);
 			}
@@ -126,7 +126,7 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 						result.error ||
 						__(
 							'Failed to deploy worker',
-							'aether-site-exporter-providers'
+							'aether-site-exporter-r2'
 						)
 				);
 			}
@@ -209,7 +209,7 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 							zoneResult.error ||
 								__(
 									'Could not find zone for domain',
-									'aether-site-exporter-providers'
+									'aether-site-exporter-r2'
 								)
 						);
 					}
@@ -231,7 +231,7 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 				err.message ||
 					__(
 						'Failed to deploy worker',
-						'aether-site-exporter-providers'
+						'aether-site-exporter-r2'
 					)
 			);
 		} finally {
@@ -266,17 +266,17 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 					}
 				>
 					{ deploying
-						? __( 'Deploying…', 'aether-site-exporter-providers' )
+						? __( 'Deploying…', 'aether-site-exporter-r2' )
 						: __(
 								'Deploy Worker',
-								'aether-site-exporter-providers'
+								'aether-site-exporter-r2'
 						  ) }
 				</Button>
 				<Button
 					variant="tertiary"
 					onClick={ () => setShowManualSetup( true ) }
 				>
-					{ __( 'Manual Setup', 'aether-site-exporter-providers' ) }
+					{ __( 'Manual Setup', 'aether-site-exporter-r2' ) }
 				</Button>
 			</div>
 
@@ -301,14 +301,14 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 				>
 					{ __(
 						'Worker deployed successfully!',
-						'aether-site-exporter-providers'
+						'aether-site-exporter-r2'
 					) }
 					{ workerUrl && (
 						<div style={ { marginTop: '0.5rem' } }>
 							<strong>
 								{ __(
 									'Worker URL:',
-									'aether-site-exporter-providers'
+									'aether-site-exporter-r2'
 								) }
 							</strong>{ ' ' }
 							<a
@@ -325,7 +325,7 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 							<strong>
 								{ __(
 									'Custom domain attached:',
-									'aether-site-exporter-providers'
+									'aether-site-exporter-r2'
 								) }
 							</strong>{ ' ' }
 							<a
@@ -352,7 +352,7 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 								<strong>
 									{ __(
 										'Custom domain warning:',
-										'aether-site-exporter-providers'
+										'aether-site-exporter-r2'
 									) }
 								</strong>{ ' ' }
 								{ domainError }

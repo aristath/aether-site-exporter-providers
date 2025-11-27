@@ -58,8 +58,6 @@ module.exports = {
 			'./assets/src/providers/cloudflare-r2-static-site/index.js',
 		'provider-cloudflare-r2-blueprint-bundle':
 			'./assets/src/providers/cloudflare-r2-blueprint-bundle/index.js',
-		'provider-gitlab': './assets/src/providers/gitlab/index.js',
-		'provider-gitlab-pages': './assets/src/providers/gitlab-pages/index.js',
 	},
 	output: {
 		...defaultConfig.output,

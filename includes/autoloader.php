@@ -3,10 +3,10 @@
 /**
  * PSR-4 Autoloader
  *
- * @package Aether\SiteExporterProviders
+ * @package Aether\SiteExporterR2
  */
 
-namespace Aether\SiteExporterProviders;
+namespace Aether\SiteExporterR2;
 
 // Exit if accessed directly.
 if (! defined('ABSPATH')) {
@@ -22,7 +22,7 @@ if (! defined('ABSPATH')) {
 spl_autoload_register(
 	function ($class) {
 		// Project-specific namespace prefix.
-		$prefix = 'Aether\\SiteExporterProviders\\';
+		$prefix = 'Aether\\SiteExporterR2\\';
 
 		// Base directory for the namespace prefix.
 		$baseDir = __DIR__ . '/';

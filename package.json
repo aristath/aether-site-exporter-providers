@@ -1,7 +1,7 @@
 {
-  "name": "aether-site-exporter-providers",
+  "name": "aether-site-exporter-r2",
   "version": "1.0.0",
-  "description": "Provider implementations (Cloudflare R2, Cloudflare Workers, GitLab, GitLab Pages) for Aether Site Exporter",
+  "description": "Cloudflare R2 storage providers for Aether Site Exporter",
   "main": "index.js",
   "scripts": {
     "build": "MINIFY=true wp-scripts build",
@@ -16,8 +16,8 @@
   "keywords": [
     "wordpress",
     "cloudflare",
-    "gitlab",
-    "providers",
+    "r2",
+    "storage",
     "deployment"
   ],
   "author": "Aristeidis Stathopoulos <aristath@gmail.com>",

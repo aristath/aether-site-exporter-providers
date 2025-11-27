@@ -67,11 +67,11 @@ export function APITokenHelpSection() {
 				{ isExpanded
 					? __(
 							'Hide token creation steps',
-							'aether-site-exporter-providers'
+							'aether-site-exporter-r2'
 					  )
 					: __(
 							'How to create an API token',
-							'aether-site-exporter-providers'
+							'aether-site-exporter-r2'
 					  ) }
 			</Button>
 
@@ -81,25 +81,25 @@ export function APITokenHelpSection() {
 						<li style={ listItemStyle }>
 							{ __(
 								'Go to Cloudflare Dashboard > My Profile > API Tokens',
-								'aether-site-exporter-providers'
+								'aether-site-exporter-r2'
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							{ __(
 								'Click "Create Token"',
-								'aether-site-exporter-providers'
+								'aether-site-exporter-r2'
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							{ __(
 								'Select "Create Custom Token"',
-								'aether-site-exporter-providers'
+								'aether-site-exporter-r2'
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							{ __(
 								'Add these permissions:',
-								'aether-site-exporter-providers'
+								'aether-site-exporter-r2'
 							) }
 							<ul style={ nestedListStyle }>
 								<li>Account &gt; Workers Scripts &gt; Edit</li>
@@ -112,14 +112,14 @@ export function APITokenHelpSection() {
 						<li style={ listItemStyle }>
 							{ __(
 								'Create the token and copy it here',
-								'aether-site-exporter-providers'
+								'aether-site-exporter-r2'
 							) }
 						</li>
 					</ol>
 					<ExternalLink href={ CLOUDFLARE_DOCS.createApiToken }>
 						{ __(
 							'View Cloudflare Documentation',
-							'aether-site-exporter-providers'
+							'aether-site-exporter-r2'
 						) }
 					</ExternalLink>
 				</div>

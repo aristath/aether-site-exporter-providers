@@ -15,17 +15,17 @@ import { __ } from '@wordpress/i18n';
 export const REQUIRED_PERMISSIONS = {
 	title: __(
 		'Required API Token Permissions',
-		'aether-site-exporter-providers'
+		'aether-site-exporter-r2'
 	),
 	sections: [
 		{
-			title: __( 'R2 Storage', 'aether-site-exporter-providers' ),
+			title: __( 'R2 Storage', 'aether-site-exporter-r2' ),
 			items: [
 				{
 					permission: 'R2: Edit',
 					description: __(
 						'Read and write files to R2 bucket',
-						'aether-site-exporter-providers'
+						'aether-site-exporter-r2'
 					),
 				},
 			],
@@ -33,21 +33,21 @@ export const REQUIRED_PERMISSIONS = {
 		{
 			title: __(
 				'Workers (for deployment)',
-				'aether-site-exporter-providers'
+				'aether-site-exporter-r2'
 			),
 			items: [
 				{
 					permission: 'Workers Scripts: Edit',
 					description: __(
 						'Deploy and update Workers',
-						'aether-site-exporter-providers'
+						'aether-site-exporter-r2'
 					),
 				},
 				{
 					permission: 'Workers Routes: Edit',
 					description: __(
 						'Attach custom domains to Workers',
-						'aether-site-exporter-providers'
+						'aether-site-exporter-r2'
 					),
 				},
 			],
@@ -55,14 +55,14 @@ export const REQUIRED_PERMISSIONS = {
 		{
 			title: __(
 				'DNS (for custom domains)',
-				'aether-site-exporter-providers'
+				'aether-site-exporter-r2'
 			),
 			items: [
 				{
 					permission: 'Zone: Read',
 					description: __(
 						'Look up zone IDs for custom domains',
-						'aether-site-exporter-providers'
+						'aether-site-exporter-r2'
 					),
 				},
 			],
@@ -75,31 +75,31 @@ export const REQUIRED_PERMISSIONS = {
  * Manual worker deployment instructions.
  */
 export const MANUAL_WORKER_DEPLOYMENT = {
-	title: __( 'Manual Worker Deployment', 'aether-site-exporter-providers' ),
+	title: __( 'Manual Worker Deployment', 'aether-site-exporter-r2' ),
 	steps: [
 		__(
 			'Go to Cloudflare Dashboard > Workers & Pages',
-			'aether-site-exporter-providers'
+			'aether-site-exporter-r2'
 		),
 		__(
 			'Click "Create" and select "Create Worker"',
-			'aether-site-exporter-providers'
+			'aether-site-exporter-r2'
 		),
 		__(
 			'Name your worker (e.g., "my-r2-static-site")',
-			'aether-site-exporter-providers'
+			'aether-site-exporter-r2'
 		),
 		__(
 			'Go to Settings > Variables > R2 Bucket Bindings',
-			'aether-site-exporter-providers'
+			'aether-site-exporter-r2'
 		),
 		__(
 			'Add binding: Variable name "R2_BUCKET", select your bucket',
-			'aether-site-exporter-providers'
+			'aether-site-exporter-r2'
 		),
 		__(
 			'Deploy the worker and copy the URL',
-			'aether-site-exporter-providers'
+			'aether-site-exporter-r2'
 		),
 	],
 	workersUrl: 'https://dash.cloudflare.com/?to=/:account/workers-and-pages',
@@ -109,23 +109,23 @@ export const MANUAL_WORKER_DEPLOYMENT = {
  * Manual domain attachment instructions.
  */
 export const MANUAL_DOMAIN_ATTACHMENT = {
-	title: __( 'Manual Domain Attachment', 'aether-site-exporter-providers' ),
+	title: __( 'Manual Domain Attachment', 'aether-site-exporter-r2' ),
 	steps: [
 		__(
 			'Go to Cloudflare Dashboard > Workers & Pages',
-			'aether-site-exporter-providers'
+			'aether-site-exporter-r2'
 		),
-		__( 'Select your worker', 'aether-site-exporter-providers' ),
+		__( 'Select your worker', 'aether-site-exporter-r2' ),
 		__(
 			'Go to Settings > Triggers > Custom Domains',
-			'aether-site-exporter-providers'
+			'aether-site-exporter-r2'
 		),
-		__( 'Click "Add Custom Domain"', 'aether-site-exporter-providers' ),
-		__( 'Enter your domain and confirm', 'aether-site-exporter-providers' ),
+		__( 'Click "Add Custom Domain"', 'aether-site-exporter-r2' ),
+		__( 'Enter your domain and confirm', 'aether-site-exporter-r2' ),
 	],
 	note: __(
 		'Ensure the domain is on the same Cloudflare account and proxied through Cloudflare (orange cloud).',
-		'aether-site-exporter-providers'
+		'aether-site-exporter-r2'
 	),
 	docsUrl:
 		'https://developers.cloudflare.com/workers/configuration/routing/custom-domains/',

@@ -151,6 +151,7 @@ addFilter(
 			...config,
 			public_url: effectiveConfig.public_url || null,
 			provider_id: providerId,
+			path: effectiveConfig.path || '',
 		};
 
 		// Return new StorageService with the adapter
@@ -191,7 +192,10 @@ addFilter(
 			const storage = new StorageService(
 				providerConfig.worker_endpoint,
 				providerConfig.bucket_name,
-				{ public_url: providerConfig.public_url || null }
+				{
+					public_url: providerConfig.public_url || null,
+					path: providerConfig.path || '',
+				}
 			);
 			return storage.testConnection();
 		};

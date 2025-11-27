@@ -35,6 +35,23 @@ export class StorageService {
 		this.bucketName = bucketName;
 		this.config = config;
 		this.providerId = config.provider_id || '';
+		this.pathPrefix = config.path || '';
+	}
+
+	/**
+	 * Get the full storage key with path prefix applied.
+	 *
+	 * @param {string} key Original key.
+	 * @return {string} Key with path prefix prepended.
+	 */
+	getFullKey( key ) {
+		if ( ! this.pathPrefix ) {
+			return key;
+		}
+		// Normalize: ensure prefix ends with / and key doesn't start with /
+		const prefix = this.pathPrefix.replace( /\/$/, '' ) + '/';
+		const normalizedKey = key.replace( /^\//, '' );
+		return prefix + normalizedKey;
 	}
 
 	/**
@@ -53,6 +70,8 @@ export class StorageService {
 			};
 		}
 
+		const fullKey = this.getFullKey( key );
+
 		const options = {
 			contentType: metadata.contentType || file.type,
 			cacheControl: metadata.cacheControl || '',
@@ -61,7 +80,7 @@ export class StorageService {
 
 		const result = await uploadFile(
 			this.workerEndpoint,
-			key,
+			fullKey,
 			file,
 			options
 		);
@@ -70,7 +89,7 @@ export class StorageService {
 			return result;
 		}
 
-		// Build public URL.
+		// Build public URL using original key for URL generation.
 		const url = this.getUrl( key );
 
 		return {
@@ -86,7 +105,8 @@ export class StorageService {
 	 * @return {Promise<Object>} Result array with 'success' and optional 'error'.
 	 */
 	async delete( key ) {
-		return deleteFile( this.workerEndpoint, key );
+		const fullKey = this.getFullKey( key );
+		return deleteFile( this.workerEndpoint, fullKey );
 	}
 
 	/**
@@ -97,7 +117,9 @@ export class StorageService {
 	 * @return {Promise<Object>} Result array with 'success' and optional 'error'.
 	 */
 	async copy( sourceKey, destKey ) {
-		return copyFile( this.workerEndpoint, sourceKey, destKey );
+		const fullSourceKey = this.getFullKey( sourceKey );
+		const fullDestKey = this.getFullKey( destKey );
+		return copyFile( this.workerEndpoint, fullSourceKey, fullDestKey );
 	}
 
 	/**
@@ -107,10 +129,11 @@ export class StorageService {
 	 * @return {Promise<boolean>} True if exists, false otherwise.
 	 */
 	async exists( key ) {
+		const fullKey = this.getFullKey( key );
 		// List objects with prefix matching the exact key.
 		const result = await listObjectsFromWorker(
 			this.workerEndpoint,
-			key,
+			fullKey,
 			1
 		);
 
@@ -119,7 +142,7 @@ export class StorageService {
 		}
 
 		const objects = result.objects || [];
-		return objects.some( ( obj ) => obj.key === key );
+		return objects.some( ( obj ) => obj.key === fullKey );
 	}
 
 	/**
@@ -130,7 +153,8 @@ export class StorageService {
 	 * @return {Promise<Object>} Result array with 'success', 'objects' array, and optional 'error'.
 	 */
 	async listObjects( prefix = '', limit = 1000 ) {
-		return listObjectsFromWorker( this.workerEndpoint, prefix, limit );
+		const fullPrefix = this.getFullKey( prefix );
+		return listObjectsFromWorker( this.workerEndpoint, fullPrefix, limit );
 	}
 
 	/**
@@ -140,13 +164,14 @@ export class StorageService {
 	 * @return {string} Public URL.
 	 */
 	getUrl( key ) {
+		const fullKey = this.getFullKey( key );
 		// Use public_url if available (e.g., custom domain)
 		if ( this.config.public_url ) {
 			const baseUrl = this.config.public_url.replace( /\/$/, '' );
-			return `${ baseUrl }/${ key }`;
+			return `${ baseUrl }/${ fullKey }`;
 		}
 		// Fallback to worker endpoint URL
-		return getObjectUrl( this.workerEndpoint, this.bucketName, key );
+		return getObjectUrl( this.workerEndpoint, this.bucketName, fullKey );
 	}
 
 	/**
@@ -156,7 +181,11 @@ export class StorageService {
 	 * @return {Promise<Object>} Result with success, copied count, errors count, and results array.
 	 */
 	async batchCopy( operations ) {
-		return batchCopyFromWorker( this.workerEndpoint, operations );
+		const prefixedOperations = operations.map( ( op ) => ( {
+			source: this.getFullKey( op.source ),
+			dest: this.getFullKey( op.dest ),
+		} ) );
+		return batchCopyFromWorker( this.workerEndpoint, prefixedOperations );
 	}
 
 	/**
@@ -166,7 +195,8 @@ export class StorageService {
 	 * @return {Promise<Object>} Result with success and optional error.
 	 */
 	async batchDelete( keys ) {
-		return batchDeleteFromWorker( this.workerEndpoint, keys );
+		const prefixedKeys = keys.map( ( key ) => this.getFullKey( key ) );
+		return batchDeleteFromWorker( this.workerEndpoint, prefixedKeys );
 	}
 
 	/**
@@ -180,11 +210,12 @@ export class StorageService {
 		const manifestKey = this.providerId
 			? `file-manifest-${ this.providerId }.json`
 			: 'file-manifest.json';
+		const fullKey = this.getFullKey( manifestKey );
 
 		try {
 			const blob = await downloadFileFromWorker(
 				this.workerEndpoint,
-				manifestKey
+				fullKey
 			);
 			return blob;
 		} catch ( error ) {
@@ -220,7 +251,8 @@ export class StorageService {
 	 */
 	async testConnection() {
 		// Try to list objects (max 1) to verify connection.
-		const result = await this.listObjects( '', 1 );
+		// Use listObjectsFromWorker directly without path prefix for connection test
+		const result = await listObjectsFromWorker( this.workerEndpoint, '', 1 );
 
 		if ( ! result.success ) {
 			return {

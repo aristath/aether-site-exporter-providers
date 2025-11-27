@@ -115,7 +115,7 @@ class ErrorBoundary extends Component {
 						>
 							{ __(
 								'An unexpected error occurred. Please try refreshing the page.',
-								'aether-site-exporter-providers'
+								'aether-site-exporter-r2'
 							) }
 						</p>
 						{ this.state.error && (

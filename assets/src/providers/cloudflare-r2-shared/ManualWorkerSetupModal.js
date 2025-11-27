@@ -148,7 +148,7 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 		<Modal
 			title={ __(
 				'Manual Worker Setup Instructions',
-				'aether-site-exporter-providers'
+				'aether-site-exporter-r2'
 			) }
 			onRequestClose={ onClose }
 			style={ modalStyle }
@@ -160,12 +160,12 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 					<h3 style={ headingStyle }>
 						{ __(
 							'Step 1: Create a Worker',
-							'aether-site-exporter-providers'
+							'aether-site-exporter-r2'
 						) }
 					</h3>
 					<ol style={ listStyle }>
 						<li style={ listItemStyle }>
-							{ __( 'Go to', 'aether-site-exporter-providers' ) }{ ' ' }
+							{ __( 'Go to', 'aether-site-exporter-r2' ) }{ ' ' }
 							<a
 								href="https://dash.cloudflare.com/?to=/:account/workers-and-pages"
 								target="_blank"
@@ -177,19 +177,19 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 						<li style={ listItemStyle }>
 							{ __(
 								'Click "Create" and select "Create Worker"',
-								'aether-site-exporter-providers'
+								'aether-site-exporter-r2'
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							{ __(
 								'Name your worker (e.g., "aether-r2-mysite")',
-								'aether-site-exporter-providers'
+								'aether-site-exporter-r2'
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							{ __(
 								'Click "Deploy" to create the worker with default code',
-								'aether-site-exporter-providers'
+								'aether-site-exporter-r2'
 							) }
 						</li>
 					</ol>
@@ -200,67 +200,67 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 					<h3 style={ headingStyle }>
 						{ __(
 							'Step 2: Add R2 Bucket Binding',
-							'aether-site-exporter-providers'
+							'aether-site-exporter-r2'
 						) }
 					</h3>
 					<ol style={ listStyle }>
 						<li style={ listItemStyle }>
 							{ __(
 								'In your worker, go to Settings > Variables',
-								'aether-site-exporter-providers'
+								'aether-site-exporter-r2'
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							{ __(
 								'Scroll down to "R2 Bucket Bindings"',
-								'aether-site-exporter-providers'
+								'aether-site-exporter-r2'
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							{ __(
 								'Click "Add binding"',
-								'aether-site-exporter-providers'
+								'aether-site-exporter-r2'
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							<strong>
 								{ __(
 									'Variable name:',
-									'aether-site-exporter-providers'
+									'aether-site-exporter-r2'
 								) }
 							</strong>{ ' ' }
 							<code>R2_BUCKET</code>{ ' ' }
 							{ __(
 								'(must be exactly this name)',
-								'aether-site-exporter-providers'
+								'aether-site-exporter-r2'
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							<strong>
 								{ __(
 									'R2 bucket:',
-									'aether-site-exporter-providers'
+									'aether-site-exporter-r2'
 								) }
 							</strong>{ ' ' }
 							{ bucketName ? (
 								<>
 									{ __(
 										'Select',
-										'aether-site-exporter-providers'
+										'aether-site-exporter-r2'
 									) }{ ' ' }
 									<code>{ bucketName }</code>
 								</>
 							) : (
 								__(
 									'Select your R2 bucket',
-									'aether-site-exporter-providers'
+									'aether-site-exporter-r2'
 								)
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							{ __(
 								'Click "Save" to save the binding',
-								'aether-site-exporter-providers'
+								'aether-site-exporter-r2'
 							) }
 						</li>
 					</ol>
@@ -271,26 +271,26 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 					<h3 style={ headingStyle }>
 						{ __(
 							'Step 3: Replace Worker Code',
-							'aether-site-exporter-providers'
+							'aether-site-exporter-r2'
 						) }
 					</h3>
 					<ol style={ listStyle }>
 						<li style={ listItemStyle }>
 							{ __(
 								'Go to your worker\'s "Code" tab',
-								'aether-site-exporter-providers'
+								'aether-site-exporter-r2'
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							{ __(
 								'Delete all existing code',
-								'aether-site-exporter-providers'
+								'aether-site-exporter-r2'
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							{ __(
 								'Paste the code below:',
-								'aether-site-exporter-providers'
+								'aether-site-exporter-r2'
 							) }
 						</li>
 					</ol>
@@ -299,7 +299,7 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 						{ isLoading && (
 							<div style={ loadingStyle }>
 								<Spinner />
-								<span>{ __( 'Loading worker code...', 'aether-site-exporter-providers' ) }</span>
+								<span>{ __( 'Loading worker code...', 'aether-site-exporter-r2' ) }</span>
 							</div>
 						) }
 						{ error && (
@@ -318,11 +318,11 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 										{ copied
 											? __(
 													'Copied!',
-													'aether-site-exporter-providers'
+													'aether-site-exporter-r2'
 											  )
 											: __(
 													'Copy Code',
-													'aether-site-exporter-providers'
+													'aether-site-exporter-r2'
 											  ) }
 									</Button>
 								</div>
@@ -347,26 +347,26 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 					<h3 style={ headingStyle }>
 						{ __(
 							'Step 4: Deploy and Copy URL',
-							'aether-site-exporter-providers'
+							'aether-site-exporter-r2'
 						) }
 					</h3>
 					<ol style={ listStyle }>
 						<li style={ listItemStyle }>
 							{ __(
 								'Click "Save and Deploy" to deploy your worker',
-								'aether-site-exporter-providers'
+								'aether-site-exporter-r2'
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							{ __(
 								'Copy the worker URL (e.g., https://aether-r2-mysite.your-subdomain.workers.dev)',
-								'aether-site-exporter-providers'
+								'aether-site-exporter-r2'
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							{ __(
 								'Paste it in the "Worker Endpoint URL" field in this form',
-								'aether-site-exporter-providers'
+								'aether-site-exporter-r2'
 							) }
 						</li>
 					</ol>
@@ -375,11 +375,11 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 				{ /* Important Note */ }
 				<Notice status="info" isDismissible={ false }>
 					<strong>
-						{ __( 'Important:', 'aether-site-exporter-providers' ) }
+						{ __( 'Important:', 'aether-site-exporter-r2' ) }
 					</strong>{ ' ' }
 					{ __(
 						'The R2 bucket binding variable name MUST be exactly "R2_BUCKET" (case-sensitive). The worker will not work without this binding.',
-						'aether-site-exporter-providers'
+						'aether-site-exporter-r2'
 					) }
 				</Notice>
 
@@ -387,7 +387,7 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 					<strong>
 						{ __(
 							'Need more help?',
-							'aether-site-exporter-providers'
+							'aether-site-exporter-r2'
 						) }
 					</strong>
 					<br />
@@ -398,7 +398,7 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 					>
 						{ __(
 							'R2 Bucket Bindings Documentation',
-							'aether-site-exporter-providers'
+							'aether-site-exporter-r2'
 						) }
 					</a>
 					{ ' | ' }
@@ -409,7 +409,7 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 					>
 						{ __(
 							'R2 Overview',
-							'aether-site-exporter-providers'
+							'aether-site-exporter-r2'
 						) }
 					</a>
 				</div>
@@ -423,7 +423,7 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 					} }
 				>
 					<Button variant="primary" onClick={ onClose }>
-						{ __( 'Close', 'aether-site-exporter-providers' ) }
+						{ __( 'Close', 'aether-site-exporter-r2' ) }
 					</Button>
 				</div>
 			</div>

@@ -5,10 +5,10 @@
  *
  * Provides common functionality for REST controllers.
  *
- * @package Aether\SiteExporterProviders\REST
+ * @package Aether\SiteExporterR2\REST
  */
 
-namespace Aether\SiteExporterProviders\REST;
+namespace Aether\SiteExporterR2\REST;
 
 /**
  * Trait providing REST API helper methods.
