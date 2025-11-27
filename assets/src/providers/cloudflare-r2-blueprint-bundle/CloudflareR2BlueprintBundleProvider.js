@@ -24,6 +24,13 @@ export class CloudflareR2BlueprintBundleProvider {
 	static ID = 'cloudflare-r2-blueprint-bundle';
 
 	/**
+	 * Provider family for config copying compatibility.
+	 *
+	 * @type {string}
+	 */
+	static FAMILY = 'cloudflare-r2';
+
+	/**
 	 * Provider name.
 	 *
 	 * @type {string}

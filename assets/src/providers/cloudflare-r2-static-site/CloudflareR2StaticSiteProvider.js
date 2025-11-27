@@ -24,6 +24,13 @@ export class CloudflareR2StaticSiteProvider {
 	static ID = 'cloudflare-r2-static-site';
 
 	/**
+	 * Provider family for config copying compatibility.
+	 *
+	 * @type {string}
+	 */
+	static FAMILY = 'cloudflare-r2';
+
+	/**
 	 * Provider name.
 	 *
 	 * @type {string}
