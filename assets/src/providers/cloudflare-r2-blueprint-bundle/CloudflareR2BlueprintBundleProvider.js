@@ -75,32 +75,16 @@ export class CloudflareR2BlueprintBundleProvider {
 	 */
 	static CONFIG_FIELDS = [
 		{
-			id: 'account_id',
-			label: __( 'Cloudflare Account ID', 'altolith-deploy-r2' ),
-			type: 'text',
+			id: 'credential_profile',
+			label: __( 'Cloudflare Credentials', 'altolith-deploy-r2' ),
+			type: 'profile',
+			profile_category: 'credentials',
+			profile_type: 'cloudflare',
 			required: true,
-			sensitive: true,
-			validation: {
-				pattern: '^[a-f0-9]{32}$',
-				message: __(
-					'Account ID must be a 32-character hexadecimal string',
-					'altolith-deploy-r2'
-				),
-			},
-		},
-		{
-			id: 'api_token',
-			label: __( 'Cloudflare API Token', 'altolith-deploy-r2' ),
-			type: 'text',
-			required: true,
-			sensitive: true,
-			validation: {
-				minLength: 20,
-				message: __(
-					'API Token must be at least 20 characters',
-					'altolith-deploy-r2'
-				),
-			},
+			help: __(
+				'Select or create a Cloudflare credentials profile with your Account ID and API Token.',
+				'altolith-deploy-r2'
+			),
 		},
 		{
 			id: 'bucket_name',

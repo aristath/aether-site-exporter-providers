@@ -12,6 +12,9 @@
 
 import { addFilter, doAction } from '@wordpress/hooks';
 import { CloudflareR2StaticSiteProvider } from './CloudflareR2StaticSiteProvider';
+
+// Register Cloudflare credentials profile type (shared across providers)
+import '../../profiles';
 import { initCloudflareR2ModalHooks } from './modal-hooks';
 import ProviderRegistry from '@altolith/providers/registry/ProviderRegistry';
 import apiFetch from '../../utils/api';
@@ -63,6 +66,7 @@ doAction( 'altolith.providers.register', CloudflareR2StaticSiteProvider );
  * @param {string} workerEndpoint Worker endpoint URL.
  * @return {Object} Upload adapter with upload() method.
  */
+// eslint-disable-next-line no-unused-vars
 function createUploadAdapter( workerEndpoint ) {
 	return {
 		/**
@@ -140,11 +144,6 @@ addFilter(
 			// The caller should handle this case
 			return null;
 		}
-
-		// Create instance-specific upload adapter using this instance's worker endpoint
-		const uploadAdapter = createUploadAdapter(
-			effectiveConfig.worker_endpoint
-		);
 
 		// Build config for StorageService with R2-specific settings
 		const storageConfig = {
