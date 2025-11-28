@@ -19,6 +19,7 @@ import {
 	DeploymentErrorHelp,
 	ManualWorkerSetupModal,
 } from '../cloudflare-r2-shared';
+import ProfileRegistry from '@altolith/profiles/ProfileRegistry';
 
 /**
  * Deploy Worker button component for Cloudflare R2.
@@ -47,17 +48,33 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 		setDomainError( null );
 
 		try {
-			// Validate required credentials for worker deployment
-			// Note: access_key_id and secret_access_key are NOT required for worker deployment
-			// They are only needed for S3-compatible API access, not for R2 bindings
-			if (
-				! config?.account_id ||
-				! config?.api_token ||
-				! config?.bucket_name
-			) {
+			// Validate required fields
+			if ( ! config?.credential_profile || ! config?.bucket_name ) {
 				throw new Error(
 					__(
-						'Cloudflare Account ID, API Token, and Bucket Name are required to deploy the worker',
+						'Credential profile and Bucket Name are required to deploy the worker',
+						'altolith-deploy-r2'
+					)
+				);
+			}
+
+			// Resolve credentials from the selected profile
+			const profile = ProfileRegistry.get( config.credential_profile );
+			if ( ! profile || ! profile.fields ) {
+				throw new Error(
+					__(
+						'Could not load credential profile. Please select a valid profile.',
+						'altolith-deploy-r2'
+					)
+				);
+			}
+
+			const { account_id: accountId, api_token: apiToken } =
+				profile.fields;
+			if ( ! accountId || ! apiToken ) {
+				throw new Error(
+					__(
+						'Credential profile is missing Account ID or API Token',
 						'altolith-deploy-r2'
 					)
 				);
@@ -99,8 +116,8 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 					worker_type: 'r2',
 					worker_name: workerName,
 					bindings,
-					account_id: config.account_id,
-					api_token: config.api_token,
+					account_id: accountId,
+					api_token: apiToken,
 				} ),
 			} );
 
@@ -162,8 +179,8 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 			if ( result.worker_url && config.public_url ) {
 				try {
 					const edgeService = new EdgeService(
-						config.account_id,
-						config.api_token,
+						accountId,
+						apiToken,
 						config,
 						'cloudflare-r2-static-site'
 					);
@@ -251,8 +268,7 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 					isBusy={ deploying }
 					disabled={
 						deploying ||
-						! config?.account_id ||
-						! config?.api_token ||
+						! config?.credential_profile ||
 						! config?.bucket_name
 					}
 				>
