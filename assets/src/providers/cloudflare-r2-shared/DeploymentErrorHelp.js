@@ -73,14 +73,8 @@ export function DeploymentErrorHelp( { errorType, hostname } ) {
 					aria-expanded={ isExpanded }
 				>
 					{ isExpanded
-						? __(
-								'Hide manual instructions',
-								'aether-site-exporter-r2'
-						  )
-						: __(
-								'How to deploy manually',
-								'aether-site-exporter-r2'
-						  ) }
+						? __( 'Hide manual instructions', 'altolith-deploy-r2' )
+						: __( 'How to deploy manually', 'altolith-deploy-r2' ) }
 				</Button>
 
 				{ isExpanded && (
@@ -88,7 +82,7 @@ export function DeploymentErrorHelp( { errorType, hostname } ) {
 						<p style={ { margin: '0 0 0.5rem' } }>
 							{ __(
 								'If automatic deployment fails, you can deploy the worker manually:',
-								'aether-site-exporter-r2'
+								'altolith-deploy-r2'
 							) }
 						</p>
 						<ol style={ listStyle }>
@@ -105,14 +99,14 @@ export function DeploymentErrorHelp( { errorType, hostname } ) {
 						>
 							{ __(
 								'Open Workers & Pages',
-								'aether-site-exporter-r2'
+								'altolith-deploy-r2'
 							) }
 						</ExternalLink>
 						{ ' | ' }
 						<ExternalLink href={ CLOUDFLARE_DOCS.workersBindings }>
 							{ __(
 								'View Bindings Documentation',
-								'aether-site-exporter-r2'
+								'altolith-deploy-r2'
 							) }
 						</ExternalLink>
 					</div>
@@ -131,13 +125,10 @@ export function DeploymentErrorHelp( { errorType, hostname } ) {
 					aria-expanded={ isExpanded }
 				>
 					{ isExpanded
-						? __(
-								'Hide manual instructions',
-								'aether-site-exporter-r2'
-						  )
+						? __( 'Hide manual instructions', 'altolith-deploy-r2' )
 						: __(
 								'How to attach domain manually',
-								'aether-site-exporter-r2'
+								'altolith-deploy-r2'
 						  ) }
 				</Button>
 
@@ -146,7 +137,7 @@ export function DeploymentErrorHelp( { errorType, hostname } ) {
 						<p style={ { margin: '0 0 0.5rem' } }>
 							{ __(
 								'If custom domain attachment fails, configure it manually:',
-								'aether-site-exporter-r2'
+								'altolith-deploy-r2'
 							) }
 						</p>
 						<ol style={ listStyle }>
@@ -166,7 +157,7 @@ export function DeploymentErrorHelp( { errorType, hostname } ) {
 						<ExternalLink href={ MANUAL_DOMAIN_ATTACHMENT.docsUrl }>
 							{ __(
 								'View Custom Domains Documentation',
-								'aether-site-exporter-r2'
+								'altolith-deploy-r2'
 							) }
 						</ExternalLink>
 					</div>

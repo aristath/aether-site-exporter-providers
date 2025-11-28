@@ -20,7 +20,7 @@ import IndexedDBStore from './indexedDB';
  * Cache configuration
  */
 const ARCHIVE_PROGRESS_CONFIG = {
-	dbName: 'aether-archive-progress',
+	dbName: 'altolith-archive-progress',
 	version: 1,
 	stores: {
 		progress: {

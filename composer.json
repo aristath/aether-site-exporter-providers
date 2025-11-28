@@ -1,6 +1,6 @@
 {
-    "name": "aristath/aether-site-exporter-r2",
-    "description": "Cloudflare R2 storage providers for Aether Site Exporter",
+    "name": "aristath/altolith-deploy-r2",
+    "description": "Cloudflare R2 storage providers for Altolith Deploy",
     "type": "wordpress-plugin",
     "require": {
         "php": ">=7.4"
@@ -15,7 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Aether\\SiteExporterR2\\": "includes/"
+            "Altolith\\DeployR2\\": "includes/"
         }
     },
     "scripts": {

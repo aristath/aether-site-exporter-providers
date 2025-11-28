@@ -19,38 +19,38 @@ export default function PlaygroundNotice() {
 
 	return (
 		<Notice
-			className="aether-playground-notice"
+			className="altolith-playground-notice"
 			status="warning"
 			isDismissible
 			onRemove={ dismiss }
 		>
-			<h3 className="aether-playground-notice__title">
+			<h3 className="altolith-playground-notice__title">
 				{ __(
-					'Aether is designed for WordPress Playground',
-					'aether-site-exporter-r2'
+					'Altolith is designed for WordPress Playground',
+					'altolith-deploy-r2'
 				) }
 			</h3>
-			<p className="aether-playground-notice__text">
+			<p className="altolith-playground-notice__text">
 				{ sprintf(
 					/* translators: %s: WordPress Playground URL */
 					__(
 						'This plugin is specifically designed to work within %s, a browser-based WordPress environment.',
-						'aether-site-exporter-r2'
+						'altolith-deploy-r2'
 					),
 					<a
-						className="aether-playground-notice__link"
+						className="altolith-playground-notice__link"
 						href="https://static-wp.s12y.org/index.html"
 						target="_blank"
 						rel="noopener noreferrer"
 					>
-						{ __( 'WordPress Playground', 'aether-site-exporter' ) }
+						{ __( 'WordPress Playground', 'altolith-deploy' ) }
 					</a>
 				) }
 			</p>
-			<p className="aether-playground-notice__text">
+			<p className="altolith-playground-notice__text">
 				{ __(
 					'While it will function on a standard WordPress installation, you may encounter unexpected behavior. For the best experience, please use this plugin within WordPress Playground.',
-					'aether-site-exporter-r2'
+					'altolith-deploy-r2'
 				) }
 			</p>
 		</Notice>

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="Aether">
+<ruleset name="Altolith">
 	<description>Modern PSR-12 based PHPCS configuration with WordPress security rules</description>
 
 	<!-- Files to check -->
@@ -67,7 +67,7 @@
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">
-				<element value="aether-site-exporter-providers"/>
+				<element value="altolith-site-exporter-providers"/>
 			</property>
 		</properties>
 	</rule>

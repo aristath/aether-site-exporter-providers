@@ -40,7 +40,7 @@ describe( 'credentialManager', () => {
 			const credentials = await getCredentials( providerId );
 
 			expect( apiFetch ).toHaveBeenCalledWith( {
-				path: `/aether/site-exporter/providers/${ providerId }/config`,
+				path: `/altolith/deploy/providers/${ providerId }/config`,
 				method: 'GET',
 			} );
 			expect( credentials ).toEqual( mockCredentials );

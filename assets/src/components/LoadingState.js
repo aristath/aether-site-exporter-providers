@@ -9,7 +9,7 @@ import { __ } from '@wordpress/i18n';
 import { spacing, colors } from '../utils/styles';
 
 export default function LoadingState( {
-	message = __( 'Loading…', 'aether-site-exporter' ),
+	message = __( 'Loading…', 'altolith-deploy' ),
 } ) {
 	const containerStyle = {
 		display: 'flex',
@@ -26,11 +26,11 @@ export default function LoadingState( {
 	};
 
 	return (
-		<div className="aether-loading-state" style={ containerStyle }>
-			<Spinner className="aether-loading-state__spinner" />
+		<div className="altolith-loading-state" style={ containerStyle }>
+			<Spinner className="altolith-loading-state__spinner" />
 			{ message && (
 				<p
-					className="aether-loading-state__message"
+					className="altolith-loading-state__message"
 					style={ messageStyle }
 				>
 					{ message }

@@ -2,7 +2,7 @@
  * Cache Monitor - Utility for monitoring and managing all IndexedDB caches
  *
  * Provides a unified interface to inspect, clear, and monitor all caches
- * used by the Aether Site Exporter. Useful for debugging, troubleshooting,
+ * used by the Altolith Site Exporter. Useful for debugging, troubleshooting,
  * and performance analysis.
  *
  * Usage in browser console:
@@ -108,7 +108,7 @@ export class CacheMonitor {
 	async getFormattedStats() {
 		const stats = await this.getAllStats();
 
-		let output = '\n=== Aether Cache Monitor ===\n\n';
+		let output = '\n=== Altolith Cache Monitor ===\n\n';
 
 		output += 'WordPress.org API Cache:\n';
 		output += `  Total cached: ${ stats.wporg.totalCached || 0 }\n`;
@@ -231,16 +231,18 @@ export class CacheMonitor {
 		};
 
 		try {
-			results.wporg = await deleteDatabase( 'aether-wporg-cache' );
-			results.manifest = await deleteDatabase( 'aether-manifest-cache' );
+			results.wporg = await deleteDatabase( 'altolith-wporg-cache' );
+			results.manifest = await deleteDatabase(
+				'altolith-manifest-cache'
+			);
 			results.providerConfigs = await deleteDatabase(
-				'aether-provider-configs'
+				'altolith-provider-configs'
 			);
 			results.uploadProgress = await deleteDatabase(
-				'aether-upload-progress'
+				'altolith-upload-progress'
 			);
 			results.archiveProgress = await deleteDatabase(
-				'aether-archive-progress'
+				'altolith-archive-progress'
 			);
 		} catch {
 			// Silently handle errors
@@ -330,12 +332,12 @@ export class CacheMonitor {
  *
  * Usage in browser console:
  * ```javascript
- * window.aetherCacheMonitor.printStats()
- * window.aetherCacheMonitor.clearAll()
+ * window.altolithCacheMonitor.printStats()
+ * window.altolithCacheMonitor.clearAll()
  * ```
  */
 if ( typeof window !== 'undefined' ) {
-	window.aetherCacheMonitor = new CacheMonitor();
+	window.altolithCacheMonitor = new CacheMonitor();
 }
 
 export default CacheMonitor;

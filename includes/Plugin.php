@@ -3,10 +3,10 @@
 /**
  * Main Plugin Class
  *
- * @package Aether\SiteExporterR2
+ * @package Altolith\DeployR2
  */
 
-namespace Aether\SiteExporterR2;
+namespace Altolith\DeployR2;
 
 // Providers are now registered entirely in JavaScript, not PHP.
 
@@ -74,9 +74,9 @@ class Plugin
 	public function loadTextdomain(): void
 	{
 		\load_plugin_textdomain(
-			'aether-site-exporter-r2',
+			'altolith-deploy-r2',
 			false,
-			\dirname(\plugin_basename(AETHER_R2_PLUGIN_FILE)) . '/languages'
+			\dirname(\plugin_basename(ALTOLITH_R2_PLUGIN_FILE)) . '/languages'
 		);
 	}
 
@@ -97,7 +97,7 @@ class Plugin
 	/**
 	 * Enqueue provider JavaScript files on settings page.
 	 *
-	 * Provider scripts register hooks (aether.provider.upload, aether.provider.test, etc.)
+	 * Provider scripts register hooks (altolith.provider.upload, altolith.provider.test, etc.)
 	 * that are used by the base plugin's JavaScript code.
 	 *
 	 * @param string $hook Current admin page hook.
@@ -105,19 +105,19 @@ class Plugin
 	 */
 	public function enqueueProviderScripts(string $hook): void
 	{
-		// Only enqueue on Aether settings page.
+		// Only enqueue on Altolith settings page.
 		// Check both hook name and page parameter for reliability.
-		$isAetherPage = (
-			'toplevel_page_aether' === $hook ||
-			(isset($_GET['page']) && 'aether' === \sanitize_text_field(\wp_unslash($_GET['page'])))
+		$isAltolithPage = (
+			'toplevel_page_altolith' === $hook ||
+			(isset($_GET['page']) && 'altolith' === \sanitize_text_field(\wp_unslash($_GET['page'])))
 		);
 
-		if (! $isAetherPage) {
+		if (! $isAltolithPage) {
 			return;
 		}
 
-		$pluginUrl = AETHER_R2_PLUGIN_URL;
-		$pluginDir = AETHER_R2_PLUGIN_DIR;
+		$pluginUrl = ALTOLITH_R2_PLUGIN_URL;
+		$pluginDir = ALTOLITH_R2_PLUGIN_DIR;
 
 		// List of provider scripts to enqueue.
 		$providerScripts = [
@@ -129,11 +129,11 @@ class Plugin
 			$assetFile = $pluginDir . 'assets/build/' . $scriptHandle . '.asset.php';
 			$asset = \file_exists($assetFile) ? require $assetFile : [
 				'dependencies' => [ 'wp-hooks', 'wp-i18n' ],
-				'version' => AETHER_R2_VERSION,
+				'version' => ALTOLITH_R2_VERSION,
 			];
 
 			\wp_enqueue_script(
-				'aether-r2-' . $scriptHandle,
+				'altolith-r2-' . $scriptHandle,
 				$pluginUrl . 'assets/build/' . $scriptHandle . '.js',
 				$asset['dependencies'],
 				$asset['version'],
@@ -143,8 +143,8 @@ class Plugin
 
 		// Pass plugin URL to JavaScript for worker file fetching.
 		\wp_add_inline_script(
-			'aether-r2-provider-cloudflare-r2-static-site',
-			'window.aetherR2PluginUrl = ' . \wp_json_encode($pluginUrl) . ';',
+			'altolith-r2-provider-cloudflare-r2-static-site',
+			'window.altolithR2PluginUrl = ' . \wp_json_encode($pluginUrl) . ';',
 			'before'
 		);
 	}

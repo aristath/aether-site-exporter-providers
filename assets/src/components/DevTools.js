@@ -20,7 +20,8 @@ import { spacing, colors } from '../utils/styles';
 function isDevelopmentMode() {
 	// Check for WordPress SCRIPT_DEBUG constant
 	return (
-		typeof window.aetherDebug !== 'undefined' && window.aetherDebug === true
+		typeof window.altolithDebug !== 'undefined' &&
+		window.altolithDebug === true
 	);
 }
 
@@ -103,7 +104,7 @@ export function DevTools() {
 	if ( ! isOpen ) {
 		return (
 			<button
-				className="aether-dev-tools__toggle"
+				className="altolith-dev-tools__toggle"
 				onClick={ () => setIsOpen( true ) }
 				style={ {
 					position: 'fixed',
@@ -127,7 +128,7 @@ export function DevTools() {
 
 	return (
 		<div
-			className="aether-dev-tools"
+			className="altolith-dev-tools"
 			style={ {
 				position: 'fixed',
 				bottom: 0,
@@ -147,7 +148,7 @@ export function DevTools() {
 		>
 			{ /* Header */ }
 			<div
-				className="aether-dev-tools__header"
+				className="altolith-dev-tools__header"
 				style={ {
 					padding: '10px',
 					backgroundColor: '#2d2d2d',
@@ -158,13 +159,13 @@ export function DevTools() {
 				} }
 			>
 				<span
-					className="aether-dev-tools__title"
+					className="altolith-dev-tools__title"
 					style={ { fontWeight: 'bold' } }
 				>
-					🔧 Aether DevTools
+					🔧 Altolith DevTools
 				</span>
 				<button
-					className="aether-dev-tools__close-button"
+					className="altolith-dev-tools__close-button"
 					onClick={ () => setIsOpen( false ) }
 					style={ {
 						background: 'none',
@@ -180,7 +181,7 @@ export function DevTools() {
 
 			{ /* Tabs */ }
 			<div
-				className="aether-dev-tools__tabs"
+				className="altolith-dev-tools__tabs"
 				style={ {
 					display: 'flex',
 					gap: '10px',
@@ -192,9 +193,9 @@ export function DevTools() {
 				{ [ 'contexts', 'api', 'performance' ].map( ( tab ) => (
 					<button
 						key={ tab }
-						className={ `aether-dev-tools__tab aether-dev-tools__tab--${ tab } ${
+						className={ `altolith-dev-tools__tab altolith-dev-tools__tab--${ tab } ${
 							activeTab === tab
-								? 'aether-dev-tools__tab--active'
+								? 'altolith-dev-tools__tab--active'
 								: ''
 						}` }
 						onClick={ () => setActiveTab( tab ) }
@@ -216,7 +217,7 @@ export function DevTools() {
 
 			{ /* Content */ }
 			<div
-				className="aether-dev-tools__content"
+				className="altolith-dev-tools__content"
 				style={ {
 					flex: 1,
 					overflow: 'auto',
@@ -247,7 +248,7 @@ export function DevTools() {
  */
 function ContextsTab( { configContext, providerContext } ) {
 	return (
-		<div className="aether-dev-tools__contexts-tab">
+		<div className="altolith-dev-tools__contexts-tab">
 			<Section title="ConfigContext">
 				<KeyValue label="Loading" value={ configContext.loading } />
 				<KeyValue label="Error" value={ configContext.error } />
@@ -282,22 +283,22 @@ function ContextsTab( { configContext, providerContext } ) {
  */
 function ApiTab( { apiLogs } ) {
 	return (
-		<div className="aether-dev-tools__api-tab">
+		<div className="altolith-dev-tools__api-tab">
 			<div
-				className="aether-dev-tools__api-header"
+				className="altolith-dev-tools__api-header"
 				style={ {
 					marginBottom: '10px',
 					paddingBottom: '10px',
 					borderBottom: '1px solid #333',
 				} }
 			>
-				<strong className="aether-dev-tools__api-title">
+				<strong className="altolith-dev-tools__api-title">
 					Recent API Calls ({ apiLogs.length })
 				</strong>
 			</div>
 			{ apiLogs.length === 0 && (
 				<div
-					className="aether-dev-tools__api-empty"
+					className="altolith-dev-tools__api-empty"
 					style={ { color: '#888' } }
 				>
 					No API calls recorded yet
@@ -306,7 +307,7 @@ function ApiTab( { apiLogs } ) {
 			{ apiLogs.map( ( log, index ) => (
 				<div
 					key={ index }
-					className={ `aether-dev-tools__api-log aether-dev-tools__api-log--${ log.status }` }
+					className={ `altolith-dev-tools__api-log altolith-dev-tools__api-log--${ log.status }` }
 					style={ {
 						marginBottom: '10px',
 						padding: '8px',
@@ -318,7 +319,7 @@ function ApiTab( { apiLogs } ) {
 					} }
 				>
 					<div
-						className="aether-dev-tools__api-log-header"
+						className="altolith-dev-tools__api-log-header"
 						style={ {
 							display: 'flex',
 							justifyContent: 'space-between',
@@ -326,7 +327,7 @@ function ApiTab( { apiLogs } ) {
 						} }
 					>
 						<span
-							className={ `aether-dev-tools__api-method aether-dev-tools__api-method--${ log.status }` }
+							className={ `altolith-dev-tools__api-method altolith-dev-tools__api-method--${ log.status }` }
 							style={ {
 								color:
 									log.status === 'success'
@@ -338,21 +339,21 @@ function ApiTab( { apiLogs } ) {
 							{ log.method }
 						</span>
 						<span
-							className="aether-dev-tools__api-duration"
+							className="altolith-dev-tools__api-duration"
 							style={ { color: '#888', fontSize: '10px' } }
 						>
 							{ log.duration }ms
 						</span>
 					</div>
 					<div
-						className="aether-dev-tools__api-path"
+						className="altolith-dev-tools__api-path"
 						style={ { fontSize: '11px', color: '#aaa' } }
 					>
 						{ log.path }
 					</div>
 					{ log.error && (
 						<div
-							className="aether-dev-tools__api-error"
+							className="altolith-dev-tools__api-error"
 							style={ {
 								fontSize: '10px',
 								color: '#f44336',
@@ -393,7 +394,7 @@ function PerformanceTab( { apiLogs } ) {
 		stats.total > 0 ? Math.round( stats.totalDuration / stats.total ) : 0;
 
 	return (
-		<div className="aether-dev-tools__performance-tab">
+		<div className="altolith-dev-tools__performance-tab">
 			<Section title="API Performance">
 				<KeyValue label="Total Calls" value={ stats.total } />
 				<KeyValue label="Successful" value={ stats.successful } />
@@ -432,7 +433,7 @@ function PerformanceTab( { apiLogs } ) {
 					</>
 				) : (
 					<div
-						className="aether-dev-tools__memory-unavailable"
+						className="altolith-dev-tools__memory-unavailable"
 						style={ { color: '#888' } }
 					>
 						Memory API not available
@@ -453,11 +454,11 @@ function PerformanceTab( { apiLogs } ) {
 function Section( { title, children } ) {
 	return (
 		<div
-			className="aether-dev-tools__section"
+			className="altolith-dev-tools__section"
 			style={ { marginBottom: '20px' } }
 		>
 			<div
-				className="aether-dev-tools__section-title"
+				className="altolith-dev-tools__section-title"
 				style={ {
 					fontWeight: 'bold',
 					marginBottom: '8px',
@@ -483,7 +484,7 @@ function Section( { title, children } ) {
 function KeyValue( { label, value, isCode = false } ) {
 	return (
 		<div
-			className="aether-dev-tools__key-value"
+			className="altolith-dev-tools__key-value"
 			style={ {
 				marginBottom: spacing.sm,
 				display: 'flex',
@@ -491,14 +492,14 @@ function KeyValue( { label, value, isCode = false } ) {
 			} }
 		>
 			<span
-				className="aether-dev-tools__key-value-label"
+				className="altolith-dev-tools__key-value-label"
 				style={ { color: colors.textMuted, minWidth: '120px' } }
 			>
 				{ label }:
 			</span>
 			{ isCode ? (
 				<pre
-					className="aether-dev-tools__key-value-code"
+					className="altolith-dev-tools__key-value-code"
 					style={ {
 						margin: 0,
 						color: '#d4d4d4',
@@ -510,7 +511,7 @@ function KeyValue( { label, value, isCode = false } ) {
 				</pre>
 			) : (
 				<span
-					className="aether-dev-tools__key-value-text"
+					className="altolith-dev-tools__key-value-text"
 					style={ { color: '#d4d4d4' } }
 				>
 					{ typeof value === 'boolean'

@@ -45,7 +45,7 @@ export async function getCredentials( providerId ) {
 
 	// Fetch from REST endpoint (using /config endpoint).
 	const response = await apiFetch( {
-		path: `/aether/site-exporter/providers/${ providerId }/config`,
+		path: `/altolith/deploy/providers/${ providerId }/config`,
 		method: 'GET',
 	} );
 

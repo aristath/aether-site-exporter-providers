@@ -29,33 +29,33 @@ export function createAuthHeaders( token, type = 'Bearer' ) {
 }
 
 /**
- * Get REST API nonce from window.aetherData.
+ * Get REST API nonce from window.altolithData.
  *
  * @return {string} REST API nonce.
  */
 function getNonce() {
 	if (
 		typeof window !== 'undefined' &&
-		window.aetherData &&
-		window.aetherData.nonce
+		window.altolithData &&
+		window.altolithData.nonce
 	) {
-		return window.aetherData.nonce;
+		return window.altolithData.nonce;
 	}
 	return '';
 }
 
 /**
- * Get REST API URL from window.aetherData.
+ * Get REST API URL from window.altolithData.
  *
  * @return {string} REST API base URL.
  */
 function getRestUrl() {
 	if (
 		typeof window !== 'undefined' &&
-		window.aetherData &&
-		window.aetherData.restUrl
+		window.altolithData &&
+		window.altolithData.restUrl
 	) {
-		return window.aetherData.restUrl;
+		return window.altolithData.restUrl;
 	}
 	return '/wp-json/';
 }

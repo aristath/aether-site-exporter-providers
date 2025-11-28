@@ -1,6 +1,6 @@
 # Utilities
 
-Shared utility functions and helpers for the Aether plugin.
+Shared utility functions and helpers for the Altolith plugin.
 
 ## Overview
 
@@ -25,7 +25,7 @@ WordPress REST API wrapper with nonce handling.
 import apiFetch from '../utils/api';
 
 const response = await apiFetch({
-    path: '/wp-json/aether/v1/endpoint',
+    path: '/wp-json/altolith/v1/endpoint',
     method: 'POST',
     data: { key: 'value' },
 });

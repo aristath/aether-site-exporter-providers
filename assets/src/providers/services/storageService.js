@@ -252,7 +252,11 @@ export class StorageService {
 	async testConnection() {
 		// Try to list objects (max 1) to verify connection.
 		// Use listObjectsFromWorker directly without path prefix for connection test
-		const result = await listObjectsFromWorker( this.workerEndpoint, '', 1 );
+		const result = await listObjectsFromWorker(
+			this.workerEndpoint,
+			'',
+			1
+		);
 
 		if ( ! result.success ) {
 			return {

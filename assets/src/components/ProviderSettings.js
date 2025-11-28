@@ -56,7 +56,7 @@ export function ProviderSettings( { provider, onSave } ) {
 						error.message ||
 							__(
 								'Failed to load configuration',
-								'aether-site-exporter'
+								'altolith-deploy'
 							)
 					);
 					setIsLoading( false );
@@ -128,7 +128,7 @@ export function ProviderSettings( { provider, onSave } ) {
 
 			// Trigger WordPress hook for other components
 			doAction(
-				'aether.admin.provider.settings.saved',
+				'altolith.admin.provider.settings.saved',
 				provider.getId()
 			);
 
@@ -139,7 +139,7 @@ export function ProviderSettings( { provider, onSave } ) {
 		} catch ( error ) {
 			setSaveError(
 				error.message ||
-					__( 'Failed to save configuration', 'aether-site-exporter' )
+					__( 'Failed to save configuration', 'altolith-deploy' )
 			);
 			setIsSaving( false );
 		}
@@ -174,7 +174,7 @@ export function ProviderSettings( { provider, onSave } ) {
 		};
 
 		// Add error styling if field has an error
-		const className = error ? 'aether-field-error' : '';
+		const className = error ? 'altolith-field-error' : '';
 
 		switch ( type ) {
 			case 'text':
@@ -219,7 +219,7 @@ export function ProviderSettings( { provider, onSave } ) {
 							{
 								label: __(
 									'Select an option…',
-									'aether-site-exporter'
+									'altolith-deploy'
 								),
 								value: '',
 							},
@@ -305,15 +305,12 @@ export function ProviderSettings( { provider, onSave } ) {
 	if ( isLoading ) {
 		return (
 			<div
-				className="aether-provider-settings aether-provider-settings--loading"
+				className="altolith-provider-settings altolith-provider-settings--loading"
 				style={ loadingStyle }
 			>
-				<Spinner className="aether-provider-settings__spinner" />
-				<p className="aether-provider-settings__loading-text">
-					{ __(
-						'Loading provider settings…',
-						'aether-site-exporter'
-					) }
+				<Spinner className="altolith-provider-settings__spinner" />
+				<p className="altolith-provider-settings__loading-text">
+					{ __( 'Loading provider settings…', 'altolith-deploy' ) }
 				</p>
 			</div>
 		);
@@ -322,26 +319,23 @@ export function ProviderSettings( { provider, onSave } ) {
 	const fields = provider.getConfigFields();
 
 	return (
-		<div className="aether-provider-settings" style={ containerStyle }>
+		<div className="altolith-provider-settings" style={ containerStyle }>
 			{ /* Success notice */ }
 			{ saveSuccess && (
 				<Notice
-					className="aether-provider-settings__notice aether-provider-settings__notice--success"
+					className="altolith-provider-settings__notice altolith-provider-settings__notice--success"
 					status="success"
 					isDismissible={ true }
 					onRemove={ () => setSaveSuccess( false ) }
 				>
-					{ __(
-						'Settings saved successfully!',
-						'aether-site-exporter'
-					) }
+					{ __( 'Settings saved successfully!', 'altolith-deploy' ) }
 				</Notice>
 			) }
 
 			{ /* Error notice */ }
 			{ saveError && (
 				<Notice
-					className="aether-provider-settings__notice aether-provider-settings__notice--error"
+					className="altolith-provider-settings__notice altolith-provider-settings__notice--error"
 					status="error"
 					isDismissible={ true }
 					onRemove={ () => setSaveError( null ) }
@@ -352,11 +346,11 @@ export function ProviderSettings( { provider, onSave } ) {
 
 			{ /* Provider description */ }
 			<div
-				className="aether-provider-settings__description"
+				className="altolith-provider-settings__description"
 				style={ descriptionStyle }
 			>
 				<p
-					className="aether-provider-settings__description-text"
+					className="altolith-provider-settings__description-text"
 					style={ descriptionParagraphStyle }
 				>
 					{ provider.getDescription() }
@@ -365,18 +359,18 @@ export function ProviderSettings( { provider, onSave } ) {
 
 			{ /* Settings form */ }
 			<form
-				className="aether-provider-settings__form"
+				className="altolith-provider-settings__form"
 				onSubmit={ handleSubmit }
 				style={ formStyle }
 			>
 				{ fields.length === 0 && (
 					<p
-						className="aether-provider-settings__no-fields"
+						className="altolith-provider-settings__no-fields"
 						style={ noFieldsStyle }
 					>
 						{ __(
 							'This provider has no configurable settings.',
-							'aether-site-exporter-r2'
+							'altolith-deploy-r2'
 						) }
 					</p>
 				) }
@@ -386,28 +380,25 @@ export function ProviderSettings( { provider, onSave } ) {
 				{ /* Form actions */ }
 				{ fields.length > 0 && (
 					<div
-						className="aether-provider-settings__actions"
+						className="altolith-provider-settings__actions"
 						style={ actionsStyle }
 					>
 						<Button
-							className="aether-provider-settings__save-button"
+							className="altolith-provider-settings__save-button"
 							type="submit"
 							variant="primary"
 							isBusy={ isSaving }
 							disabled={ isSaving }
 						>
 							{ isSaving
-								? __( 'Saving…', 'aether-site-exporter' )
-								: __(
-										'Save Settings',
-										'aether-site-exporter'
-								  ) }
+								? __( 'Saving…', 'altolith-deploy' )
+								: __( 'Save Settings', 'altolith-deploy' ) }
 						</Button>
 
 						{ /* Optional: Test connection button */ }
 						{ provider.testConnection && (
 							<Button
-								className="aether-provider-settings__test-button"
+								className="altolith-provider-settings__test-button"
 								variant="secondary"
 								disabled={
 									isSaving || Object.keys( errors ).length > 0
@@ -426,7 +417,7 @@ export function ProviderSettings( { provider, onSave } ) {
 												result.error ||
 													__(
 														'Connection test failed',
-														'aether-site-exporter-r2'
+														'altolith-deploy-r2'
 													)
 											);
 										}
@@ -435,16 +426,13 @@ export function ProviderSettings( { provider, onSave } ) {
 											error.message ||
 												__(
 													'Connection test failed',
-													'aether-site-exporter-r2'
+													'altolith-deploy-r2'
 												)
 										);
 									}
 								} }
 							>
-								{ __(
-									'Test Connection',
-									'aether-site-exporter'
-								) }
+								{ __( 'Test Connection', 'altolith-deploy' ) }
 							</Button>
 						) }
 					</div>
@@ -454,10 +442,10 @@ export function ProviderSettings( { provider, onSave } ) {
 			{ /* Required fields notice */ }
 			{ fields.some( ( field ) => field.required ) && (
 				<p
-					className="aether-provider-settings__required-notice"
+					className="altolith-provider-settings__required-notice"
 					style={ requiredNoticeStyle }
 				>
-					{ __( '* Required fields', 'aether-site-exporter' ) }
+					{ __( '* Required fields', 'altolith-deploy' ) }
 				</p>
 			) }
 		</div>

@@ -1,7 +1,7 @@
 /**
  * Secret Field Component
  *
- * Replaces the aether-secret web component with a React component.
+ * Replaces the altolith-secret web component with a React component.
  *
  * @package
  */
@@ -30,9 +30,9 @@ export default function SecretField( {
 	};
 
 	return (
-		<div className="aether-secret-field" style={ containerStyle }>
+		<div className="altolith-secret-field" style={ containerStyle }>
 			<TextControl
-				className="aether-secret-field__input"
+				className="altolith-secret-field__input"
 				label={ label }
 				help={ help }
 				value={ value }
@@ -44,14 +44,14 @@ export default function SecretField( {
 				{ ...props }
 			/>
 			<Button
-				className="aether-secret-field__toggle"
+				className="altolith-secret-field__toggle"
 				variant="secondary"
 				onClick={ () => setIsVisible( ! isVisible ) }
 				style={ toggleStyle }
 			>
 				{ isVisible
-					? __( 'Hide', 'aether-site-exporter' )
-					: __( 'Show', 'aether-site-exporter' ) }
+					? __( 'Hide', 'altolith-deploy' )
+					: __( 'Show', 'altolith-deploy' ) }
 			</Button>
 		</div>
 	);

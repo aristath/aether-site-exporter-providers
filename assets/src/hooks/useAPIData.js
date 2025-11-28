@@ -27,14 +27,14 @@ import apiFetch from '../utils/api';
  * @example
  * // Simple usage
  * const { data, loading, error, refresh } = useAPIData({
- *     path: '/aether/site-exporter/config',
+ *     path: '/altolith/deploy/config',
  *     initialData: {}
  * });
  *
  * @example
  * // With transformation
  * const { data, loading, error } = useAPIData({
- *     path: '/aether/site-exporter/export/jobs?limit=5',
+ *     path: '/altolith/deploy/export/jobs?limit=5',
  *     transform: (response) => response.value?.jobs || [],
  *     initialData: []
  * });
@@ -42,7 +42,7 @@ import apiFetch from '../utils/api';
  * @example
  * // With dependencies
  * const { data } = useAPIData({
- *     path: `/aether/site-exporter/providers/${providerId}/status`,
+ *     path: `/altolith/deploy/providers/${providerId}/status`,
  *     dependencies: [providerId],
  *     fetchOnMount: !!providerId
  * });
@@ -189,7 +189,7 @@ export function useAPIData( {
  *
  * @example
  * const { data, loading, page, totalPages, nextPage, prevPage } = usePaginatedData({
- *     path: '/aether/site-exporter/export/jobs',
+ *     path: '/altolith/deploy/export/jobs',
  *     perPage: 10
  * });
  */

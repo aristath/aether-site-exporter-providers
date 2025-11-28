@@ -24,25 +24,25 @@ module.exports = {
 			'error',
 			{
 				ignore: [
-					'@aether/base/.*', // Webpack alias
-					'@aether/providers/.*', // Webpack alias
-					'@aether/utils/.*', // Webpack alias
-					'@aether/components/.*', // Webpack alias
-					'@aether/hooks/.*', // Webpack alias
-					'@aether/constants/.*', // Webpack alias
-					'@aether/contexts/.*', // Webpack alias
-					'@aether/services/.*', // Webpack alias
-					'@aether/publish/.*', // Webpack alias
-					'@aether/admin/.*', // Webpack alias
+					'@altolith/base/.*', // Webpack alias
+					'@altolith/providers/.*', // Webpack alias
+					'@altolith/utils/.*', // Webpack alias
+					'@altolith/components/.*', // Webpack alias
+					'@altolith/hooks/.*', // Webpack alias
+					'@altolith/constants/.*', // Webpack alias
+					'@altolith/contexts/.*', // Webpack alias
+					'@altolith/services/.*', // Webpack alias
+					'@altolith/publish/.*', // Webpack alias
+					'@altolith/admin/.*', // Webpack alias
 					'../contexts/.*', // Context imports from base plugin
 					'../../base/.*', // Base provider imports in test files
 					'../configFieldBuilder', // ConfigFieldBuilder from base plugin
 				],
 			},
 		],
-		// Allow imports from base plugin (aether-site-exporter)
+		// Allow imports from base plugin (altolith-deploy)
 		// This is a separate plugin that depends on the base plugin
-		// Imports from @aether/* are resolved at build time by webpack
+		// Imports from @altolith/* are resolved at build time by webpack
 		'import/no-extraneous-dependencies': [
 			'error',
 			{
@@ -63,73 +63,73 @@ module.exports = {
 				map: [
 					// Webpack aliases for base plugin
 					[
-						'@aether/base',
+						'@altolith/base',
 						path.resolve(
 							__dirname,
-							'../aether-site-exporter/assets/src'
+							'../altolith-deploy/assets/src'
 						),
 					],
 					[
-						'@aether/providers',
+						'@altolith/providers',
 						path.resolve(
 							__dirname,
-							'../aether-site-exporter/assets/src/providers'
+							'../altolith-deploy/assets/src/providers'
 						),
 					],
 					[
-						'@aether/utils',
+						'@altolith/utils',
 						path.resolve(
 							__dirname,
-							'../aether-site-exporter/assets/src/utils'
+							'../altolith-deploy/assets/src/utils'
 						),
 					],
 					[
-						'@aether/components',
+						'@altolith/components',
 						path.resolve(
 							__dirname,
-							'../aether-site-exporter/assets/src/components'
+							'../altolith-deploy/assets/src/components'
 						),
 					],
 					[
-						'@aether/hooks',
+						'@altolith/hooks',
 						path.resolve(
 							__dirname,
-							'../aether-site-exporter/assets/src/hooks'
+							'../altolith-deploy/assets/src/hooks'
 						),
 					],
 					[
-						'@aether/constants',
+						'@altolith/constants',
 						path.resolve(
 							__dirname,
-							'../aether-site-exporter/assets/src/constants'
+							'../altolith-deploy/assets/src/constants'
 						),
 					],
 					[
-						'@aether/contexts',
+						'@altolith/contexts',
 						path.resolve(
 							__dirname,
-							'../aether-site-exporter/assets/src/contexts'
+							'../altolith-deploy/assets/src/contexts'
 						),
 					],
 					[
-						'@aether/services',
+						'@altolith/services',
 						path.resolve(
 							__dirname,
-							'../aether-site-exporter/assets/src/services'
+							'../altolith-deploy/assets/src/services'
 						),
 					],
 					[
-						'@aether/publish',
+						'@altolith/publish',
 						path.resolve(
 							__dirname,
-							'../aether-site-exporter/assets/src/publish'
+							'../altolith-deploy/assets/src/publish'
 						),
 					],
 					[
-						'@aether/admin',
+						'@altolith/admin',
 						path.resolve(
 							__dirname,
-							'../aether-site-exporter/assets/src/admin-settings'
+							'../altolith-deploy/assets/src/admin-settings'
 						),
 					],
 				],

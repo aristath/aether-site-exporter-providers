@@ -117,7 +117,7 @@ async function checkWithMethod( slug, type, method, config = {} ) {
 			default:
 				// PHP server-side method (default, no CORS issues)
 				// apiFetch expects path without /wp-json prefix
-				checkUrl = `/aether/site-exporter/check-wporg?slug=${ encodeURIComponent(
+				checkUrl = `/altolith/deploy/check-wporg?slug=${ encodeURIComponent(
 					slug
 				) }&type=${ encodeURIComponent( type ) }`;
 				break;
@@ -173,7 +173,7 @@ async function checkWithMethod( slug, type, method, config = {} ) {
 async function getInstalledAssets() {
 	try {
 		const response = await apiFetch( {
-			path: '/aether/site-exporter/assets',
+			path: '/altolith/deploy/assets',
 			method: 'GET',
 		} );
 
@@ -216,7 +216,7 @@ export default function useAssetDiscovery() {
 		try {
 			// Fetch config to get wporgCheckMethod
 			const configResponse = await apiFetch( {
-				path: '/aether/site-exporter/config',
+				path: '/altolith/deploy/config',
 				method: 'GET',
 			} );
 
@@ -296,7 +296,7 @@ export default function useAssetDiscovery() {
 		try {
 			// Fetch config to get wporgCheckMethod
 			const configResponse = await apiFetch( {
-				path: '/aether/site-exporter/config',
+				path: '/altolith/deploy/config',
 				method: 'GET',
 			} );
 
@@ -350,9 +350,10 @@ export default function useAssetDiscovery() {
 				.filter(
 					( plugin ) =>
 						// Skip plugins that are built into Playground or already included
-						! [ 'aether', 'sqlite-database-integration' ].includes(
-							normalizePluginSlug( plugin.slug )
-						)
+						! [
+							'altolith',
+							'sqlite-database-integration',
+						].includes( normalizePluginSlug( plugin.slug ) )
 				)
 				.map( ( plugin ) => normalizePluginSlug( plugin.slug ) );
 

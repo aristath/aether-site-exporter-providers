@@ -5,10 +5,10 @@
  *
  * Handles REST API endpoints for serving Cloudflare Worker scripts.
  *
- * @package Aether\SiteExporterR2\REST
+ * @package Altolith\DeployR2\REST
  */
 
-namespace Aether\SiteExporterR2\REST;
+namespace Altolith\DeployR2\REST;
 
 use WP_REST_Request;
 use WP_REST_Response;
@@ -40,7 +40,7 @@ class WorkerScriptController
 					'worker_type' => [
 						'required'          => true,
 						'type'              => 'string',
-						'description'       => \__('Worker script type (e.g., "r2")', 'aether-site-exporter-r2'),
+						'description'       => \__('Worker script type (e.g., "r2")', 'altolith-deploy-r2'),
 						'sanitize_callback' => 'sanitize_key',
 					],
 				],
@@ -59,36 +59,36 @@ class WorkerScriptController
 					'worker_type' => [
 						'required'          => true,
 						'type'              => 'string',
-						'description'       => \__('Worker type (e.g., "r2")', 'aether-site-exporter-r2'),
+						'description'       => \__('Worker type (e.g., "r2")', 'altolith-deploy-r2'),
 						'sanitize_callback' => 'sanitize_key',
 					],
 					'worker_name' => [
 						'required'          => true,
 						'type'              => 'string',
-						'description'       => \__('Worker name', 'aether-site-exporter-r2'),
+						'description'       => \__('Worker name', 'altolith-deploy-r2'),
 						'sanitize_callback' => 'sanitize_text_field',
 					],
 					'script' => [
 						'required'          => false,
 						'type'              => 'string',
-						'description'       => \__('Worker script content (optional - will be loaded from file system if not provided)', 'aether-site-exporter-r2'),
+						'description'       => \__('Worker script content (optional - will be loaded from file system if not provided)', 'altolith-deploy-r2'),
 					],
 					'bindings' => [
 						'required'          => false,
 						'type'              => 'object',
-						'description'       => \__('Worker bindings', 'aether-site-exporter-r2'),
+						'description'       => \__('Worker bindings', 'altolith-deploy-r2'),
 						'default'           => [],
 					],
 					'account_id' => [
 						'required'          => true,
 						'type'              => 'string',
-						'description'       => \__('Cloudflare account ID', 'aether-site-exporter-r2'),
+						'description'       => \__('Cloudflare account ID', 'altolith-deploy-r2'),
 						'sanitize_callback' => 'sanitize_text_field',
 					],
 					'api_token' => [
 						'required'          => true,
 						'type'              => 'string',
-						'description'       => \__('Cloudflare API token', 'aether-site-exporter-r2'),
+						'description'       => \__('Cloudflare API token', 'altolith-deploy-r2'),
 					],
 				],
 			]
@@ -115,7 +115,7 @@ class WorkerScriptController
 				'invalid_worker_type',
 				\sprintf(
 					/* translators: %s: worker type */
-					\__('Invalid worker type: %s', 'aether-site-exporter-r2'),
+					\__('Invalid worker type: %s', 'altolith-deploy-r2'),
 					$workerType
 				),
 				[ 'status' => 400 ]
@@ -123,14 +123,14 @@ class WorkerScriptController
 		}
 
 		$scriptFile = $workerScripts[ $workerType ];
-		$scriptPath = AETHER_R2_PLUGIN_DIR . 'assets/workers/' . $scriptFile;
+		$scriptPath = ALTOLITH_R2_PLUGIN_DIR . 'assets/workers/' . $scriptFile;
 
 		if (! \file_exists($scriptPath)) {
 			return new WP_Error(
 				'worker_script_not_found',
 				\sprintf(
 					/* translators: %s: script file name */
-					\__('Worker script not found: %s', 'aether-site-exporter-r2'),
+					\__('Worker script not found: %s', 'altolith-deploy-r2'),
 					$scriptFile
 				),
 				[ 'status' => 404 ]
@@ -142,7 +142,7 @@ class WorkerScriptController
 		if ($scriptContent === false) {
 			return new WP_Error(
 				'failed_to_read_script',
-				\__('Failed to read worker script', 'aether-site-exporter-r2'),
+				\__('Failed to read worker script', 'altolith-deploy-r2'),
 				[ 'status' => 500 ]
 			);
 		}
@@ -172,7 +172,7 @@ class WorkerScriptController
 		if (empty($workerName) || empty($accountId) || empty($apiToken)) {
 			return new WP_Error(
 				'missing_parameters',
-				\__('Missing required parameters: worker_name, account_id, and api_token are required.', 'aether-site-exporter-r2'),
+				\__('Missing required parameters: worker_name, account_id, and api_token are required.', 'altolith-deploy-r2'),
 				['status' => 400]
 			);
 		}
@@ -188,7 +188,7 @@ class WorkerScriptController
 					'invalid_worker_type',
 					\sprintf(
 						/* translators: %s: worker type */
-						\__('Invalid worker type: %s', 'aether-site-exporter-r2'),
+						\__('Invalid worker type: %s', 'altolith-deploy-r2'),
 						$workerType
 					),
 					[ 'status' => 400 ]
@@ -196,14 +196,14 @@ class WorkerScriptController
 			}
 
 			$scriptFile = $workerScripts[$workerType];
-			$scriptPath = AETHER_R2_PLUGIN_DIR . 'assets/workers/' . $scriptFile;
+			$scriptPath = ALTOLITH_R2_PLUGIN_DIR . 'assets/workers/' . $scriptFile;
 
 			if (! \file_exists($scriptPath)) {
 				return new WP_Error(
 					'worker_script_not_found',
 					\sprintf(
 						/* translators: %s: script file name */
-						\__('Worker script not found: %s', 'aether-site-exporter-r2'),
+						\__('Worker script not found: %s', 'altolith-deploy-r2'),
 						$scriptFile
 					),
 					[ 'status' => 404 ]
@@ -215,7 +215,7 @@ class WorkerScriptController
 			if ($script === false) {
 				return new WP_Error(
 					'failed_to_read_script',
-					\__('Failed to read worker script', 'aether-site-exporter-r2'),
+					\__('Failed to read worker script', 'altolith-deploy-r2'),
 					[ 'status' => 500 ]
 				);
 			}
@@ -230,7 +230,7 @@ class WorkerScriptController
 		if (empty($script)) {
 			return new WP_Error(
 				'invalid_script',
-				\__('Worker script is empty.', 'aether-site-exporter-r2'),
+				\__('Worker script is empty.', 'altolith-deploy-r2'),
 				['status' => 400]
 			);
 		}
@@ -239,7 +239,7 @@ class WorkerScriptController
 		if (strpos($script, 'export default') === false || strpos($script, 'async fetch') === false) {
 			return new WP_Error(
 				'invalid_script_format',
-				\__('Worker script must be a valid Cloudflare Worker with export default and async fetch.', 'aether-site-exporter-r2'),
+				\__('Worker script must be a valid Cloudflare Worker with export default and async fetch.', 'altolith-deploy-r2'),
 				['status' => 400]
 			);
 		}
@@ -337,7 +337,7 @@ class WorkerScriptController
 					'deployment_failed',
 					\sprintf(
 						/* translators: %s: error message */
-						\__('Worker deployment failed: %s', 'aether-site-exporter-r2'),
+						\__('Worker deployment failed: %s', 'altolith-deploy-r2'),
 						$curlError
 					),
 					['status' => 500]
@@ -351,7 +351,7 @@ class WorkerScriptController
 
 			if ($httpCode !== 200) {
 				$errorData = is_string($responseBody) ? \json_decode($responseBody, true) : null;
-				$errorMessage = \__('Worker deployment failed', 'aether-site-exporter-r2');
+				$errorMessage = \__('Worker deployment failed', 'altolith-deploy-r2');
 				if (isset($errorData['errors'][0]['message'])) {
 					$errorMessage = $errorData['errors'][0]['message'];
 				}
@@ -362,7 +362,7 @@ class WorkerScriptController
 					'deployment_failed',
 					\sprintf(
 						/* translators: %1$s: HTTP status code, %2$s: error message */
-						\__('Worker deployment failed (HTTP %1$s): %2$s', 'aether-site-exporter-r2'),
+						\__('Worker deployment failed (HTTP %1$s): %2$s', 'altolith-deploy-r2'),
 						$httpCode,
 						$errorMessage
 					),
@@ -395,7 +395,7 @@ class WorkerScriptController
 				'deployment_failed',
 				\sprintf(
 					/* translators: %s: error message */
-					\__('Worker deployment failed: %s', 'aether-site-exporter-r2'),
+					\__('Worker deployment failed: %s', 'altolith-deploy-r2'),
 					$response->get_error_message()
 				),
 				['status' => 500]
@@ -419,7 +419,7 @@ class WorkerScriptController
 
 		if ($statusCode !== 200) {
 			$errorData = \json_decode($responseBody, true);
-			$errorMessage = \__('Worker deployment failed', 'aether-site-exporter-r2');
+			$errorMessage = \__('Worker deployment failed', 'altolith-deploy-r2');
 			if (isset($errorData['errors'][0]['message'])) {
 				$errorMessage = $errorData['errors'][0]['message'];
 			}
@@ -430,7 +430,7 @@ class WorkerScriptController
 				'deployment_failed',
 				\sprintf(
 					/* translators: %1$s: HTTP status code, %2$s: error message */
-					\__('Worker deployment failed (HTTP %1$s): %2$s', 'aether-site-exporter-r2'),
+					\__('Worker deployment failed (HTTP %1$s): %2$s', 'altolith-deploy-r2'),
 					$statusCode,
 					$errorMessage
 				),

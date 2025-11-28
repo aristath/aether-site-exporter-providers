@@ -2,16 +2,16 @@
 	"compilerOptions": {
 		"baseUrl": ".",
 		"paths": {
-			"@aether/base/*": [ "../aether-site-exporter/assets/src/*" ],
-			"@aether/utils/*": [ "../aether-site-exporter/assets/src/utils/*" ],
-			"@aether/components/*": [ "../aether-site-exporter/assets/src/components/*" ],
-			"@aether/hooks/*": [ "../aether-site-exporter/assets/src/hooks/*" ],
-			"@aether/constants/*": [ "../aether-site-exporter/assets/src/constants/*" ],
-			"@aether/contexts/*": [ "../aether-site-exporter/assets/src/contexts/*" ],
-			"@aether/services/*": [ "../aether-site-exporter/assets/src/services/*" ],
-			"@aether/providers/*": [ "../aether-site-exporter/assets/src/providers/*" ],
-			"@aether/publish/*": [ "../aether-site-exporter/assets/src/publish/*" ],
-			"@aether/admin/*": [ "../aether-site-exporter/assets/src/admin-settings/*" ]
+			"@altolith/base/*": [ "../altolith-deploy/assets/src/*" ],
+			"@altolith/utils/*": [ "../altolith-deploy/assets/src/utils/*" ],
+			"@altolith/components/*": [ "../altolith-deploy/assets/src/components/*" ],
+			"@altolith/hooks/*": [ "../altolith-deploy/assets/src/hooks/*" ],
+			"@altolith/constants/*": [ "../altolith-deploy/assets/src/constants/*" ],
+			"@altolith/contexts/*": [ "../altolith-deploy/assets/src/contexts/*" ],
+			"@altolith/services/*": [ "../altolith-deploy/assets/src/services/*" ],
+			"@altolith/providers/*": [ "../altolith-deploy/assets/src/providers/*" ],
+			"@altolith/publish/*": [ "../altolith-deploy/assets/src/publish/*" ],
+			"@altolith/admin/*": [ "../altolith-deploy/assets/src/admin-settings/*" ]
 		},
 		"jsx": "react",
 		"module": "esnext",

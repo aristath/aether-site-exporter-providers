@@ -28,7 +28,7 @@ const dbInstances = new Map();
  * Default database configuration
  */
 const DEFAULT_CONFIG = {
-	dbName: 'aether-site-exporter',
+	dbName: 'altolith-deploy',
 	version: 1,
 	stores: {
 		cache: {

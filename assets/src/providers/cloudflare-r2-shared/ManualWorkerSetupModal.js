@@ -8,7 +8,13 @@
  */
 
 import { useState, useEffect } from '@wordpress/element';
-import { Modal, Button, Notice, TextareaControl, Spinner } from '@wordpress/components';
+import {
+	Modal,
+	Button,
+	Notice,
+	TextareaControl,
+	Spinner,
+} from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { CLOUDFLARE_DOCS } from './documentation';
 
@@ -39,7 +45,7 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 
 			try {
 				// Get plugin URL from global variable set by PHP
-				const pluginUrl = window.aetherSepPluginUrl || '';
+				const pluginUrl = window.altolithSepPluginUrl || '';
 				if ( ! pluginUrl ) {
 					throw new Error( 'Plugin URL not available' );
 				}
@@ -49,7 +55,9 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 				);
 
 				if ( ! response.ok ) {
-					throw new Error( `Failed to fetch worker code: ${ response.status }` );
+					throw new Error(
+						`Failed to fetch worker code: ${ response.status }`
+					);
 				}
 
 				const code = await response.text();
@@ -148,24 +156,24 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 		<Modal
 			title={ __(
 				'Manual Worker Setup Instructions',
-				'aether-site-exporter-r2'
+				'altolith-deploy-r2'
 			) }
 			onRequestClose={ onClose }
 			style={ modalStyle }
-			className="aether-manual-worker-modal"
+			className="altolith-manual-worker-modal"
 		>
-			<div className="aether-manual-worker-modal__content">
+			<div className="altolith-manual-worker-modal__content">
 				{ /* Step 1: Create Worker */ }
 				<div style={ sectionStyle }>
 					<h3 style={ headingStyle }>
 						{ __(
 							'Step 1: Create a Worker',
-							'aether-site-exporter-r2'
+							'altolith-deploy-r2'
 						) }
 					</h3>
 					<ol style={ listStyle }>
 						<li style={ listItemStyle }>
-							{ __( 'Go to', 'aether-site-exporter-r2' ) }{ ' ' }
+							{ __( 'Go to', 'altolith-deploy-r2' ) }{ ' ' }
 							<a
 								href="https://dash.cloudflare.com/?to=/:account/workers-and-pages"
 								target="_blank"
@@ -177,19 +185,19 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 						<li style={ listItemStyle }>
 							{ __(
 								'Click "Create" and select "Create Worker"',
-								'aether-site-exporter-r2'
+								'altolith-deploy-r2'
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							{ __(
-								'Name your worker (e.g., "aether-r2-mysite")',
-								'aether-site-exporter-r2'
+								'Name your worker (e.g., "altolith-r2-mysite")',
+								'altolith-deploy-r2'
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							{ __(
 								'Click "Deploy" to create the worker with default code',
-								'aether-site-exporter-r2'
+								'altolith-deploy-r2'
 							) }
 						</li>
 					</ol>
@@ -200,67 +208,58 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 					<h3 style={ headingStyle }>
 						{ __(
 							'Step 2: Add R2 Bucket Binding',
-							'aether-site-exporter-r2'
+							'altolith-deploy-r2'
 						) }
 					</h3>
 					<ol style={ listStyle }>
 						<li style={ listItemStyle }>
 							{ __(
 								'In your worker, go to Settings > Variables',
-								'aether-site-exporter-r2'
+								'altolith-deploy-r2'
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							{ __(
 								'Scroll down to "R2 Bucket Bindings"',
-								'aether-site-exporter-r2'
+								'altolith-deploy-r2'
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							{ __(
 								'Click "Add binding"',
-								'aether-site-exporter-r2'
+								'altolith-deploy-r2'
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							<strong>
-								{ __(
-									'Variable name:',
-									'aether-site-exporter-r2'
-								) }
+								{ __( 'Variable name:', 'altolith-deploy-r2' ) }
 							</strong>{ ' ' }
 							<code>R2_BUCKET</code>{ ' ' }
 							{ __(
 								'(must be exactly this name)',
-								'aether-site-exporter-r2'
+								'altolith-deploy-r2'
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							<strong>
-								{ __(
-									'R2 bucket:',
-									'aether-site-exporter-r2'
-								) }
+								{ __( 'R2 bucket:', 'altolith-deploy-r2' ) }
 							</strong>{ ' ' }
 							{ bucketName ? (
 								<>
-									{ __(
-										'Select',
-										'aether-site-exporter-r2'
-									) }{ ' ' }
+									{ __( 'Select', 'altolith-deploy-r2' ) }{ ' ' }
 									<code>{ bucketName }</code>
 								</>
 							) : (
 								__(
 									'Select your R2 bucket',
-									'aether-site-exporter-r2'
+									'altolith-deploy-r2'
 								)
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							{ __(
 								'Click "Save" to save the binding',
-								'aether-site-exporter-r2'
+								'altolith-deploy-r2'
 							) }
 						</li>
 					</ol>
@@ -271,26 +270,26 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 					<h3 style={ headingStyle }>
 						{ __(
 							'Step 3: Replace Worker Code',
-							'aether-site-exporter-r2'
+							'altolith-deploy-r2'
 						) }
 					</h3>
 					<ol style={ listStyle }>
 						<li style={ listItemStyle }>
 							{ __(
 								'Go to your worker\'s "Code" tab',
-								'aether-site-exporter-r2'
+								'altolith-deploy-r2'
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							{ __(
 								'Delete all existing code',
-								'aether-site-exporter-r2'
+								'altolith-deploy-r2'
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							{ __(
 								'Paste the code below:',
-								'aether-site-exporter-r2'
+								'altolith-deploy-r2'
 							) }
 						</li>
 					</ol>
@@ -299,7 +298,12 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 						{ isLoading && (
 							<div style={ loadingStyle }>
 								<Spinner />
-								<span>{ __( 'Loading worker code...', 'aether-site-exporter-r2' ) }</span>
+								<span>
+									{ __(
+										'Loading worker code…',
+										'altolith-deploy-r2'
+									) }
+								</span>
 							</div>
 						) }
 						{ error && (
@@ -318,11 +322,11 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 										{ copied
 											? __(
 													'Copied!',
-													'aether-site-exporter-r2'
+													'altolith-deploy-r2'
 											  )
 											: __(
 													'Copy Code',
-													'aether-site-exporter-r2'
+													'altolith-deploy-r2'
 											  ) }
 									</Button>
 								</div>
@@ -347,26 +351,26 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 					<h3 style={ headingStyle }>
 						{ __(
 							'Step 4: Deploy and Copy URL',
-							'aether-site-exporter-r2'
+							'altolith-deploy-r2'
 						) }
 					</h3>
 					<ol style={ listStyle }>
 						<li style={ listItemStyle }>
 							{ __(
 								'Click "Save and Deploy" to deploy your worker',
-								'aether-site-exporter-r2'
+								'altolith-deploy-r2'
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							{ __(
-								'Copy the worker URL (e.g., https://aether-r2-mysite.your-subdomain.workers.dev)',
-								'aether-site-exporter-r2'
+								'Copy the worker URL (e.g., https://altolith-r2-mysite.your-subdomain.workers.dev)',
+								'altolith-deploy-r2'
 							) }
 						</li>
 						<li style={ listItemStyle }>
 							{ __(
 								'Paste it in the "Worker Endpoint URL" field in this form',
-								'aether-site-exporter-r2'
+								'altolith-deploy-r2'
 							) }
 						</li>
 					</ol>
@@ -375,20 +379,17 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 				{ /* Important Note */ }
 				<Notice status="info" isDismissible={ false }>
 					<strong>
-						{ __( 'Important:', 'aether-site-exporter-r2' ) }
+						{ __( 'Important:', 'altolith-deploy-r2' ) }
 					</strong>{ ' ' }
 					{ __(
 						'The R2 bucket binding variable name MUST be exactly "R2_BUCKET" (case-sensitive). The worker will not work without this binding.',
-						'aether-site-exporter-r2'
+						'altolith-deploy-r2'
 					) }
 				</Notice>
 
 				<div style={ noteStyle }>
 					<strong>
-						{ __(
-							'Need more help?',
-							'aether-site-exporter-r2'
-						) }
+						{ __( 'Need more help?', 'altolith-deploy-r2' ) }
 					</strong>
 					<br />
 					<a
@@ -398,7 +399,7 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 					>
 						{ __(
 							'R2 Bucket Bindings Documentation',
-							'aether-site-exporter-r2'
+							'altolith-deploy-r2'
 						) }
 					</a>
 					{ ' | ' }
@@ -407,10 +408,7 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 						target="_blank"
 						rel="noopener noreferrer"
 					>
-						{ __(
-							'R2 Overview',
-							'aether-site-exporter-r2'
-						) }
+						{ __( 'R2 Overview', 'altolith-deploy-r2' ) }
 					</a>
 				</div>
 
@@ -423,7 +421,7 @@ export function ManualWorkerSetupModal( { isOpen, onClose, bucketName } ) {
 					} }
 				>
 					<Button variant="primary" onClick={ onClose }>
-						{ __( 'Close', 'aether-site-exporter-r2' ) }
+						{ __( 'Close', 'altolith-deploy-r2' ) }
 					</Button>
 				</div>
 			</div>

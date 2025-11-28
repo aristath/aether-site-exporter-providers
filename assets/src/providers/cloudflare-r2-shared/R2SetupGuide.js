@@ -60,10 +60,7 @@ export function R2SetupGuide() {
 		<div style={ containerStyle }>
 			<div style={ headerStyle }>
 				<strong>
-					{ __(
-						'Before you begin',
-						'aether-site-exporter-r2'
-					) }
+					{ __( 'Before you begin', 'altolith-deploy-r2' ) }
 				</strong>
 				<Button
 					variant="link"
@@ -72,11 +69,8 @@ export function R2SetupGuide() {
 					aria-expanded={ isExpanded }
 				>
 					{ isExpanded
-						? __( 'Hide details', 'aether-site-exporter-r2' )
-						: __(
-								'Show details',
-								'aether-site-exporter-r2'
-						  ) }
+						? __( 'Hide details', 'altolith-deploy-r2' )
+						: __( 'Show details', 'altolith-deploy-r2' ) }
 				</Button>
 			</div>
 
@@ -84,13 +78,10 @@ export function R2SetupGuide() {
 				<p style={ { margin: '0.5rem 0 0', fontSize: '13px' } }>
 					{ __(
 						'You need a Cloudflare API token with R2, Workers, and Zone permissions.',
-						'aether-site-exporter-r2'
+						'altolith-deploy-r2'
 					) }{ ' ' }
 					<ExternalLink href={ REQUIRED_PERMISSIONS.createTokenUrl }>
-						{ __(
-							'Create API Token',
-							'aether-site-exporter-r2'
-						) }
+						{ __( 'Create API Token', 'altolith-deploy-r2' ) }
 					</ExternalLink>
 				</p>
 			) }
@@ -100,7 +91,7 @@ export function R2SetupGuide() {
 					<p style={ { margin: '0 0 0.5rem' } }>
 						{ __(
 							'Create a Cloudflare API token with these permissions:',
-							'aether-site-exporter-r2'
+							'altolith-deploy-r2'
 						) }
 					</p>
 					{ REQUIRED_PERMISSIONS.sections.map(
@@ -140,7 +131,7 @@ export function R2SetupGuide() {
 						>
 							{ __(
 								'Create API Token in Cloudflare Dashboard',
-								'aether-site-exporter-r2'
+								'altolith-deploy-r2'
 							) }
 						</ExternalLink>
 					</p>

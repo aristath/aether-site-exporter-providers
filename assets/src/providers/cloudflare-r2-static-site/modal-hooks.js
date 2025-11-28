@@ -58,24 +58,24 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 				throw new Error(
 					__(
 						'Cloudflare Account ID, API Token, and Bucket Name are required to deploy the worker',
-						'aether-site-exporter-r2'
+						'altolith-deploy-r2'
 					)
 				);
 			}
 
 			const restUrl = (
-				window.aetherData?.restUrl ||
+				window.altolithData?.restUrl ||
 				window.wpApiSettings?.root ||
 				'/wp-json'
 			).replace( /\/$/, '' );
 
-			// Get nonce for authentication from window.aetherData (set by base plugin)
+			// Get nonce for authentication from window.altolithData (set by base plugin)
 			const nonce =
-				window.aetherData?.nonce || window.wpApiSettings?.nonce || '';
+				window.altolithData?.nonce || window.wpApiSettings?.nonce || '';
 
-			// Generate worker name (format: aether-r2-{random})
+			// Generate worker name (format: altolith-r2-{random})
 			const randomId = Math.random().toString( 36 ).substring( 2, 10 );
-			const workerName = `aether-r2-${ randomId }`;
+			const workerName = `altolith-r2-${ randomId }`;
 
 			// Prepare bindings - R2 bucket binding
 			const bindings = {};
@@ -87,7 +87,7 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 			}
 
 			// Deploy worker using server-side REST API endpoint (avoids CORS issues)
-			const deployEndpoint = `${ restUrl }/aether/site-exporter/providers/cloudflare/deploy-worker`;
+			const deployEndpoint = `${ restUrl }/altolith/deploy/providers/cloudflare/deploy-worker`;
 
 			const deployResponse = await fetch( deployEndpoint, {
 				method: 'POST',
@@ -111,10 +111,7 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 				throw new Error(
 					errorData.message ||
 						errorData.error ||
-						__(
-							'Failed to deploy worker',
-							'aether-site-exporter-r2'
-						)
+						__( 'Failed to deploy worker', 'altolith-deploy-r2' )
 				);
 			}
 
@@ -124,10 +121,7 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 				throw new Error(
 					result.message ||
 						result.error ||
-						__(
-							'Failed to deploy worker',
-							'aether-site-exporter-r2'
-						)
+						__( 'Failed to deploy worker', 'altolith-deploy-r2' )
 				);
 			}
 
@@ -142,14 +136,14 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 				try {
 					// First fetch existing config to merge with
 					const existingConfigResponse = await apiFetch( {
-						path: `/aether/site-exporter/providers/${ providerId }/config`,
+						path: `/altolith/deploy/providers/${ providerId }/config`,
 						method: 'GET',
 					} );
 					const existingConfig = existingConfigResponse?.config || {};
 
 					// Merge worker_endpoint into existing config
 					await apiFetch( {
-						path: `/aether/site-exporter/providers/${ providerId }/config`,
+						path: `/altolith/deploy/providers/${ providerId }/config`,
 						method: 'POST',
 						data: {
 							config: {
@@ -209,7 +203,7 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 							zoneResult.error ||
 								__(
 									'Could not find zone for domain',
-									'aether-site-exporter-r2'
+									'altolith-deploy-r2'
 								)
 						);
 					}
@@ -229,10 +223,7 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 		} catch ( err ) {
 			setError(
 				err.message ||
-					__(
-						'Failed to deploy worker',
-						'aether-site-exporter-r2'
-					)
+					__( 'Failed to deploy worker', 'altolith-deploy-r2' )
 			);
 		} finally {
 			setDeploying( false );
@@ -266,17 +257,14 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 					}
 				>
 					{ deploying
-						? __( 'Deploying…', 'aether-site-exporter-r2' )
-						: __(
-								'Deploy Worker',
-								'aether-site-exporter-r2'
-						  ) }
+						? __( 'Deploying…', 'altolith-deploy-r2' )
+						: __( 'Deploy Worker', 'altolith-deploy-r2' ) }
 				</Button>
 				<Button
 					variant="tertiary"
 					onClick={ () => setShowManualSetup( true ) }
 				>
-					{ __( 'Manual Setup', 'aether-site-exporter-r2' ) }
+					{ __( 'Manual Setup', 'altolith-deploy-r2' ) }
 				</Button>
 			</div>
 
@@ -301,15 +289,12 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 				>
 					{ __(
 						'Worker deployed successfully!',
-						'aether-site-exporter-r2'
+						'altolith-deploy-r2'
 					) }
 					{ workerUrl && (
 						<div style={ { marginTop: '0.5rem' } }>
 							<strong>
-								{ __(
-									'Worker URL:',
-									'aether-site-exporter-r2'
-								) }
+								{ __( 'Worker URL:', 'altolith-deploy-r2' ) }
 							</strong>{ ' ' }
 							<a
 								href={ workerUrl }
@@ -325,7 +310,7 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 							<strong>
 								{ __(
 									'Custom domain attached:',
-									'aether-site-exporter-r2'
+									'altolith-deploy-r2'
 								) }
 							</strong>{ ' ' }
 							<a
@@ -352,7 +337,7 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 								<strong>
 									{ __(
 										'Custom domain warning:',
-										'aether-site-exporter-r2'
+										'altolith-deploy-r2'
 									) }
 								</strong>{ ' ' }
 								{ domainError }
@@ -392,8 +377,8 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 export function initCloudflareR2ModalHooks( providerIdPrefix ) {
 	// Add setup guide at the top of the modal
 	addFilter(
-		'aether.admin.provider.modal.header',
-		`aether/${ providerIdPrefix }/setup-guide`,
+		'altolith.admin.provider.modal.header',
+		`altolith/${ providerIdPrefix }/setup-guide`,
 		( content, context ) => {
 			// Only show for matching provider
 			if ( ! context.providerId?.startsWith( providerIdPrefix ) ) {
@@ -405,8 +390,8 @@ export function initCloudflareR2ModalHooks( providerIdPrefix ) {
 
 	// Add API token help section after api_token field
 	addFilter(
-		'aether.admin.provider.field.after',
-		`aether/${ providerIdPrefix }/api-token-help`,
+		'altolith.admin.provider.field.after',
+		`altolith/${ providerIdPrefix }/api-token-help`,
 		( content, context ) => {
 			// Only add after api_token field for matching provider
 			if (
@@ -428,8 +413,8 @@ export function initCloudflareR2ModalHooks( providerIdPrefix ) {
 	// Hook into the field-level after filter to add Deploy Worker button
 	// after the worker_endpoint field
 	addFilter(
-		'aether.admin.provider.field.after',
-		`aether/${ providerIdPrefix }/deploy-button`,
+		'altolith.admin.provider.field.after',
+		`altolith/${ providerIdPrefix }/deploy-button`,
 		( content, context ) => {
 			// Only add button after worker_endpoint field for matching provider
 			if (

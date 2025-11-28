@@ -21,81 +21,81 @@ module.exports = {
 	setupFilesAfterEnv: [ '<rootDir>/tests/js/setup.js' ],
 	moduleNameMapper: {
 		'\\.(css|less|scss|sass)$': 'identity-obj-proxy',
-		'^@aether/base/(.*)$': path.resolve(
+		'^@altolith/base/(.*)$': path.resolve(
 			__dirname,
-			'../aether-site-exporter/assets/src/$1'
+			'../altolith-deploy/assets/src/$1'
 		),
-		'^@aether/utils/(.*)$': path.resolve(
+		'^@altolith/utils/(.*)$': path.resolve(
 			__dirname,
-			'../aether-site-exporter/assets/src/utils/$1'
+			'../altolith-deploy/assets/src/utils/$1'
 		),
-		'^@aether/utils$': path.resolve(
+		'^@altolith/utils$': path.resolve(
 			__dirname,
-			'../aether-site-exporter/assets/src/utils'
+			'../altolith-deploy/assets/src/utils'
 		),
-		'^@aether/components/(.*)$': path.resolve(
+		'^@altolith/components/(.*)$': path.resolve(
 			__dirname,
-			'../aether-site-exporter/assets/src/components/$1'
+			'../altolith-deploy/assets/src/components/$1'
 		),
-		'^@aether/components$': path.resolve(
+		'^@altolith/components$': path.resolve(
 			__dirname,
-			'../aether-site-exporter/assets/src/components'
+			'../altolith-deploy/assets/src/components'
 		),
-		'^@aether/hooks/(.*)$': path.resolve(
+		'^@altolith/hooks/(.*)$': path.resolve(
 			__dirname,
-			'../aether-site-exporter/assets/src/hooks/$1'
+			'../altolith-deploy/assets/src/hooks/$1'
 		),
-		'^@aether/hooks$': path.resolve(
+		'^@altolith/hooks$': path.resolve(
 			__dirname,
-			'../aether-site-exporter/assets/src/hooks'
+			'../altolith-deploy/assets/src/hooks'
 		),
-		'^@aether/constants/(.*)$': path.resolve(
+		'^@altolith/constants/(.*)$': path.resolve(
 			__dirname,
-			'../aether-site-exporter/assets/src/constants/$1'
+			'../altolith-deploy/assets/src/constants/$1'
 		),
-		'^@aether/constants$': path.resolve(
+		'^@altolith/constants$': path.resolve(
 			__dirname,
-			'../aether-site-exporter/assets/src/constants'
+			'../altolith-deploy/assets/src/constants'
 		),
-		'^@aether/contexts/(.*)$': path.resolve(
+		'^@altolith/contexts/(.*)$': path.resolve(
 			__dirname,
-			'../aether-site-exporter/assets/src/contexts/$1'
+			'../altolith-deploy/assets/src/contexts/$1'
 		),
-		'^@aether/contexts$': path.resolve(
+		'^@altolith/contexts$': path.resolve(
 			__dirname,
-			'../aether-site-exporter/assets/src/contexts'
+			'../altolith-deploy/assets/src/contexts'
 		),
-		'^@aether/services/(.*)$': path.resolve(
+		'^@altolith/services/(.*)$': path.resolve(
 			__dirname,
-			'../aether-site-exporter/assets/src/services/$1'
+			'../altolith-deploy/assets/src/services/$1'
 		),
-		'^@aether/services$': path.resolve(
+		'^@altolith/services$': path.resolve(
 			__dirname,
-			'../aether-site-exporter/assets/src/services'
+			'../altolith-deploy/assets/src/services'
 		),
-		'^@aether/providers/(.*)$': path.resolve(
+		'^@altolith/providers/(.*)$': path.resolve(
 			__dirname,
-			'../aether-site-exporter/assets/src/providers/$1'
+			'../altolith-deploy/assets/src/providers/$1'
 		),
-		'^@aether/providers$': path.resolve(
+		'^@altolith/providers$': path.resolve(
 			__dirname,
-			'../aether-site-exporter/assets/src/providers'
+			'../altolith-deploy/assets/src/providers'
 		),
-		'^@aether/publish/(.*)$': path.resolve(
+		'^@altolith/publish/(.*)$': path.resolve(
 			__dirname,
-			'../aether-site-exporter/assets/src/publish/$1'
+			'../altolith-deploy/assets/src/publish/$1'
 		),
-		'^@aether/publish$': path.resolve(
+		'^@altolith/publish$': path.resolve(
 			__dirname,
-			'../aether-site-exporter/assets/src/publish'
+			'../altolith-deploy/assets/src/publish'
 		),
-		'^@aether/admin/(.*)$': path.resolve(
+		'^@altolith/admin/(.*)$': path.resolve(
 			__dirname,
-			'../aether-site-exporter/assets/src/admin-settings/$1'
+			'../altolith-deploy/assets/src/admin-settings/$1'
 		),
-		'^@aether/admin$': path.resolve(
+		'^@altolith/admin$': path.resolve(
 			__dirname,
-			'../aether-site-exporter/assets/src/admin-settings'
+			'../altolith-deploy/assets/src/admin-settings'
 		),
 	},
 	transform: {

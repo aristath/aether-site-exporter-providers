@@ -18,7 +18,7 @@ import IndexedDBStore from './indexedDB';
  * Cache configuration
  */
 const WPORG_CACHE_CONFIG = {
-	dbName: 'aether-wporg-cache',
+	dbName: 'altolith-wporg-cache',
 	version: 1,
 	stores: {
 		wporgChecks: {

@@ -35,7 +35,7 @@ export class CloudflareR2StaticSiteProvider {
 	 *
 	 * @type {string}
 	 */
-	static NAME = __( 'Cloudflare R2', 'aether-site-exporter-r2' );
+	static NAME = __( 'Cloudflare R2', 'altolith-deploy-r2' );
 
 	/**
 	 * Provider type.
@@ -51,7 +51,7 @@ export class CloudflareR2StaticSiteProvider {
 	 */
 	static DESCRIPTION = __(
 		'Cloudflare R2 object storage for static site exports with zero egress fees.',
-		'aether-site-exporter-r2'
+		'altolith-deploy-r2'
 	);
 
 	/**
@@ -76,10 +76,7 @@ export class CloudflareR2StaticSiteProvider {
 	static CONFIG_FIELDS = [
 		{
 			id: 'account_id',
-			label: __(
-				'Cloudflare Account ID',
-				'aether-site-exporter-r2'
-			),
+			label: __( 'Cloudflare Account ID', 'altolith-deploy-r2' ),
 			type: 'text',
 			required: true,
 			sensitive: true,
@@ -87,16 +84,13 @@ export class CloudflareR2StaticSiteProvider {
 				pattern: '^[a-f0-9]{32}$',
 				message: __(
 					'Account ID must be a 32-character hexadecimal string',
-					'aether-site-exporter-r2'
+					'altolith-deploy-r2'
 				),
 			},
 		},
 		{
 			id: 'api_token',
-			label: __(
-				'Cloudflare API Token',
-				'aether-site-exporter-r2'
-			),
+			label: __( 'Cloudflare API Token', 'altolith-deploy-r2' ),
 			type: 'text',
 			required: true,
 			sensitive: true,
@@ -104,13 +98,13 @@ export class CloudflareR2StaticSiteProvider {
 				minLength: 20,
 				message: __(
 					'API Token must be at least 20 characters',
-					'aether-site-exporter-r2'
+					'altolith-deploy-r2'
 				),
 			},
 		},
 		{
 			id: 'bucket_name',
-			label: __( 'Bucket Name', 'aether-site-exporter-r2' ),
+			label: __( 'Bucket Name', 'altolith-deploy-r2' ),
 			type: 'text',
 			required: true,
 			sensitive: false,
@@ -120,95 +114,86 @@ export class CloudflareR2StaticSiteProvider {
 				maxLength: 63,
 				message: __(
 					'Bucket name must be 3-63 characters, start and end with alphanumeric, and contain only lowercase letters, numbers, and hyphens',
-					'aether-site-exporter-r2'
+					'altolith-deploy-r2'
 				),
 			},
 		},
 		{
 			id: 'path',
-			label: __( 'Path Prefix', 'aether-site-exporter-r2' ),
+			label: __( 'Path Prefix', 'altolith-deploy-r2' ),
 			type: 'text',
 			required: false,
 			sensitive: false,
 			placeholder: 'my-site/',
 			help: __(
 				'Optional path prefix for all uploaded files (e.g., "my-site/" will upload files as "my-site/index.html")',
-				'aether-site-exporter-r2'
+				'altolith-deploy-r2'
 			),
 			validation: {
 				pattern: '^[a-zA-Z0-9._/-]*$',
 				message: __(
 					'Path can only contain letters, numbers, dots, underscores, hyphens, and forward slashes',
-					'aether-site-exporter-r2'
+					'altolith-deploy-r2'
 				),
 			},
 		},
 		{
 			id: 'public_url',
-			label: __(
-				'Custom Domain (Optional)',
-				'aether-site-exporter-r2'
-			),
+			label: __( 'Custom Domain (Optional)', 'altolith-deploy-r2' ),
 			type: 'url',
 			required: false,
 			sensitive: false,
 			help: __(
 				'The custom domain for your static site (e.g., https://example.com). If provided, the Deploy Worker button will automatically attach it to the worker.',
-				'aether-site-exporter-r2'
+				'altolith-deploy-r2'
 			),
 		},
 		{
 			id: 'worker_endpoint',
-			label: __(
-				'Worker Endpoint URL',
-				'aether-site-exporter-r2'
-			),
+			label: __( 'Worker Endpoint URL', 'altolith-deploy-r2' ),
 			type: 'url',
 			required: false,
 			sensitive: false,
 			help: __(
 				'URL of the deployed Cloudflare Worker. Use the Deploy Worker button below to create one.',
-				'aether-site-exporter-r2'
+				'altolith-deploy-r2'
 			),
 		},
 		{
 			id: 'access_key_id',
-			label: __( 'R2 Access Key ID', 'aether-site-exporter-r2' ),
+			label: __( 'R2 Access Key ID', 'altolith-deploy-r2' ),
 			type: 'text',
 			required: false,
 			sensitive: true,
 			help: __(
 				'Only required for S3-compatible API access, not for Worker-based uploads.',
-				'aether-site-exporter-r2'
+				'altolith-deploy-r2'
 			),
 			validation: {
 				minLength: 16,
 				maxLength: 128,
 				message: __(
 					'Access Key ID must be between 16 and 128 characters',
-					'aether-site-exporter-r2'
+					'altolith-deploy-r2'
 				),
 			},
 		},
 		{
 			id: 'secret_access_key',
-			label: __(
-				'R2 Secret Access Key',
-				'aether-site-exporter-r2'
-			),
+			label: __( 'R2 Secret Access Key', 'altolith-deploy-r2' ),
 			type: 'text',
 			required: false,
 			sensitive: true,
 			help: __(
 				'Only required for S3-compatible API access, not for Worker-based uploads.',
-				'aether-site-exporter-r2'
+				'altolith-deploy-r2'
 			),
 			validation: {
 				minLength: 32,
 				maxLength: 128,
 				message: __(
 					'Secret Access Key must be between 32 and 128 characters',
-					'aether-site-exporter-r2'
+					'altolith-deploy-r2'
 				),
 			},
 		},

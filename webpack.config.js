@@ -92,46 +92,46 @@ module.exports = {
 		alias: {
 			...defaultConfig.resolve?.alias,
 			// Allow importing from base plugin's source
-			'@aether/base': require( 'path' ).resolve(
+			'@altolith/base': require( 'path' ).resolve(
 				__dirname,
-				'../aether-site-exporter/assets/src'
+				'../altolith-deploy/assets/src'
 			),
 			// Mirror base plugin's aliases so transitive imports resolve correctly
-			'@aether/utils': require( 'path' ).resolve(
+			'@altolith/utils': require( 'path' ).resolve(
 				__dirname,
-				'../aether-site-exporter/assets/src/utils'
+				'../altolith-deploy/assets/src/utils'
 			),
-			'@aether/components': require( 'path' ).resolve(
+			'@altolith/components': require( 'path' ).resolve(
 				__dirname,
-				'../aether-site-exporter/assets/src/components'
+				'../altolith-deploy/assets/src/components'
 			),
-			'@aether/hooks': require( 'path' ).resolve(
+			'@altolith/hooks': require( 'path' ).resolve(
 				__dirname,
-				'../aether-site-exporter/assets/src/hooks'
+				'../altolith-deploy/assets/src/hooks'
 			),
-			'@aether/constants': require( 'path' ).resolve(
+			'@altolith/constants': require( 'path' ).resolve(
 				__dirname,
-				'../aether-site-exporter/assets/src/constants'
+				'../altolith-deploy/assets/src/constants'
 			),
-			'@aether/contexts': require( 'path' ).resolve(
+			'@altolith/contexts': require( 'path' ).resolve(
 				__dirname,
-				'../aether-site-exporter/assets/src/contexts'
+				'../altolith-deploy/assets/src/contexts'
 			),
-			'@aether/services': require( 'path' ).resolve(
+			'@altolith/services': require( 'path' ).resolve(
 				__dirname,
-				'../aether-site-exporter/assets/src/services'
+				'../altolith-deploy/assets/src/services'
 			),
-			'@aether/providers': require( 'path' ).resolve(
+			'@altolith/providers': require( 'path' ).resolve(
 				__dirname,
-				'../aether-site-exporter/assets/src/providers'
+				'../altolith-deploy/assets/src/providers'
 			),
-			'@aether/publish': require( 'path' ).resolve(
+			'@altolith/publish': require( 'path' ).resolve(
 				__dirname,
-				'../aether-site-exporter/assets/src/publish'
+				'../altolith-deploy/assets/src/publish'
 			),
-			'@aether/admin': require( 'path' ).resolve(
+			'@altolith/admin': require( 'path' ).resolve(
 				__dirname,
-				'../aether-site-exporter/assets/src/admin-settings'
+				'../altolith-deploy/assets/src/admin-settings'
 			),
 		},
 	},

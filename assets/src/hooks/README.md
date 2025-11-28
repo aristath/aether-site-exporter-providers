@@ -1,6 +1,6 @@
 # Custom React Hooks
 
-Reusable React hooks for the Aether plugin.
+Reusable React hooks for the Altolith plugin.
 
 ## Overview
 

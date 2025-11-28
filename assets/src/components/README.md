@@ -1,6 +1,6 @@
 # Components
 
-Shared React components used across the Aether plugin.
+Shared React components used across the Altolith plugin.
 
 ## Overview
 
@@ -25,7 +25,7 @@ No shared components are currently defined. Components will be extracted here as
  *
  * Brief description of component purpose and behavior.
  *
- * @package Aether
+ * @package Altolith
  */
 
 import { useState } from '@wordpress/element';
@@ -47,7 +47,7 @@ export function ComponentName( { title, onAction } ) {
         <div>
             <h2>{title}</h2>
             <button onClick={onAction}>
-                {__('Action', 'aether')}
+                {__('Action', 'altolith')}
             </button>
         </div>
     );
@@ -75,11 +75,11 @@ Always use `@wordpress/i18n` for user-facing text:
 import { __ } from '@wordpress/i18n';
 
 // Translate strings
-const label = __('Save Changes', 'aether');
+const label = __('Save Changes', 'altolith');
 
 // Translate with placeholders
 const message = sprintf(
-    __('Uploaded %d files', 'aether'),
+    __('Uploaded %d files', 'altolith'),
     fileCount
 );
 ```
@@ -97,11 +97,11 @@ const containerStyle = {
     background: colors.white,
 };
 
-<Modal title={__('Title', 'aether')}>
-    <div className="aether-component" style={ containerStyle }>
+<Modal title={__('Title', 'altolith')}>
+    <div className="altolith-component" style={ containerStyle }>
         <ProgressBar value={50} />
         <Button isPrimary>
-            {__('Save', 'aether')}
+            {__('Save', 'altolith')}
         </Button>
     </div>
 </Modal>
@@ -167,7 +167,7 @@ export function ExampleComponent({ title, onAction }) {
     return (
         <Modal title={title}>
             <Button onClick={onAction}>
-                {__('Action', 'aether')}
+                {__('Action', 'altolith')}
             </Button>
         </Modal>
     );

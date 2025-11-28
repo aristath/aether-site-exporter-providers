@@ -1,7 +1,7 @@
 {
-  "name": "aether-site-exporter-r2",
+  "name": "altolith-deploy-r2",
   "version": "1.0.0",
-  "description": "Cloudflare R2 storage providers for Aether Site Exporter",
+  "description": "Cloudflare R2 storage providers for Altolith Deploy",
   "main": "index.js",
   "scripts": {
     "build": "MINIFY=true wp-scripts build",
@@ -23,7 +23,7 @@
   "author": "Aristeidis Stathopoulos <aristath@gmail.com>",
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "@aether/base": "file:../aether-site-exporter",
+    "@altolith/base": "file:../altolith-deploy",
     "@wordpress/api-fetch": "^6.0.0",
     "@wordpress/components": "^28.0.0",
     "@wordpress/element": "^6.0.0",

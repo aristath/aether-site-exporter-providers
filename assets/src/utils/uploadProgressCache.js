@@ -27,7 +27,7 @@ import IndexedDBStore from './indexedDB';
  * Cache configuration
  */
 const UPLOAD_PROGRESS_CONFIG = {
-	dbName: 'aether-upload-progress',
+	dbName: 'altolith-upload-progress',
 	version: 1,
 	stores: {
 		sessions: {

@@ -25,7 +25,7 @@ export function usePlaygroundNotice() {
 	const fetchState = async () => {
 		try {
 			const response = await apiFetch( {
-				path: '/aether/site-exporter/notices/playground',
+				path: '/altolith/deploy/notices/playground',
 			} );
 
 			if ( response.success ) {
@@ -46,7 +46,7 @@ export function usePlaygroundNotice() {
 	const dismiss = async () => {
 		try {
 			const response = await apiFetch( {
-				path: '/aether/site-exporter/notices/playground/dismiss',
+				path: '/altolith/deploy/notices/playground/dismiss',
 				method: 'POST',
 			} );
 

@@ -36,7 +36,7 @@ const CACHE_SCHEMA_VERSION = 2; // Incremented for IndexedDB keyPath fix
  * Cache configuration
  */
 const MANIFEST_CACHE_CONFIG = {
-	dbName: 'aether-manifest-cache',
+	dbName: 'altolith-manifest-cache',
 	version: 1,
 	stores: {
 		manifests: {

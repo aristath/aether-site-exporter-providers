@@ -137,7 +137,7 @@ export class EdgeService {
 		if ( workerType === 'r2' ) {
 			try {
 				const response = await apiFetch( {
-					path: '/aether/v1/providers/cloudflare-r2/deploy-worker',
+					path: '/altolith/v1/providers/cloudflare-r2/deploy-worker',
 					method: 'POST',
 					data: {
 						worker_name: workerName,
@@ -557,7 +557,7 @@ export class EdgeService {
 
 		try {
 			const response = await apiFetch( {
-				path: `/aether/v1/providers/${ targetProviderId }/edge/worker-script/${ workerType }`,
+				path: `/altolith/v1/providers/${ targetProviderId }/edge/worker-script/${ workerType }`,
 				method: 'GET',
 			} );
 
@@ -605,7 +605,7 @@ export class EdgeService {
 	 */
 	generateWorkerName( workerType ) {
 		const randomSuffix = Math.random().toString( 36 ).substring( 2, 10 );
-		return `aether-${ workerType }-${ randomSuffix }`;
+		return `altolith-${ workerType }-${ randomSuffix }`;
 	}
 
 	/**

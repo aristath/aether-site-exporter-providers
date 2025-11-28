@@ -351,8 +351,8 @@ describe( 'useAssetDiscovery', () => {
 					success: true,
 					plugins: [
 						{
-							slug: 'aether/aether',
-							name: 'Aether',
+							slug: 'altolith/altolith',
+							name: 'Altolith',
 							version: '1.0',
 							is_active: true,
 						},
@@ -366,7 +366,7 @@ describe( 'useAssetDiscovery', () => {
 					themes: [],
 				} )
 				.mockResolvedValueOnce( {
-					// aether - from wporg but should be excluded (built-in)
+					// altolith - from wporg but should be excluded (built-in)
 					success: true,
 					exists: true,
 				} )
@@ -384,7 +384,7 @@ describe( 'useAssetDiscovery', () => {
 			} );
 
 			// Built-in plugins should be excluded even if they're from WordPress.org
-			expect( assets.plugins ).not.toContain( 'aether' );
+			expect( assets.plugins ).not.toContain( 'altolith' );
 			expect( assets.plugins ).not.toContain(
 				'sqlite-database-integration'
 			);

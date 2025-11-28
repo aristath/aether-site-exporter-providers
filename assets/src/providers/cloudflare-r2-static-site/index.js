@@ -4,7 +4,7 @@
  * Registers the Cloudflare R2 static site provider handlers via WordPress hooks.
  * Uses the StorageService adapter pattern for true provider instance isolation.
  *
- * Each provider instance gets its own StorageService via the 'aether.storage.service.create'
+ * Each provider instance gets its own StorageService via the 'altolith.storage.service.create'
  * filter, ensuring complete isolation between instances.
  *
  * @package
@@ -13,7 +13,7 @@
 import { addFilter, doAction } from '@wordpress/hooks';
 import { CloudflareR2StaticSiteProvider } from './CloudflareR2StaticSiteProvider';
 import { initCloudflareR2ModalHooks } from './modal-hooks';
-import ProviderRegistry from '@aether/providers/registry/ProviderRegistry';
+import ProviderRegistry from '@altolith/providers/registry/ProviderRegistry';
 import apiFetch from '../../utils/api';
 import { StorageService } from '../services/storageService';
 import { uploadFile as uploadToWorker } from '../../utils/workerEndpointClient';
@@ -27,7 +27,7 @@ import { uploadFile as uploadToWorker } from '../../utils/workerEndpointClient';
 async function loadProviderConfig( providerId ) {
 	try {
 		const response = await apiFetch( {
-			path: `/aether/site-exporter/providers/${ providerId }/config`,
+			path: `/altolith/deploy/providers/${ providerId }/config`,
 			method: 'GET',
 		} );
 		return response.config || {};
@@ -49,7 +49,7 @@ ProviderRegistry.register(
 );
 
 // Also trigger the hook for any listeners
-doAction( 'aether.providers.register', CloudflareR2StaticSiteProvider );
+doAction( 'altolith.providers.register', CloudflareR2StaticSiteProvider );
 
 /**
  * Create upload adapter for Cloudflare R2.
@@ -80,7 +80,7 @@ function createUploadAdapter( workerEndpoint ) {
 			// Server-side files are indicated by sourceUrl and empty blob
 			if ( options.sourceUrl && file.size === 0 ) {
 				try {
-					// Fetch directly from the sourceUrl (e.g., http://localhost:10003/wp-content/uploads/aether-temp/bundle.zip)
+					// Fetch directly from the sourceUrl (e.g., http://localhost:10003/wp-content/uploads/altolith-temp/bundle.zip)
 					const response = await fetch( options.sourceUrl, {
 						credentials: 'same-origin',
 					} );
@@ -120,8 +120,8 @@ function createUploadAdapter( workerEndpoint ) {
  * by the caller before invoking the filter.
  */
 addFilter(
-	'aether.storage.service.create',
-	'aether/cloudflare-r2-static-site',
+	'altolith.storage.service.create',
+	'altolith/cloudflare-r2-static-site',
 	( service, staticPath, config, providerId, providerConfig ) => {
 		// Only handle this provider type
 		if ( ! providerId?.startsWith( 'cloudflare-r2-static-site' ) ) {
@@ -169,8 +169,8 @@ addFilter(
  * Register test connection handler hook.
  */
 addFilter(
-	'aether.provider.test',
-	'aether/cloudflare-r2-static-site',
+	'altolith.provider.test',
+	'altolith/cloudflare-r2-static-site',
 	( handler, providerId ) => {
 		if ( ! providerId?.startsWith( 'cloudflare-r2-static-site' ) ) {
 			return handler;
@@ -207,8 +207,8 @@ addFilter(
  * Register upload strategy filter.
  */
 addFilter(
-	'aether.provider.upload_strategy',
-	'aether/cloudflare-r2-static-site',
+	'altolith.provider.upload_strategy',
+	'altolith/cloudflare-r2-static-site',
 	( strategy, providerId ) => {
 		if ( providerId?.startsWith( 'cloudflare-r2-static-site' ) ) {
 			return 'worker';

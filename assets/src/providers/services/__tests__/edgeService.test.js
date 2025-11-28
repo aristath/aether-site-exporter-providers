@@ -151,7 +151,7 @@ describe( 'EdgeService', () => {
 			);
 
 			expect( result.success ).toBe( true );
-			expect( result.data.workerName ).toContain( 'aether-r2-' );
+			expect( result.data.workerName ).toContain( 'altolith-r2-' );
 			expect( result.data.workerName ).toContain( '-dry-run' );
 			expect( result.data.workerUrl ).toContain( '.workers.dev' );
 			expect( result.data.message ).toBe( 'Dry run successful' );
@@ -168,8 +168,8 @@ describe( 'EdgeService', () => {
 			// Mock apiFetch for R2 deployment (uses PHP endpoint)
 			apiFetch.mockResolvedValueOnce( {
 				success: true,
-				worker_name: 'aether-r2-abc123',
-				worker_url: 'https://aether-r2-abc123.workers.dev',
+				worker_name: 'altolith-r2-abc123',
+				worker_url: 'https://altolith-r2-abc123.workers.dev',
 			} );
 
 			const result = await service.deploy(
@@ -180,13 +180,13 @@ describe( 'EdgeService', () => {
 			);
 
 			expect( result.success ).toBe( true );
-			expect( result.data.workerName ).toContain( 'aether-r2-' );
+			expect( result.data.workerName ).toContain( 'altolith-r2-' );
 			expect( result.data.workerUrl ).toContain( '.workers.dev' );
 			expect( apiFetch ).toHaveBeenCalledWith( {
-				path: '/aether/v1/providers/cloudflare-r2/deploy-worker',
+				path: '/altolith/v1/providers/cloudflare-r2/deploy-worker',
 				method: 'POST',
 				data: expect.objectContaining( {
-					worker_name: expect.stringMatching( /^aether-r2-/ ),
+					worker_name: expect.stringMatching( /^altolith-r2-/ ),
 					script,
 					bindings,
 				} ),
@@ -231,7 +231,7 @@ describe( 'EdgeService', () => {
 		} );
 
 		test( 'should test deployment successfully', async () => {
-			const workerUrl = 'https://aether-r2-abc123.workers.dev';
+			const workerUrl = 'https://altolith-r2-abc123.workers.dev';
 
 			// Mock listWorkers call
 			global.fetch.mockResolvedValueOnce( {
@@ -247,7 +247,7 @@ describe( 'EdgeService', () => {
 				ok: true,
 				json: async () => ( {
 					success: true,
-					result: { name: 'aether-r2-abc123' },
+					result: { name: 'altolith-r2-abc123' },
 				} ),
 			} );
 
@@ -259,7 +259,7 @@ describe( 'EdgeService', () => {
 		} );
 
 		test( 'should handle token test failure', async () => {
-			const workerUrl = 'https://aether-r2-abc123.workers.dev';
+			const workerUrl = 'https://altolith-r2-abc123.workers.dev';
 
 			global.fetch.mockResolvedValueOnce( {
 				ok: false,
@@ -276,7 +276,7 @@ describe( 'EdgeService', () => {
 		} );
 
 		test( 'should handle worker info retrieval failure gracefully', async () => {
-			const workerUrl = 'https://aether-r2-abc123.workers.dev';
+			const workerUrl = 'https://altolith-r2-abc123.workers.dev';
 
 			// Mock listWorkers success
 			global.fetch.mockResolvedValueOnce( {
@@ -367,7 +367,7 @@ describe( 'EdgeService', () => {
 	describe( 'generateWorkerName', () => {
 		test( 'should generate worker name with type and random suffix', () => {
 			const name = service.generateWorkerName( 'r2' );
-			expect( name ).toMatch( /^aether-r2-[a-z0-9]{8}$/ );
+			expect( name ).toMatch( /^altolith-r2-[a-z0-9]{8}$/ );
 		} );
 
 		test( 'should generate unique names', () => {
@@ -379,24 +379,24 @@ describe( 'EdgeService', () => {
 
 	describe( 'getWorkerUrlFromName', () => {
 		test( 'should construct worker URL from name', () => {
-			const url = service.getWorkerUrlFromName( 'aether-r2-abc123' );
-			expect( url ).toBe( 'https://aether-r2-abc123.workers.dev' );
+			const url = service.getWorkerUrlFromName( 'altolith-r2-abc123' );
+			expect( url ).toBe( 'https://altolith-r2-abc123.workers.dev' );
 		} );
 	} );
 
 	describe( 'extractWorkerNameFromUrl', () => {
 		test( 'should extract worker name from URL', () => {
 			const name = service.extractWorkerNameFromUrl(
-				'https://aether-r2-abc123.workers.dev'
+				'https://altolith-r2-abc123.workers.dev'
 			);
-			expect( name ).toBe( 'aether-r2-abc123' );
+			expect( name ).toBe( 'altolith-r2-abc123' );
 		} );
 
 		test( 'should handle HTTP URLs', () => {
 			const name = service.extractWorkerNameFromUrl(
-				'http://aether-r2-abc123.workers.dev'
+				'http://altolith-r2-abc123.workers.dev'
 			);
-			expect( name ).toBe( 'aether-r2-abc123' );
+			expect( name ).toBe( 'altolith-r2-abc123' );
 		} );
 
 		test( 'should return null for invalid URL', () => {
@@ -412,8 +412,8 @@ describe( 'EdgeService', () => {
 				json: async () => ( {
 					success: true,
 					result: [
-						{ id: 'worker-1', script: 'aether-r2-abc123' },
-						{ id: 'worker-2', script: 'aether-media-def456' },
+						{ id: 'worker-1', script: 'altolith-r2-abc123' },
+						{ id: 'worker-2', script: 'altolith-media-def456' },
 					],
 				} ),
 			} );
@@ -448,7 +448,7 @@ describe( 'EdgeService', () => {
 
 	describe( 'getWorker', () => {
 		test( 'should get worker info successfully', async () => {
-			const workerName = 'aether-r2-abc123';
+			const workerName = 'altolith-r2-abc123';
 			global.fetch.mockResolvedValueOnce( {
 				ok: true,
 				json: async () => ( {
@@ -632,7 +632,7 @@ describe( 'EdgeService', () => {
 			} );
 
 			const result =
-				await service.enableWorkersDevSubdomain( 'aether-r2-abc123' );
+				await service.enableWorkersDevSubdomain( 'altolith-r2-abc123' );
 
 			expect( result.success ).toBe( true );
 			expect( global.fetch ).toHaveBeenCalledTimes( 2 );
@@ -648,7 +648,7 @@ describe( 'EdgeService', () => {
 			} );
 
 			const result =
-				await service.enableWorkersDevSubdomain( 'aether-r2-abc123' );
+				await service.enableWorkersDevSubdomain( 'altolith-r2-abc123' );
 
 			expect( result.success ).toBe( false );
 			expect( result.error ).toBe( 'Failed to get subdomain' );
@@ -664,7 +664,7 @@ describe( 'EdgeService', () => {
 			} );
 
 			const result =
-				await service.enableWorkersDevSubdomain( 'aether-r2-abc123' );
+				await service.enableWorkersDevSubdomain( 'altolith-r2-abc123' );
 
 			expect( result.success ).toBe( false );
 			expect( result.error ).toContain( 'No subdomain configured' );
@@ -680,13 +680,13 @@ describe( 'EdgeService', () => {
 					result: {
 						id: 'domain-123',
 						hostname: 'example.com',
-						service: 'aether-r2-abc123',
+						service: 'altolith-r2-abc123',
 					},
 				} ),
 			} );
 
 			const result = await service.attachWorkerToCustomDomain(
-				'aether-r2-abc123',
+				'altolith-r2-abc123',
 				'example.com',
 				'zone-123'
 			);
@@ -715,7 +715,7 @@ describe( 'EdgeService', () => {
 			} );
 
 			await service.attachWorkerToCustomDomain(
-				'aether-r2-abc123',
+				'altolith-r2-abc123',
 				'https://example.com/path',
 				'zone-123'
 			);
@@ -735,7 +735,7 @@ describe( 'EdgeService', () => {
 			} );
 
 			const result = await service.attachWorkerToCustomDomain(
-				'aether-r2-abc123',
+				'altolith-r2-abc123',
 				'example.com',
 				'invalid-zone'
 			);
@@ -748,7 +748,7 @@ describe( 'EdgeService', () => {
 			global.fetch.mockRejectedValueOnce( new Error( 'Network error' ) );
 
 			const result = await service.attachWorkerToCustomDomain(
-				'aether-r2-abc123',
+				'altolith-r2-abc123',
 				'example.com',
 				'zone-123'
 			);

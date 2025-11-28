@@ -153,7 +153,9 @@ export default {
 
 			// Get R2 key from header (decode URI-encoded non-ASCII characters)
 			const encodedR2Key = request.headers.get( 'X-R2-Key' );
-			const r2Key = encodedR2Key ? decodeURIComponent( encodedR2Key ) : null;
+			const r2Key = encodedR2Key
+				? decodeURIComponent( encodedR2Key )
+				: null;
 			if ( ! r2Key ) {
 				debugInfo.timing.validation = Date.now() - startTime;
 				return new Response(

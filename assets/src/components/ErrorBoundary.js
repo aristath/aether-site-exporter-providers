@@ -95,42 +95,39 @@ class ErrorBoundary extends Component {
 			};
 
 			return (
-				<div className="aether-error-boundary" style={ containerStyle }>
+				<div
+					className="altolith-error-boundary"
+					style={ containerStyle }
+				>
 					<div
-						className="aether-error-boundary__notice"
+						className="altolith-error-boundary__notice"
 						style={ noticeStyle }
 					>
 						<h2
-							className="aether-error-boundary__heading"
+							className="altolith-error-boundary__heading"
 							style={ headingStyle }
 						>
-							{ __(
-								'Something went wrong',
-								'aether-site-exporter'
-							) }
+							{ __( 'Something went wrong', 'altolith-deploy' ) }
 						</h2>
 						<p
-							className="aether-error-boundary__message"
+							className="altolith-error-boundary__message"
 							style={ paragraphStyle }
 						>
 							{ __(
 								'An unexpected error occurred. Please try refreshing the page.',
-								'aether-site-exporter-r2'
+								'altolith-deploy-r2'
 							) }
 						</p>
 						{ this.state.error && (
 							<details
-								className="aether-error-boundary__details"
+								className="altolith-error-boundary__details"
 								style={ { marginTop: spacing.lg } }
 							>
-								<summary className="aether-error-boundary__summary">
-									{ __(
-										'Error details',
-										'aether-site-exporter'
-									) }
+								<summary className="altolith-error-boundary__summary">
+									{ __( 'Error details', 'altolith-deploy' ) }
 								</summary>
 								<pre
-									className="aether-error-boundary__error-text"
+									className="altolith-error-boundary__error-text"
 									style={ {
 										marginTop: spacing.lg,
 										padding: spacing.lg,
@@ -147,7 +144,7 @@ class ErrorBoundary extends Component {
 						) }
 						<button
 							type="button"
-							className="aether-error-boundary__retry-button"
+							className="altolith-error-boundary__retry-button"
 							onClick={ this.resetError }
 							style={ {
 								marginTop: spacing.lg,
@@ -162,7 +159,7 @@ class ErrorBoundary extends Component {
 								lineHeight: 1.5,
 							} }
 						>
-							{ __( 'Try again', 'aether-site-exporter' ) }
+							{ __( 'Try again', 'altolith-deploy' ) }
 						</button>
 					</div>
 				</div>

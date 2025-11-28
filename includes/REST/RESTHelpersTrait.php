@@ -5,10 +5,10 @@
  *
  * Provides common functionality for REST controllers.
  *
- * @package Aether\SiteExporterR2\REST
+ * @package Altolith\DeployR2\REST
  */
 
-namespace Aether\SiteExporterR2\REST;
+namespace Altolith\DeployR2\REST;
 
 /**
  * Trait providing REST API helper methods.
@@ -34,6 +34,6 @@ trait RESTHelpersTrait
 	 */
 	public function getNamespace(): string
 	{
-		return 'aether/site-exporter/providers';
+		return 'altolith/deploy/providers';
 	}
 }

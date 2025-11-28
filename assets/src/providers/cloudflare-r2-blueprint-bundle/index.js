@@ -10,7 +10,7 @@
 import { addFilter, addAction, doAction } from '@wordpress/hooks';
 import { CloudflareR2BlueprintBundleProvider } from './CloudflareR2BlueprintBundleProvider';
 import { initCloudflareR2ModalHooks } from './modal-hooks';
-import ProviderRegistry from '@aether/providers/registry/ProviderRegistry';
+import ProviderRegistry from '@altolith/providers/registry/ProviderRegistry';
 import apiFetch from '../../utils/api';
 import { StorageService } from '../services/storageService';
 
@@ -23,7 +23,7 @@ import { StorageService } from '../services/storageService';
 async function loadProviderConfig( providerId ) {
 	try {
 		const response = await apiFetch( {
-			path: `/aether/site-exporter/providers/${ providerId }/config`,
+			path: `/altolith/deploy/providers/${ providerId }/config`,
 			method: 'GET',
 		} );
 		return response.config || {};
@@ -45,7 +45,7 @@ ProviderRegistry.register(
 );
 
 // Also trigger the hook for any listeners
-doAction( 'aether.providers.register', CloudflareR2BlueprintBundleProvider );
+doAction( 'altolith.providers.register', CloudflareR2BlueprintBundleProvider );
 
 // Track processed files per provider to avoid duplicate processing
 const processedFiles = new Map();
@@ -73,7 +73,7 @@ async function getStorageService( providerId ) {
 /**
  * Handle unified file upload for blueprint bundle provider.
  *
- * @param {Object} fileContext Unified file context from aether.file.upload action.
+ * @param {Object} fileContext Unified file context from altolith.file.upload action.
  * @return {Promise<void>}
  */
 async function handleUnifiedFileUpload( fileContext ) {
@@ -190,8 +190,8 @@ async function handleUnifiedFileUpload( fileContext ) {
  * Register unified file upload action hook.
  */
 addAction(
-	'aether.file.upload',
-	'aether/cloudflare-r2-blueprint-bundle',
+	'altolith.file.upload',
+	'altolith/cloudflare-r2-blueprint-bundle',
 	( fileContext ) => {
 		if ( ! fileContext._uploadPromises ) {
 			fileContext._uploadPromises = [];
@@ -207,8 +207,8 @@ addAction(
  * Register test connection handler hook.
  */
 addFilter(
-	'aether.provider.test',
-	'aether/cloudflare-r2-blueprint-bundle',
+	'altolith.provider.test',
+	'altolith/cloudflare-r2-blueprint-bundle',
 	( handler, providerId ) => {
 		if ( ! providerId?.startsWith( 'cloudflare-r2-blueprint-bundle' ) ) {
 			return handler;
@@ -231,8 +231,8 @@ addFilter(
  * Register upload strategy filter.
  */
 addFilter(
-	'aether.provider.upload_strategy',
-	'aether/cloudflare-r2-blueprint-bundle',
+	'altolith.provider.upload_strategy',
+	'altolith/cloudflare-r2-blueprint-bundle',
 	( strategy, providerId ) => {
 		if ( providerId?.startsWith( 'cloudflare-r2-blueprint-bundle' ) ) {
 			return 'worker';

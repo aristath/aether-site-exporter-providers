@@ -1,10 +1,10 @@
-# Aether Site Exporter - R2
+# Altolith Deploy - R2
 
-Cloudflare R2 storage providers for [Aether Site Exporter](https://github.com/aristath/aether-site-exporter).
+Cloudflare R2 storage providers for [Altolith Deploy](https://github.com/aristath/altolith-deploy).
 
 ## Overview
 
-This plugin extends Aether Site Exporter with Cloudflare R2 storage providers, enabling you to deploy static sites and blueprint bundles to Cloudflare R2.
+This plugin extends Altolith Deploy with Cloudflare R2 storage providers, enabling you to deploy static sites and blueprint bundles to Cloudflare R2.
 
 ### Included Providers
 
@@ -15,18 +15,18 @@ This plugin extends Aether Site Exporter with Cloudflare R2 storage providers, e
 
 - WordPress 6.4+
 - PHP 7.4+ (PHP 8.1+ recommended)
-- **Aether Site Exporter** plugin (required dependency)
+- **Altolith Deploy** plugin (required dependency)
 - Cloudflare account with R2 enabled
 
 ## Installation
 
 ### From Source
 
-1. **Install Aether Site Exporter** (required parent plugin)
+1. **Install Altolith Deploy** (required parent plugin)
    ```bash
    cd wp-content/plugins
-   git clone https://github.com/aristath/aether-site-exporter.git
-   cd aether-site-exporter
+   git clone https://github.com/aristath/altolith-deploy.git
+   cd altolith-deploy
    composer install
    npm install
    npm run build
@@ -35,8 +35,8 @@ This plugin extends Aether Site Exporter with Cloudflare R2 storage providers, e
 2. **Install This Plugin**
    ```bash
    cd wp-content/plugins
-   git clone https://github.com/aristath/aether-site-exporter-r2.git
-   cd aether-site-exporter-r2
+   git clone https://github.com/aristath/altolith-deploy-r2.git
+   cd altolith-deploy-r2
    composer install
    npm install
    npm run build
@@ -44,8 +44,8 @@ This plugin extends Aether Site Exporter with Cloudflare R2 storage providers, e
 
 3. **Activate Both Plugins**
    - Go to WordPress Admin → Plugins
-   - Activate "Aether Site Exporter"
-   - Activate "Aether Site Exporter - R2"
+   - Activate "Altolith Deploy"
+   - Activate "Altolith Deploy - R2"
 
 ## Configuration
 
@@ -70,7 +70,7 @@ Deploy static sites to Cloudflare R2 object storage.
 **Setup Steps:**
 1. Create an R2 bucket in Cloudflare dashboard
 2. Generate a Cloudflare API token with R2 permissions
-3. Go to Settings → Aether Export
+3. Go to Settings → Altolith Export
 4. Add a new Cloudflare R2 provider instance
 5. Enter your configuration details
 6. Click "Deploy Worker" to create the upload worker
@@ -109,7 +109,7 @@ composer phpstan
 ### Project Structure
 
 ```
-aether-site-exporter-r2/
+altolith-deploy-r2/
 ├── assets/
 │   ├── src/
 │   │   └── providers/
@@ -126,16 +126,16 @@ aether-site-exporter-r2/
 │   │   └── WorkerScriptController.php
 │   ├── Plugin.php
 │   └── autoloader.php
-└── aether-site-exporter-r2.php
+└── altolith-deploy-r2.php
 ```
 
 ## REST API Endpoints
 
-- `GET /wp-json/aether/site-exporter/providers/worker-scripts/r2`
+- `GET /wp-json/altolith/deploy/providers/worker-scripts/r2`
   - Get Cloudflare R2 Worker script content
   - Requires `manage_options` capability
 
-- `POST /wp-json/aether/site-exporter/providers/cloudflare/deploy-worker`
+- `POST /wp-json/altolith/deploy/providers/cloudflare/deploy-worker`
   - Deploy Cloudflare Worker to your account
   - Requires `manage_options` capability
 
@@ -145,6 +145,6 @@ GPL-3.0-or-later - see [LICENSE](LICENSE) file for details.
 
 ## Links
 
-- [Aether Site Exporter](https://github.com/aristath/aether-site-exporter) - Parent plugin
+- [Altolith Deploy](https://github.com/aristath/altolith-deploy) - Parent plugin
 - [Cloudflare R2](https://www.cloudflare.com/products/r2/) - Object storage
 - [WordPress Playground](https://wordpress.github.io/wordpress-playground/) - WordPress WASM runtime
