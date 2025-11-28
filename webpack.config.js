@@ -54,10 +54,8 @@ class RemoveSourceMapPlugin {
 module.exports = {
 	...defaultConfig,
 	entry: {
-		'provider-cloudflare-r2-static-site':
-			'./assets/src/providers/cloudflare-r2-static-site/index.js',
-		'provider-cloudflare-r2-blueprint-bundle':
-			'./assets/src/providers/cloudflare-r2-blueprint-bundle/index.js',
+		'provider-cloudflare-r2':
+			'./assets/src/providers/cloudflare-r2/index.js',
 	},
 	output: {
 		...defaultConfig.output,

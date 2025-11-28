@@ -1,27 +1,29 @@
 /**
- * Cloudflare R2 Blueprint Bundle Provider
+ * Cloudflare R2 Provider
  *
- * Static metadata class for the Cloudflare R2 blueprint bundle provider.
- * All logic is handled via hooks in index.js.
+ * Unified provider for Cloudflare R2 object storage. Handles all output types
+ * (static site, blueprint, etc.) based on user configuration.
  *
- * @package
+ * This replaces the separate CloudflareR2StaticSiteProvider and
+ * CloudflareR2BlueprintBundleProvider with a single, extensible provider.
  */
 
 import { __ } from '@wordpress/i18n';
+import { getOutputTypeFields } from '@altolith/utils/outputTypes';
 
 /**
- * CloudflareR2BlueprintBundleProvider class
+ * CloudflareR2Provider class
  *
- * Provides Cloudflare R2 object storage for blueprint bundle exports.
- * This is a static metadata class - all operational logic is in index.js.
+ * Provides Cloudflare R2 object storage for all output types.
+ * Uses Cloudflare Workers for file uploads with zero egress fees.
  */
-export class CloudflareR2BlueprintBundleProvider {
+export class CloudflareR2Provider {
 	/**
 	 * Provider ID constant.
 	 *
 	 * @type {string}
 	 */
-	static ID = 'cloudflare-r2-blueprint-bundle';
+	static ID = 'cloudflare-r2';
 
 	/**
 	 * Provider family for config copying compatibility.
@@ -50,7 +52,7 @@ export class CloudflareR2BlueprintBundleProvider {
 	 * @type {string}
 	 */
 	static DESCRIPTION = __(
-		'Cloudflare R2 object storage for WordPress Playground blueprint bundles with zero egress fees.',
+		'Cloudflare R2 object storage with zero egress fees. Supports static site exports and WordPress Playground blueprints.',
 		'altolith-deploy-r2'
 	);
 
@@ -62,14 +64,18 @@ export class CloudflareR2BlueprintBundleProvider {
 	static ICON = '☁️';
 
 	/**
-	 * Deployment type this provider supports.
+	 * Whether this provider supports parallel execution with other instances.
 	 *
-	 * @type {string}
+	 * R2 providers can run in parallel since they use separate worker endpoints.
+	 *
+	 * @type {boolean}
 	 */
-	static DEPLOYMENT_TYPE = 'blueprint_bundle';
+	static SUPPORTS_PARALLEL_EXECUTION = true;
 
 	/**
-	 * Configuration fields.
+	 * Core configuration fields (provider-specific).
+	 *
+	 * Output type fields are added dynamically via getConfigFields().
 	 *
 	 * @type {Array<Object>}
 	 */
@@ -110,7 +116,7 @@ export class CloudflareR2BlueprintBundleProvider {
 			sensitive: false,
 			placeholder: 'my-site/',
 			help: __(
-				'Optional path prefix for all uploaded files (e.g., "my-site/" will upload files as "my-site/bundle.zip")',
+				'Optional path prefix for all uploaded files (e.g., "my-site/" will upload files as "my-site/index.html")',
 				'altolith-deploy-r2'
 			),
 			validation: {
@@ -120,6 +126,17 @@ export class CloudflareR2BlueprintBundleProvider {
 					'altolith-deploy-r2'
 				),
 			},
+		},
+		{
+			id: 'public_url',
+			label: __( 'Custom Domain (Optional)', 'altolith-deploy-r2' ),
+			type: 'url',
+			required: false,
+			sensitive: false,
+			help: __(
+				'The custom domain for your site (e.g., https://example.com). If provided, the Deploy Worker button will automatically attach it to the worker. Also used for blueprint URL references.',
+				'altolith-deploy-r2'
+			),
 		},
 		{
 			id: 'worker_endpoint',
@@ -170,27 +187,22 @@ export class CloudflareR2BlueprintBundleProvider {
 				),
 			},
 		},
-		{
-			id: 'bundle_path',
-			label: __( 'Bundle Path', 'altolith-deploy-r2' ),
-			type: 'text',
-			required: false,
-			sensitive: false,
-			placeholder: 'blueprint-bundle/bundle.zip',
-			help: __(
-				'Path within the bucket for the blueprint bundle ZIP file',
-				'altolith-deploy-r2'
-			),
-		},
-		{
-			id: 'public_url',
-			label: __( 'Custom Domain (Optional)', 'altolith-deploy-r2' ),
-			type: 'url',
-			required: false,
-			sensitive: false,
-			isAdvanced: true,
-		},
 	];
+
+	/**
+	 * Get all configuration fields including output type fields.
+	 *
+	 * This method merges the provider's core fields with fields from all
+	 * registered output types (static_site, blueprint, media_offload, etc.).
+	 *
+	 * @return {Array<Object>} Complete array of config field definitions.
+	 */
+	static getConfigFields() {
+		const coreFields = [ ...CloudflareR2Provider.CONFIG_FIELDS ];
+		const outputTypeFields = getOutputTypeFields();
+
+		return [ ...coreFields, ...outputTypeFields ];
+	}
 }
 
-export default CloudflareR2BlueprintBundleProvider;
+export default CloudflareR2Provider;

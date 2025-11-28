@@ -173,31 +173,25 @@ class Plugin
 		$pluginUrl = ALTOLITH_R2_PLUGIN_URL;
 		$pluginDir = ALTOLITH_R2_PLUGIN_DIR;
 
-		// List of provider scripts to enqueue.
-		$providerScripts = [
-			'provider-cloudflare-r2-static-site',
-			'provider-cloudflare-r2-blueprint-bundle',
+		// Unified provider script (handles all output types).
+		$scriptHandle = 'provider-cloudflare-r2';
+		$assetFile = $pluginDir . 'assets/build/' . $scriptHandle . '.asset.php';
+		$asset = \file_exists($assetFile) ? require $assetFile : [
+			'dependencies' => [ 'wp-hooks', 'wp-i18n' ],
+			'version' => ALTOLITH_R2_VERSION,
 		];
 
-		foreach ($providerScripts as $scriptHandle) {
-			$assetFile = $pluginDir . 'assets/build/' . $scriptHandle . '.asset.php';
-			$asset = \file_exists($assetFile) ? require $assetFile : [
-				'dependencies' => [ 'wp-hooks', 'wp-i18n' ],
-				'version' => ALTOLITH_R2_VERSION,
-			];
-
-			\wp_enqueue_script(
-				'altolith-r2-' . $scriptHandle,
-				$pluginUrl . 'assets/build/' . $scriptHandle . '.js',
-				$asset['dependencies'],
-				$asset['version'],
-				true
-			);
-		}
+		\wp_enqueue_script(
+			'altolith-r2-' . $scriptHandle,
+			$pluginUrl . 'assets/build/' . $scriptHandle . '.js',
+			$asset['dependencies'],
+			$asset['version'],
+			true
+		);
 
 		// Pass plugin URL to JavaScript for worker file fetching.
 		\wp_add_inline_script(
-			'altolith-r2-provider-cloudflare-r2-static-site',
+			'altolith-r2-' . $scriptHandle,
 			'window.altolithR2PluginUrl = ' . \wp_json_encode($pluginUrl) . ';',
 			'before'
 		);

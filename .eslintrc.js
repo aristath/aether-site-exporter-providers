@@ -34,6 +34,7 @@ module.exports = {
 					'@altolith/services/.*', // Webpack alias
 					'@altolith/publish/.*', // Webpack alias
 					'@altolith/admin/.*', // Webpack alias
+					'@altolith/profiles/.*', // Webpack alias
 					'../contexts/.*', // Context imports from base plugin
 					'../../base/.*', // Base provider imports in test files
 					'../configFieldBuilder', // ConfigFieldBuilder from base plugin
@@ -130,6 +131,13 @@ module.exports = {
 						path.resolve(
 							__dirname,
 							'../altolith-deploy/assets/src/admin-settings'
+						),
+					],
+					[
+						'@altolith/profiles',
+						path.resolve(
+							__dirname,
+							'../altolith-deploy/assets/src/profiles'
 						),
 					],
 				],

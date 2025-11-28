@@ -26,16 +26,27 @@ export class StorageService {
 	/**
 	 * Constructor.
 	 *
+	 * Supports adapter pattern for provider-specific upload implementations.
+	 * Each provider instance can inject its own upload adapter via the
+	 * 'altolith.storage.service.create' filter, achieving true provider instance isolation.
+	 *
 	 * @param {string} workerEndpoint Worker endpoint URL.
 	 * @param {string} bucketName     Bucket name.
 	 * @param {Object} config         Optional configuration.
+	 * @param {Object} uploadAdapter  Optional upload adapter with upload() method.
 	 */
-	constructor( workerEndpoint, bucketName, config = {} ) {
+	constructor(
+		workerEndpoint,
+		bucketName,
+		config = {},
+		uploadAdapter = null
+	) {
 		this.workerEndpoint = workerEndpoint;
 		this.bucketName = bucketName;
 		this.config = config;
 		this.providerId = config.provider_id || '';
 		this.pathPrefix = config.path || '';
+		this.uploadAdapter = uploadAdapter;
 	}
 
 	/**
@@ -57,6 +68,10 @@ export class StorageService {
 	/**
 	 * Upload a file to storage.
 	 *
+	 * Uses the upload adapter if provided, otherwise falls back to direct upload.
+	 * This enables provider-specific upload implementations while keeping common logic
+	 * (manifest, dedup, etc.) in the StorageService.
+	 *
 	 * @param {string}    key      Object key/path in storage.
 	 * @param {File|Blob} file     File to upload.
 	 * @param {Object}    metadata Optional metadata (contentType, cacheControl, onProgress).
@@ -70,32 +85,55 @@ export class StorageService {
 			};
 		}
 
-		const fullKey = this.getFullKey( key );
+		const contentType = metadata.contentType || file.type;
 
-		const options = {
-			contentType: metadata.contentType || file.type,
-			cacheControl: metadata.cacheControl || '',
-			onProgress: metadata.onProgress || null,
-		};
+		try {
+			let result;
 
-		const result = await uploadFile(
-			this.workerEndpoint,
-			fullKey,
-			file,
-			options
-		);
+			// Use upload adapter if provided (provider-specific upload)
+			if (
+				this.uploadAdapter &&
+				typeof this.uploadAdapter.upload === 'function'
+			) {
+				result = await this.uploadAdapter.upload( key, file, {
+					...metadata,
+					contentType,
+				} );
+			} else {
+				// Default: upload directly to R2 via worker
+				const fullKey = this.getFullKey( key );
 
-		if ( ! result.success ) {
-			return result;
+				const options = {
+					contentType,
+					cacheControl: metadata.cacheControl || '',
+					onProgress: metadata.onProgress || null,
+				};
+
+				result = await uploadFile(
+					this.workerEndpoint,
+					fullKey,
+					file,
+					options
+				);
+			}
+
+			if ( ! result.success ) {
+				return result;
+			}
+
+			// Build public URL using original key for URL generation.
+			const url = this.getUrl( key );
+
+			return {
+				success: true,
+				url,
+			};
+		} catch ( error ) {
+			return {
+				success: false,
+				error: error.message || 'Upload failed',
+			};
 		}
-
-		// Build public URL using original key for URL generation.
-		const url = this.getUrl( key );
-
-		return {
-			success: true,
-			url,
-		};
 	}
 
 	/**

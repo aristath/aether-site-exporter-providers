@@ -1,7 +1,7 @@
 /**
- * Cloudflare R2 Blueprint Bundle Provider Modal Hooks
+ * Cloudflare R2 Provider Modal Hooks
  *
- * Adds custom content to the Cloudflare R2 blueprint bundle provider configuration modal.
+ * Adds custom content to the Cloudflare R2 provider configuration modal.
  * Specifically adds a "Deploy Worker" button for R2 storage worker.
  *
  * @package
@@ -12,6 +12,7 @@ import { Button, Notice } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { addFilter } from '@wordpress/hooks';
 import apiFetch from '../../utils/api';
+import { EdgeService } from '../services/edgeService';
 import {
 	R2SetupGuide,
 	APITokenHelpSection,
@@ -34,6 +35,8 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 	const [ error, setError ] = useState( null );
 	const [ success, setSuccess ] = useState( false );
 	const [ workerUrl, setWorkerUrl ] = useState( null );
+	const [ domainAttached, setDomainAttached ] = useState( false );
+	const [ domainError, setDomainError ] = useState( null );
 	const [ showManualSetup, setShowManualSetup ] = useState( false );
 
 	const handleDeploy = async () => {
@@ -41,6 +44,8 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 		setError( null );
 		setSuccess( false );
 		setWorkerUrl( null );
+		setDomainAttached( false );
+		setDomainError( null );
 
 		try {
 			// Validate required fields
@@ -170,6 +175,61 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 				}
 			}
 
+			// If public_url is configured, attach the worker to the custom domain
+			if ( result.worker_url && config.public_url ) {
+				try {
+					const edgeService = new EdgeService(
+						accountId,
+						apiToken,
+						config,
+						'cloudflare-r2'
+					);
+
+					// Get zone ID for the hostname
+					const hostname = config.public_url
+						.replace( /^https?:\/\//, '' )
+						.split( '/' )[ 0 ];
+					const rootDomain = hostname
+						.split( '.' )
+						.slice( -2 )
+						.join( '.' );
+					const zoneResult =
+						await edgeService.getZoneIdForHostname( rootDomain );
+
+					if ( zoneResult.success && zoneResult.data?.zoneId ) {
+						// Extract worker name from worker URL
+						const deployedWorkerName =
+							result.worker_url.match(
+								/https?:\/\/([^.]+)/
+							)?.[ 1 ];
+						if ( deployedWorkerName ) {
+							const attachResult =
+								await edgeService.attachWorkerToCustomDomain(
+									deployedWorkerName,
+									hostname,
+									zoneResult.data.zoneId
+								);
+							if ( attachResult.success ) {
+								setDomainAttached( true );
+							} else {
+								setDomainError( attachResult.error );
+							}
+						}
+					} else {
+						setDomainError(
+							zoneResult.error ||
+								__(
+									'Could not find zone for domain',
+									'altolith-deploy-r2'
+								)
+						);
+					}
+				} catch ( domainErr ) {
+					// Don't fail deployment if custom domain attachment fails
+					setDomainError( domainErr.message );
+				}
+			}
+
 			setSuccess( true );
 			setWorkerUrl( result.worker_url || null );
 
@@ -261,6 +321,53 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
 							</a>
 						</div>
 					) }
+					{ domainAttached && config.public_url && (
+						<div style={ { marginTop: '0.5rem' } }>
+							<strong>
+								{ __(
+									'Custom domain attached:',
+									'altolith-deploy-r2'
+								) }
+							</strong>{ ' ' }
+							<a
+								href={ config.public_url }
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								{
+									config.public_url
+										.replace( /^https?:\/\//, '' )
+										.split( '/' )[ 0 ]
+								}
+							</a>
+						</div>
+					) }
+					{ domainError && (
+						<>
+							<div
+								style={ {
+									marginTop: '0.5rem',
+									color: '#d63638',
+								} }
+							>
+								<strong>
+									{ __(
+										'Custom domain warning:',
+										'altolith-deploy-r2'
+									) }
+								</strong>{ ' ' }
+								{ domainError }
+							</div>
+							<DeploymentErrorHelp
+								errorType="domain_attachment"
+								hostname={
+									config.public_url
+										?.replace( /^https?:\/\//, '' )
+										.split( '/' )[ 0 ]
+								}
+							/>
+						</>
+					) }
 				</Notice>
 			) }
 
@@ -281,7 +388,7 @@ function DeployWorkerButton( { providerId, config, onChange } ) {
  * - After api_token field: Token creation help
  * - After worker_endpoint field: Deploy Worker button
  *
- * @param {string} providerIdPrefix Provider ID prefix to match (e.g., 'cloudflare-r2-blueprint-bundle').
+ * @param {string} providerIdPrefix Provider ID prefix to match (e.g., 'cloudflare-r2').
  */
 export function initCloudflareR2ModalHooks( providerIdPrefix ) {
 	// Add setup guide at the top of the modal
