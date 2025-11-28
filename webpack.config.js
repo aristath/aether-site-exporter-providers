@@ -133,6 +133,10 @@ module.exports = {
 				__dirname,
 				'../altolith-deploy/assets/src/admin-settings'
 			),
+			'@altolith/profiles': require( 'path' ).resolve(
+				__dirname,
+				'../altolith-deploy/assets/src/profiles'
+			),
 		},
 	},
 	externals: ( { request }, callback ) => {
