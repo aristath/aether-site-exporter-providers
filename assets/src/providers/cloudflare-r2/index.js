@@ -84,26 +84,41 @@ function createUploadAdapter( workerEndpoint, storageConfig ) {
 			let fileToUpload = file;
 
 			// If this is a server-side file, fetch it first
-			// Server-side files are indicated by sourceUrl and empty blob
-			if ( options.sourceUrl && file.size === 0 ) {
-				try {
-					const response = await fetch( options.sourceUrl, {
-						credentials: 'same-origin',
-					} );
+			// Server-side files are indicated by sourceUrl or sourcePath with empty blob
+			if ( file.size === 0 && ( options.sourceUrl || options.sourcePath ) ) {
+				let sourceUrl = options.sourceUrl;
 
-					if ( ! response.ok ) {
+				// If sourcePath is provided, convert it to a URL
+				if ( ! sourceUrl && options.sourcePath ) {
+					// Construct URL to fetch the file via REST API
+					// The sourcePath is a local file path, we need to serve it via REST
+					const siteUrl = options.metadata?.siteUrl || window.location.origin;
+					// Encode the sourcePath to pass it as a query parameter
+					const encodedPath = encodeURIComponent( options.sourcePath );
+					// Use the export-file endpoint to serve the file
+					sourceUrl = `${ siteUrl }/wp-json/altolith/deploy/export-file?path=${ encodedPath }`;
+				}
+
+				if ( sourceUrl ) {
+					try {
+						const response = await fetch( sourceUrl, {
+							credentials: 'same-origin',
+						} );
+
+						if ( ! response.ok ) {
+							return {
+								success: false,
+								error: `Failed to fetch server-side file for R2 upload: ${ response.statusText }`,
+							};
+						}
+
+						fileToUpload = await response.blob();
+					} catch ( error ) {
 						return {
 							success: false,
-							error: `Failed to fetch server-side file for R2 upload: ${ response.statusText }`,
+							error: `Failed to fetch server-side file: ${ error.message }`,
 						};
 					}
-
-					fileToUpload = await response.blob();
-				} catch ( error ) {
-					return {
-						success: false,
-						error: `Failed to fetch server-side file: ${ error.message }`,
-					};
 				}
 			}
 
